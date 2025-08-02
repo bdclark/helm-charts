@@ -1,0 +1,23 @@
+version: "0.2"
+language: "en"
+words:
+  - mosquitto
+  - Mosquitto
+  - configmap
+  - readwrite
+  - wrongpass
+  - adminaccess
+  - monitorpass
+  - mypassword
+  - kubectl
+  - nindent
+  - mqtt
+  - MQTT
+  - tolerations
+  - replicaset
+  - automount
+  - mysecret
+  - Taskfile
+ignorePaths: []
+dictionaries: []
+useGitignore: true

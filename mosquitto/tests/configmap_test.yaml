@@ -1,0 +1,125 @@
+suite: test configmap
+templates:
+  - configmap.yaml
+tests:
+  - it: should create configmap with default values
+    asserts:
+      - isKind:
+          of: ConfigMap
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-mosquitto-config
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "persistence false"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "allow_anonymous true"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "listener 1883"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "log_type information"
+
+  - it: should configure persistence when enabled
+    set:
+      persistence.enabled: true
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "persistence true"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "persistence_location /mosquitto/data/"
+
+  - it: should disable anonymous when users defined
+    set:
+      auth.users:
+        - username: testuser
+          password: testpass
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "allow_anonymous false"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "password_file /mosquitto/config/passwd"
+      - equal:
+          path: data.passwd
+          value: "testuser:testpass\n"
+
+  - it: should create acl file when acls defined
+    set:
+      auth.acls:
+        - user: admin
+          topic: "#"
+          access: readwrite
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "acl_file /mosquitto/config/acl"
+      - equal:
+          path: data.acl
+          value: "user admin\ntopic readwrite #\n"
+
+  - it: should only create listeners for enabled ports
+    set:
+      service.ports.mqtt.enabled: true
+      service.ports.mqttTls.enabled: false
+      service.ports.websocket.enabled: true
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "listener 1883"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "listener 9001"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "protocol websockets"
+      - notMatchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "listener 8883"
+
+  - it: should configure TLS when enabled with secret
+    set:
+      service.ports.mqttTls.enabled: true
+      service.ports.mqttTls.tls.secretName: "mosquitto-tls"
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "listener 8883"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "cafile /mosquitto/certs/ca.crt"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "certfile /mosquitto/certs/tls.crt"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "keyfile /mosquitto/certs/tls.key"
+
+  - it: should set custom log level
+    set:
+      config.logLevel: debug
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "log_type debug"
+
+  - it: should set max connections when specified
+    set:
+      config.maxConnections: 100
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "max_connections 100"
+
+  - it: should not set max connections when 0
+    set:
+      config.maxConnections: 0
+    asserts:
+      - notMatchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "max_connections"

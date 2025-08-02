@@ -1,0 +1,159 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should create deployment with default values
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-mosquitto
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "eclipse-mosquitto:2.0.18"
+
+  - it: should use custom replica count
+    set:
+      replicaCount: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: should use custom image
+    set:
+      image.repository: my-mosquitto
+      image.tag: "custom"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "my-mosquitto:custom"
+
+  - it: should expose only enabled ports
+    set:
+      service.ports.mqtt.enabled: true
+      service.ports.mqttTls.enabled: false
+      service.ports.websocket.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqtt
+            containerPort: 1883
+            protocol: TCP
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: websocket
+            containerPort: 9001
+            protocol: TCP
+      - notContains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqttTls
+
+  - it: should mount config volume
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /mosquitto/config
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            configMap:
+              name: RELEASE-NAME-mosquitto-config
+
+  - it: should mount persistence volume when enabled
+    set:
+      persistence.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /mosquitto/data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-mosquitto-data
+
+  - it: should use existing claim when specified
+    set:
+      persistence.enabled: true
+      persistence.existingClaim: my-existing-pvc
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: my-existing-pvc
+
+  - it: should mount TLS certs when enabled
+    set:
+      service.ports.mqttTls.enabled: true
+      service.ports.mqttTls.tls.secretName: mosquitto-tls
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: tls-certs
+            mountPath: /mosquitto/certs
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tls-certs
+            secret:
+              secretName: mosquitto-tls
+
+  - it: should not mount TLS certs when no secret specified
+    set:
+      service.ports.mqttTls.enabled: true
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: tls-certs
+
+  - it: should apply pod annotations
+    set:
+      podAnnotations:
+        annotation1: value1
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations.annotation1
+          value: value1
+
+  - it: should apply security context
+    set:
+      securityContext:
+        runAsUser: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000
+
+  - it: should apply resource limits
+    set:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: 100m
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 128Mi

@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "mosquitto.fullname" . }}-config
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+data:
+  mosquitto.conf: |
+    # Auto-generated mosquitto configuration
+    {{- if .Values.persistence.enabled }}
+    persistence true
+    persistence_location /mosquitto/data/
+    {{- else }}
+    persistence false
+    {{- end }}
+
+    {{- if and .Values.config.allowAnonymous (not .Values.auth.users) }}
+    allow_anonymous true
+    {{- else }}
+    allow_anonymous false
+    {{- end }}
+
+    # Logging configuration
+    log_dest stdout
+    log_type {{ .Values.config.logLevel }}
+
+    {{- if gt (.Values.config.maxConnections | int) 0 }}
+    # Connection limits
+    max_connections {{ .Values.config.maxConnections }}
+    {{- end }}
+
+    {{- if .Values.auth.users }}
+    password_file /mosquitto/config/passwd
+    {{- end }}
+
+    {{- if .Values.auth.acls }}
+    acl_file /mosquitto/config/acl
+    {{- end }}
+
+    # Listeners based on enabled service ports
+    {{- range $name, $config := .Values.service.ports }}
+    {{- if $config.enabled }}
+    {{- if eq $name "mqtt" }}
+    listener {{ $config.targetPort }}
+    {{- else if eq $name "mqttTls" }}
+    listener {{ $config.targetPort }}
+    {{- if $config.tls.secretName }}
+    cafile /mosquitto/certs/{{ $config.tls.caFile }}
+    certfile /mosquitto/certs/{{ $config.tls.certFile }}
+    keyfile /mosquitto/certs/{{ $config.tls.keyFile }}
+    {{- end }}
+    {{- else if eq $name "websocket" }}
+    listener {{ $config.targetPort }}
+    protocol websockets
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    {{- if .Values.config.extraConfig }}
+    # Additional custom configuration
+{{ .Values.config.extraConfig | indent 4 }}
+    {{- end }}
+
+  {{- if .Values.auth.users }}
+  passwd: |
+    {{- range .Values.auth.users }}
+    {{- if .passwordHash }}
+    {{ .username }}:{{ .passwordHash }}
+    {{- else if .password }}
+    {{ .username }}:{{ .password }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.auth.acls }}
+  acl: |
+    {{- range .Values.auth.acls }}
+    {{- if .user }}
+    user {{ .user }}
+    topic {{ .access }} {{ .topic }}
+    {{- else if .pattern }}
+    {{ .pattern }}
+    {{- end }}
+    {{- end }}
+  {{- end }}

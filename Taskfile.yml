@@ -1,0 +1,145 @@
+version: '3'
+
+vars:
+  CHART_NAME: mosquitto
+  TEST_NAMESPACE: mosquitto-test
+  TEST_RELEASE: mosquitto-test
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  install-tools:
+    desc: Install helm-unittest and other testing tools
+    cmds:
+      - echo "Installing helm-unittest plugin..."
+      - helm plugin install https://github.com/helm-unittest/helm-unittest.git || true
+      - echo "Checking required tools..."
+      - which helm || (echo "Please install Helm first" && exit 1)
+      - which kubectl || echo "kubectl not found - integration tests will not work"
+
+  lint:
+    desc: Run helm lint on all charts
+    cmds:
+      - echo "Linting {{.CHART_NAME}} chart..."
+      - helm lint {{.CHART_NAME}}/
+
+  test-unit:
+    desc: Run unit tests with helm-unittest
+    cmds:
+      - echo "Running unit tests..."
+      - helm unittest {{.CHART_NAME}}/
+
+  test-template:
+    desc: Test template rendering with different values
+    cmds:
+      - echo "Testing template rendering..."
+      - mkdir -p /tmp/helm-test
+      - helm template test-release {{.CHART_NAME}}/ > /tmp/helm-test/default.yaml
+      - helm template test-release {{.CHART_NAME}}/ --set auth.users[0].username=admin --set auth.users[0].password=admin123 > /tmp/helm-test/auth.yaml
+      - helm template test-release {{.CHART_NAME}}/ --set persistence.enabled=true > /tmp/helm-test/persistence.yaml
+      - echo "Templates rendered successfully to /tmp/helm-test/"
+
+  test-integration:
+    desc: Run integration tests on real cluster
+    deps: [check-cluster]
+    cmds:
+      - echo "Running integration tests..."
+      - ./tests/integration/scripts/test-runner.sh
+
+  test:
+    desc: Run all tests (lint + unit + template)
+    deps: [lint, test-unit, test-template]
+
+  test-quick:
+    desc: Run only unit tests (fast)
+    deps: [test-unit]
+
+  test-ci:
+    desc: Full CI test suite
+    deps: [install-tools, test]
+
+  clean:
+    desc: Clean up test artifacts
+    cmds:
+      - rm -rf /tmp/helm-test
+      - rm -f tests/integration/{{.CHART_NAME}}/*.yaml.tmp
+
+  package:
+    desc: Package the chart after testing
+    deps: [lint, test-unit]
+    cmds:
+      - helm package {{.CHART_NAME}}/
+
+  install-local:
+    desc: Install chart to current kubectl context
+    deps: [check-cluster]
+    cmds:
+      - echo "Installing {{.CHART_NAME}} chart locally..."
+      - helm upgrade --install {{.TEST_RELEASE}} {{.CHART_NAME}}/ 
+          --create-namespace 
+          --namespace {{.TEST_NAMESPACE}}
+
+  uninstall-local:
+    desc: Uninstall local test installation
+    cmds:
+      - helm uninstall {{.TEST_RELEASE}} --namespace {{.TEST_NAMESPACE}} || true
+      - kubectl delete namespace {{.TEST_NAMESPACE}} || true
+
+  check-cluster:
+    desc: Check if kubernetes cluster is available
+    cmds:
+      - which kubectl || (echo "kubectl required" && exit 1)
+      - kubectl cluster-info >/dev/null || (echo "No kubernetes cluster available" && exit 1)
+    silent: true
+
+  watch:
+    desc: Watch for changes and run tests
+    cmds:
+      - echo "Watching for changes..."
+      - |
+        if command -v inotifywait >/dev/null; then
+          while inotifywait -r -e modify {{.CHART_NAME}}/ tests/; do
+            echo "Files changed, running tests..."
+            task test-quick
+          done
+        else
+          echo "inotify-tools not available, install for file watching"
+          exit 1
+        fi
+
+  # Development helpers
+  dev:
+    desc: Development mode - install tools and run quick test
+    deps: [install-tools, test-quick]
+
+  debug-template:
+    desc: Debug template rendering with verbose output
+    cmds:
+      - echo "Debugging template for {{.CHART_NAME}}..."
+      - helm template {{.TEST_RELEASE}} {{.CHART_NAME}}/ --debug
+
+  validate-schema:
+    desc: Validate chart schema if schema file exists
+    cmds:
+      - |
+        if [ -f "{{.CHART_NAME}}/values.schema.json" ]; then
+          echo "Validating values schema..."
+          helm lint {{.CHART_NAME}}/ --strict
+        else
+          echo "No schema file found, skipping validation"
+        fi
+
+  # Security scanning
+  security-scan:
+    desc: Run security scan on chart templates
+    cmds:
+      - echo "Running security scan..."
+      - |
+        if command -v trivy >/dev/null; then
+          trivy config {{.CHART_NAME}}/
+        else
+          echo "Trivy not installed, skipping security scan"
+        fi

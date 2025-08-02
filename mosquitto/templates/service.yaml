@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "mosquitto.fullname" . }}
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range $name, $config := .Values.service.ports }}
+    {{- if $config.enabled }}
+    - port: {{ $config.port }}
+      targetPort: {{ $config.targetPort }}
+      protocol: {{ $config.protocol }}
+      name: {{ $name }}
+    {{- end }}
+    {{- end }}
+  selector:
+    {{- include "mosquitto.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,150 @@
+# Default values for mosquitto.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: eclipse-mosquitto
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# Secrets for pulling images from private repositories
+imagePullSecrets: []
+
+# Override the chart name
+nameOverride: ""
+fullnameOverride: ""
+
+# Pod annotations and labels
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  # MQTT broker ports
+  ports:
+    mqtt:
+      enabled: true
+      port: 1883
+      targetPort: 1883
+      protocol: TCP
+    mqttTls:
+      enabled: false
+      port: 8883
+      targetPort: 8883
+      protocol: TCP
+      # TLS configuration (only used if enabled)
+      tls:
+        # Secret containing TLS certificates
+        secretName: ""
+        # Keys in the secret (customize if your secret uses different key names)
+        caFile: "ca.crt"      # CA certificate
+        certFile: "tls.crt"   # Server certificate  
+        keyFile: "tls.key"    # Server private key
+    websocket:
+      enabled: false
+      port: 9001
+      targetPort: 9001
+      protocol: TCP
+
+ingress:
+  # Only needed for WebSocket connections (HTTP-based MQTT)
+  # Traditional MQTT (TCP) should use LoadBalancer or NodePort service type
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: mosquitto.local
+      paths:
+        - path: /mqtt
+          pathType: Prefix
+          service:
+            name: websocket  # Only websocket port is HTTP-compatible
+  tls: []
+  #  - secretName: mosquitto-tls
+  #    hosts:
+  #      - mosquitto.local
+
+# Resource limits and requests
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Health checks
+livenessProbe:
+  tcpSocket:
+    port: mqtt
+  initialDelaySeconds: 30
+  periodSeconds: 10
+readinessProbe:
+  tcpSocket:
+    port: mqtt
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+
+# Mosquitto configuration
+config:
+  # Allow anonymous connections (automatically disabled if users are defined)
+  allowAnonymous: true
+  # Log level: error, warning, notice, information, subscribe, unsubscribe, websockets, none, all
+  logLevel: information
+  # Maximum concurrent client connections (0 = unlimited)
+  maxConnections: 0
+  # Additional custom configuration
+  extraConfig: ""
+
+# Authentication configuration
+auth:
+  # Users for password-based authentication
+  users: []
+    # - username: admin
+    #   password: admin123        # Plaintext password (development)
+    # - username: user1
+    #   passwordHash: "$6$..."    # Pre-hashed password (production)
+
+  # Access Control Lists
+  acls: []
+    # - user: admin
+    #   topic: "#"
+    #   access: readwrite
+    # - user: user1
+    #   topic: "devices/user1/#"
+    #   access: readwrite
+    # - pattern: "readwrite %u/#"  # %u replaced with username
+
+persistence:
+  enabled: false
+  # Storage class for PVC
+  # Set to "-" to disable dynamic provisioning and use default storage class
+  # Set to "" to use cluster default storage class
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi
+  # Use an existing PVC instead of creating a new one
+  # If defined, PVC must be created manually before volume will be bound
+  # existingClaim:
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

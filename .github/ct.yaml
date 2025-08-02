@@ -1,0 +1,31 @@
+# Chart Testing (ct) configuration
+target-branch: main
+remote: origin
+
+# Charts to test
+chart-dirs:
+  - .
+
+# Helm chart repositories to add
+helm-repos:
+  - bitnami=https://charts.bitnami.com/bitnami
+
+# Additional Helm chart repositories for dependency charts
+chart-repos: []
+
+# Skip charts that haven't changed
+check-version-increment: true
+
+# Process dependency charts
+dependency-update: true
+
+# Validate chart maintainers
+validate-maintainers: false
+
+# Additional linting configuration  
+helm-extra-args: --timeout 600s
+
+# Values files for testing different configurations
+additional-commands:
+  - helm template test-release {CHART} --values tests/unit/mosquitto/values/auth-enabled.yaml
+  - helm template test-release {CHART} --values tests/unit/mosquitto/values/tls-enabled.yaml

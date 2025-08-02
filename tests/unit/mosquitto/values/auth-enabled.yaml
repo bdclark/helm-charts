@@ -1,0 +1,17 @@
+# Test values with authentication enabled
+auth:
+  users:
+    - username: admin
+      password: admin123
+    - username: sensor1
+      passwordHash: "$6$salt$hash..."
+  acls:
+    - user: admin
+      topic: "#"
+      access: readwrite
+    - user: sensor1
+      topic: "sensors/sensor1/#"
+      access: write
+
+config:
+  allowAnonymous: false

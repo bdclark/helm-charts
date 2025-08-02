@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "mosquitto.fullname" . }}-test-connection"
+  labels:
+    {{- include "mosquitto.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: mqtt-test
+      image: eclipse-mosquitto:latest
+      command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Testing MQTT connection to {{ include "mosquitto.fullname" . }}"
+          
+          # Test basic connectivity
+          echo "Testing basic connectivity..."
+          nc -zv {{ include "mosquitto.fullname" . }} {{ .Values.service.ports.mqtt.port }}
+          
+          {{- if .Values.service.ports.mqtt.enabled }}
+          # Test MQTT publish (anonymous)
+          {{- if and .Values.config.allowAnonymous (not .Values.auth.users) }}
+          echo "Testing anonymous MQTT publish..."
+          mosquitto_pub -h {{ include "mosquitto.fullname" . }} -p {{ .Values.service.ports.mqtt.port }} -t "test/connection" -m "helm test message" --capath /etc/ssl/certs/
+          echo "Anonymous publish test passed"
+          {{- end }}
+          
+          {{- if .Values.auth.users }}
+          # Test authenticated MQTT (if users configured)
+          echo "Authentication is enabled - testing connectivity only"
+          {{- end }}
+          {{- end }}
+          
+          {{- if and .Values.service.ports.websocket.enabled .Values.service.ports.websocket.enabled }}
+          # Test WebSocket port
+          echo "Testing WebSocket port connectivity..."
+          nc -zv {{ include "mosquitto.fullname" . }} {{ .Values.service.ports.websocket.port }}
+          {{- end }}
+          
+          {{- if and .Values.service.ports.mqttTls.enabled .Values.service.ports.mqttTls.enabled }}
+          # Test TLS port
+          echo "Testing TLS port connectivity..."
+          nc -zv {{ include "mosquitto.fullname" . }} {{ .Values.service.ports.mqttTls.port }}
+          {{- end }}
+          
+          echo "All connectivity tests passed!"
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
