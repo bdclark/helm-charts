@@ -16,6 +16,7 @@ This is a Helm charts repository containing custom Kubernetes deployment charts.
 ## Common Development Commands
 
 ### Helm Operations
+
 ```bash
 # Validate chart syntax and structure
 helm lint mosquitto/
@@ -37,6 +38,7 @@ helm uninstall my-mosquitto
 ```
 
 ### Validation and Testing
+
 ```bash
 # Spell check (requires cspell installation)
 npx cspell "**/*.{yaml,yml,md}"
@@ -51,6 +53,7 @@ kubectl apply --dry-run=client -f <(helm template mosquitto mosquitto/)
 ## Chart Architecture
 
 ### Template System
+
 Charts use Helm's Go templating engine with these key patterns:
 
 - **Helper templates** (`_helpers.tpl`): Reusable template functions for names, labels, and selectors
@@ -59,7 +62,9 @@ Charts use Helm's Go templating engine with these key patterns:
 - **Resource naming**: Consistent naming using helper templates like `mosquitto.fullname`
 
 ### Standard Kubernetes Resources
+
 Each chart typically includes:
+
 - **Deployment**: Main application workload
 - **Service**: Network access to pods
 - **ServiceAccount**: Pod identity and permissions
@@ -67,6 +72,7 @@ Each chart typically includes:
 - **ConfigMap/Secret**: Configuration and sensitive data (as needed)
 
 ### Configuration Patterns
+
 - All charts follow the standard `values.yaml` structure with sections for:
   - Image configuration (`image.repository`, `image.tag`, `image.pullPolicy`)
   - Service configuration (`service.type`, `service.port`)
@@ -74,6 +80,20 @@ Each chart typically includes:
   - Autoscaling configuration
   - Security contexts and pod security
   - Ingress and networking options
+
+### Documentation Standards
+
+- **Markdown tables**: Always format with consistent column widths for readability
+  - Left-align parameter names, descriptions, and values
+  - Use appropriate spacing to align columns visually
+  - Example:
+
+    ```markdown
+    | Parameter             | Description                  | Default     |
+    |-----------------------|------------------------------|-------------|
+    | `service.type`        | Service type                 | `ClusterIP` |
+    | `persistence.enabled` | Enable persistence           | `false`     |
+    ```
 
 ## Development Workflow
 
@@ -88,3 +108,11 @@ Each chart typically includes:
 - **Chart version** (`version` in Chart.yaml): Increment when changing chart structure or templates
 - **App version** (`appVersion` in Chart.yaml): Should match the version of the deployed application
 - Follow semantic versioning for chart versions
+
+## Coding Standards
+
+- **Markdown linting**: Always ensure markdown files adhere to markdownlint standards when possible
+- **Trailing whitespace**: No trailing whitespace in code or documentation unless it's required
+- **File newline**: All files should end with a newline unless use-case demands otherwise
+- **Shellcheck**: All bash and shell scripts should pass shellcheck standards if possible
+- **Spelling**: All files should pass cspell rules, add to dictionary when necessary

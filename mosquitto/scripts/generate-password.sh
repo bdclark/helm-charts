@@ -25,7 +25,7 @@ EXAMPLES:
 
 OUTPUT:
     The script outputs a password hash that can be used in values.yaml:
-    
+
     auth:
       users:
         - username: admin
@@ -82,7 +82,7 @@ generate_hash() {
     local username="$1"
     local password="$2"
     local temp_file=$(mktemp)
-    
+
     # Try to use local mosquitto_passwd first
     if command -v mosquitto_passwd >/dev/null 2>&1; then
         echo "Using local mosquitto_passwd..."
@@ -100,7 +100,7 @@ generate_hash() {
         echo "Please install mosquitto-clients or Docker" >&2
         exit 1
     fi
-    
+
     rm -f "$temp_file"
 }
 

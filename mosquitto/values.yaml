@@ -2,7 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+# Workload type - Deployment or StatefulSet
+# StatefulSet provides stable network identity and persistent storage
+# Recommended when persistence is enabled
+workload:
+  type: Deployment  # Deployment or StatefulSet
 
 image:
   repository: eclipse-mosquitto
@@ -34,6 +38,23 @@ securityContext: {}
 
 service:
   type: ClusterIP
+  # Service annotations for load balancer configuration
+  annotations: {}
+    # MetalLB examples:
+    # metallb.universe.tf/loadBalancerIPs: "192.168.1.100"
+    # metallb.universe.tf/address-pool: "production-public-ips"
+    # Traefik examples:
+    # traefik.ingress.kubernetes.io/service.loadbalancer.method: "drr"
+    # Cloud provider examples:
+    # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    # service.beta.kubernetes.io/azure-load-balancer-resource-group: "myResourceGroup"
+  # LoadBalancer configuration (for MetalLB, cloud providers, etc.)
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  # External traffic policy for LoadBalancer and NodePort
+  externalTrafficPolicy: Cluster
+  # Session affinity for service
+  sessionAffinity: None
   # MQTT broker ports
   ports:
     mqtt:
@@ -41,24 +62,58 @@ service:
       port: 1883
       targetPort: 1883
       protocol: TCP
+      # NodePort for NodePort service type (leave empty for auto-assignment)
+      nodePort: ""
     mqttTls:
       enabled: false
       port: 8883
       targetPort: 8883
       protocol: TCP
+      # NodePort for NodePort service type (leave empty for auto-assignment)
+      nodePort: ""
       # TLS configuration (only used if enabled)
       tls:
         # Secret containing TLS certificates
         secretName: ""
         # Keys in the secret (customize if your secret uses different key names)
         caFile: "ca.crt"      # CA certificate
-        certFile: "tls.crt"   # Server certificate  
+        certFile: "tls.crt"   # Server certificate
         keyFile: "tls.key"    # Server private key
     websocket:
       enabled: false
       port: 9001
       targetPort: 9001
       protocol: TCP
+      # NodePort for NodePort service type (leave empty for auto-assignment)
+      nodePort: ""
+
+# Host networking configuration
+hostNetwork:
+  # Enable host networking (pod uses host's network namespace)
+  enabled: false
+  # DNS policy when using host networking
+  dnsPolicy: ClusterFirstWithHostNet
+
+# Host port configuration (alternative to hostNetwork)
+hostPorts:
+  # Enable binding to host ports
+  enabled: false
+  # Host ports configuration
+  mqtt:
+    # Host port for MQTT (leave empty to disable)
+    port: ""
+    # Host IP to bind to (empty = all interfaces)
+    hostIP: ""
+  mqttTls:
+    # Host port for MQTT TLS (leave empty to disable)
+    port: ""
+    # Host IP to bind to (empty = all interfaces)
+    hostIP: ""
+  websocket:
+    # Host port for WebSocket (leave empty to disable)
+    port: ""
+    # Host IP to bind to (empty = all interfaces)
+    hostIP: ""
 
 ingress:
   # Only needed for WebSocket connections (HTTP-based MQTT)
@@ -139,9 +194,11 @@ persistence:
   accessModes:
     - ReadWriteOnce
   size: 1Gi
-  # Use an existing PVC instead of creating a new one
+  # Use an existing PVC instead of creating a new one (deployment only)
   # If defined, PVC must be created manually before volume will be bound
   # existingClaim:
+  # Annotations for PVC (StatefulSet only)
+  annotations: {}
 
 nodeSelector: {}
 

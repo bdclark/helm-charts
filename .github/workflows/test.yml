@@ -8,7 +8,7 @@ on:
 
 env:
   HELM_VERSION: v3.14.0
-  TASK_VERSION: v3.34.1
+  TASK_VERSION: 3.x
 
 jobs:
   lint-and-unit-test:
@@ -26,7 +26,7 @@ jobs:
           version: ${{ env.HELM_VERSION }}
 
       - name: Install Task
-        uses: arduino/setup-task@v1
+        uses: arduino/setup-task@v2
         with:
           version: ${{ env.TASK_VERSION }}
 
@@ -90,7 +90,7 @@ jobs:
           version: ${{ env.HELM_VERSION }}
 
       - name: Install Task
-        uses: arduino/setup-task@v1
+        uses: arduino/setup-task@v2
         with:
           version: ${{ env.TASK_VERSION }}
 
@@ -179,7 +179,7 @@ jobs:
           version: ${{ env.HELM_VERSION }}
 
       - name: Install Task
-        uses: arduino/setup-task@v1
+        uses: arduino/setup-task@v2
         with:
           version: ${{ env.TASK_VERSION }}
 

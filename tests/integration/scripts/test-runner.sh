@@ -71,7 +71,7 @@ helm upgrade "$TEST_RELEASE" "$CHART_DIR" \
 
 # Verify PVC is created and bound
 echo "Verifying PVC is bound..."
-kubectl wait --for=condition=bound pvc/mosquitto-test-data \
+kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/mosquitto-test-data \
     --namespace "$TEST_NAMESPACE" \
     --timeout=60s
 

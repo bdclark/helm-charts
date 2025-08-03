@@ -15,21 +15,10 @@ Eclipse Mosquitto MQTT broker with comprehensive authentication, TLS, and persis
 #### Quick Start
 
 ```bash
-# Add repo (when published)
-helm repo add my-charts https://charts.example.com
+# Install from source
+helm install mosquitto ./mosquitto/
 
-# Install with default settings
-helm install mosquitto my-charts/mosquitto
-
-# Install with authentication
-helm install mosquitto my-charts/mosquitto \
-  --set auth.users[0].username=admin \
-  --set auth.users[0].password=admin123
-
-# Install with persistence
-helm install mosquitto my-charts/mosquitto \
-  --set persistence.enabled=true \
-  --set persistence.size=5Gi
+# See mosquitto/README.md for detailed configuration examples
 ```
 
 ## Development

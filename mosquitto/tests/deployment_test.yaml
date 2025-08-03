@@ -2,6 +2,13 @@ suite: test deployment
 templates:
   - deployment.yaml
 tests:
+  - it: should not create deployment when workload type is statefulset
+    set:
+      workload.type: StatefulSet
+    asserts:
+      - hasDocuments:
+          count: 0
+
   - it: should create deployment with default values
     asserts:
       - isKind:
@@ -15,14 +22,6 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].image
           value: "eclipse-mosquitto:2.0.18"
-
-  - it: should use custom replica count
-    set:
-      replicaCount: 3
-    asserts:
-      - equal:
-          path: spec.replicas
-          value: 3
 
   - it: should use custom image
     set:
@@ -157,3 +156,80 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].resources.limits.memory
           value: 128Mi
+
+  - it: should enable hostNetwork when specified
+    set:
+      hostNetwork.enabled: true
+      hostNetwork.dnsPolicy: ClusterFirstWithHostNet
+    asserts:
+      - equal:
+          path: spec.template.spec.hostNetwork
+          value: true
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirstWithHostNet
+
+  - it: should not set hostNetwork when disabled
+    set:
+      hostNetwork.enabled: false
+    asserts:
+      - isNull:
+          path: spec.template.spec.hostNetwork
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+
+  - it: should set hostPorts when enabled
+    set:
+      hostPorts.enabled: true
+      hostPorts.mqtt.port: 1883
+      hostPorts.mqtt.hostIP: "192.168.1.10"
+      service.ports.mqttTls.enabled: true
+      hostPorts.mqttTls.port: 8883
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqtt
+            containerPort: 1883
+            protocol: TCP
+            hostPort: 1883
+            hostIP: "192.168.1.10"
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqttTls
+            containerPort: 8883
+            protocol: TCP
+            hostPort: 8883
+
+  - it: should not set hostPorts when disabled
+    set:
+      hostPorts.enabled: false
+      hostPorts.mqtt.port: 1883
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqtt
+            containerPort: 1883
+            protocol: TCP
+      - notContains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            hostPort: 1883
+
+  - it: should not set hostPorts when enabled but port not specified
+    set:
+      hostPorts.enabled: true
+      hostPorts.mqtt.port: ""
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqtt
+            containerPort: 1883
+            protocol: TCP
+      - notContains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            hostPort: 1883

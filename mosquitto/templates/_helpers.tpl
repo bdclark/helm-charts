@@ -50,3 +50,12 @@ app.kubernetes.io/name: {{ include "mosquitto.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{/*
+Validate workload type
+*/}}
+{{- define "mosquitto.validateWorkloadType" -}}
+{{- if not (or (eq .Values.workload.type "Deployment") (eq .Values.workload.type "StatefulSet")) }}
+{{- fail "workload.type must be either 'Deployment' or 'StatefulSet'" }}
+{{- end }}
+{{- end }}
+

@@ -1,13 +1,14 @@
 {{- include "mosquitto.validateWorkloadType" . -}}
-{{- if eq .Values.workload.type "Deployment" -}}
+{{- if eq .Values.workload.type "StatefulSet" -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "mosquitto.fullname" . }}
   labels:
     {{- include "mosquitto.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  serviceName: {{ include "mosquitto.fullname" . }}
   selector:
     matchLabels:
       {{- include "mosquitto.selectorLabels" . | nindent 6 }}
@@ -73,28 +74,28 @@ spec:
             - name: config
               mountPath: /mosquitto/config
               readOnly: true
-            {{- if .Values.persistence.enabled }}
-            - name: data
-              mountPath: /mosquitto/data
-            {{- end }}
             {{- if and .Values.service.ports.mqttTls.enabled .Values.service.ports.mqttTls.tls.secretName }}
             - name: tls-certs
               mountPath: /mosquitto/certs
               readOnly: true
             {{- end }}
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /mosquitto/data
+            {{- end }}
       volumes:
         - name: config
           configMap:
             name: {{ include "mosquitto.fullname" . }}-config
-        {{- if .Values.persistence.enabled }}
-        - name: data
-          persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "mosquitto.fullname" .)) }}
-        {{- end }}
         {{- if and .Values.service.ports.mqttTls.enabled .Values.service.ports.mqttTls.tls.secretName }}
         - name: tls-certs
           secret:
             secretName: {{ .Values.service.ports.mqttTls.tls.secretName }}
+        {{- end }}
+        {{- if and .Values.persistence.enabled .Values.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
@@ -108,4 +109,28 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        {{- with .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- range .Values.persistence.accessModes }}
+          - {{ . | quote }}
+          {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+        {{- if .Values.persistence.storageClass }}
+        {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        {{- end }}
+        {{- end }}
+  {{- end }}
 {{- end }}

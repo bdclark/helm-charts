@@ -1,0 +1,125 @@
+suite: test statefulset
+templates:
+  - statefulset.yaml
+tests:
+  - it: should not create statefulset by default
+    templates:
+      - statefulset.yaml
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create statefulset when workload type is statefulset
+    set:
+      workload.type: StatefulSet
+    templates:
+      - statefulset.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: StatefulSet
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-mosquitto
+      - equal:
+          path: spec.serviceName
+          value: RELEASE-NAME-mosquitto
+
+  - it: should create volume claim template when persistence enabled
+    set:
+      workload.type: StatefulSet
+      persistence.enabled: true
+      persistence.size: 5Gi
+    templates:
+      - statefulset.yaml
+    asserts:
+      - isNotEmpty:
+          path: spec.volumeClaimTemplates
+      - equal:
+          path: spec.volumeClaimTemplates[0].metadata.name
+          value: data
+      - equal:
+          path: spec.volumeClaimTemplates[0].spec.resources.requests.storage
+          value: 5Gi
+
+  - it: should not create volume claim template when using existing claim
+    set:
+      workload.type: StatefulSet
+      persistence.enabled: true
+      persistence.existingClaim: my-existing-pvc
+    templates:
+      - statefulset.yaml
+    asserts:
+      - isNull:
+          path: spec.volumeClaimTemplates
+
+  - it: should mount existing PVC when specified
+    set:
+      workload.type: StatefulSet
+      persistence.enabled: true
+      persistence.existingClaim: my-existing-pvc
+    templates:
+      - statefulset.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: my-existing-pvc
+
+  - it: should apply PVC annotations
+    set:
+      workload.type: StatefulSet
+      persistence.enabled: true
+      persistence.annotations:
+        custom-annotation: custom-value
+    templates:
+      - statefulset.yaml
+    asserts:
+      - equal:
+          path: spec.volumeClaimTemplates[0].metadata.annotations.custom-annotation
+          value: custom-value
+
+  - it: should enable hostNetwork when specified
+    set:
+      workload.type: StatefulSet
+      hostNetwork.enabled: true
+      hostNetwork.dnsPolicy: ClusterFirstWithHostNet
+    templates:
+      - statefulset.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.hostNetwork
+          value: true
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirstWithHostNet
+
+  - it: should set hostPorts when enabled
+    set:
+      workload.type: StatefulSet
+      hostPorts.enabled: true
+      hostPorts.mqtt.port: 1883
+      hostPorts.mqtt.hostIP: "192.168.1.10"
+      service.ports.mqttTls.enabled: true
+      hostPorts.mqttTls.port: 8883
+    templates:
+      - statefulset.yaml
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqtt
+            containerPort: 1883
+            protocol: TCP
+            hostPort: 1883
+            hostIP: "192.168.1.10"
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: mqttTls
+            containerPort: 8883
+            protocol: TCP
+            hostPort: 8883
