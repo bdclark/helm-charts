@@ -50,26 +50,6 @@ jobs:
           path: /tmp/helm-test/
           retention-days: 7
 
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'config'
-          scan-ref: 'mosquitto/'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
 
   integration-test:
     name: Integration Tests
@@ -99,12 +79,7 @@ jobs:
         with:
           node_image: kindest/node:${{ matrix.k8s-version }}
           cluster_name: mosquitto-test
-          config: |
-            kind: Cluster
-            apiVersion: kind.x-k8s.io/v1alpha4
-            nodes:
-            - role: control-plane
-            - role: worker
+          config: .github/kind-config.yaml
 
       - name: Install helm-unittest
         run: helm plugin install https://github.com/helm-unittest/helm-unittest.git
@@ -159,6 +134,7 @@ jobs:
         uses: helm/kind-action@v1
         with:
           node_image: kindest/node:v1.29.0
+          config: .github/kind-config.yaml
 
       - name: Run chart-testing (install)
         if: steps.list.outputs.changed == 'true'

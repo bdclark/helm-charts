@@ -22,7 +22,7 @@ dependency-update: true
 # Validate chart maintainers
 validate-maintainers: false
 
-# Additional linting configuration  
+# Additional linting configuration
 helm-extra-args: --timeout 600s
 
 # Values files for testing different configurations
