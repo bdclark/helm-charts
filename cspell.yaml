@@ -1,23 +1,30 @@
 version: "0.2"
-language: "en"
+language: en
 words:
+  - adminaccess
+  - artifacthub
+  - automount
+  - configmap
+  - kubectl
+  - metallb
+  - monitorpass
   - mosquitto
   - Mosquitto
-  - configmap
-  - readwrite
-  - wrongpass
-  - adminaccess
-  - monitorpass
-  - mypassword
-  - kubectl
-  - nindent
   - mqtt
   - MQTT
-  - tolerations
-  - replicaset
-  - automount
+  - mypassword
   - mysecret
+  - nindent
+  - readwrite
+  - replicaset
+  - secretpassword
+  - Shellcheck
+  - statefulset
   - Taskfile
+  - tolerations
+  - traefik
+  - Traefik
+  - wrongpass
 ignorePaths: []
 dictionaries: []
 useGitignore: true

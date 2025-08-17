@@ -1,0 +1,37 @@
+apiVersion: v2
+name: mosquitto
+description: Eclipse Mosquitto MQTT broker with authentication and persistence support
+type: application
+version: 0.1.0
+appVersion: 2.0.18
+home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+  - https://github.com/eclipse/mosquitto
+icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+keywords:
+  - mqtt
+  - mosquitto
+  - eclipse
+  - iot
+  - broker
+  - messaging
+maintainers:
+  - name: Brian Clark
+    email: brian@noreply.com
+    url: https://github.com/bdclark
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - name: Eclipse Mosquitto
+      url: https://mosquitto.org/
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial chart implementation with authentication and persistence support
+  artifacthub.io/images: |
+    - name: mosquitto
+      image: eclipse-mosquitto:2.0.18
+  artifacthub.io/operator: "false"
+  artifacthub.io/prerelease: "false"

@@ -1,0 +1,16 @@
+# Helm chart packages
+*.tgz
+
+# Chart-releaser packages
+.cr-release-packages/
+
+# Python virtual environment
+.venv/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,9 +1,8 @@
 version: '3'
 
 vars:
-  CHART_NAME: mosquitto
-  TEST_NAMESPACE: mosquitto-test
-  TEST_RELEASE: mosquitto-test
+  CHARTS_DIR: charts
+  DEFAULT_CHART: mosquitto
 
 tasks:
   default:
@@ -11,135 +10,226 @@ tasks:
     cmds:
       - task --list
 
-  install-tools:
-    desc: Install helm-unittest and other testing tools
+  discover-charts:
+    desc: List all available charts
     cmds:
-      - echo "Installing helm-unittest plugin..."
-      - helm plugin install https://github.com/helm-unittest/helm-unittest.git || true
-      - echo "Checking required tools..."
+      - find {{.CHARTS_DIR}} -name Chart.yaml -exec dirname {} \; | sed 's|{{.CHARTS_DIR}}/||' | sort
+    silent: true
+
+  install-tools:
+    desc: Install chart-testing and chart-releaser tools
+    cmds:
+      - echo "Installing chart-testing..."
+      - |
+        if ! command -v ct &> /dev/null; then
+          echo "Please install chart-testing: https://github.com/helm/chart-testing#installation"
+          echo "  brew install chart-testing"
+          echo "  or download from releases"
+          exit 1
+        fi
+      - echo "Installing chart-releaser..."
+      - |
+        if ! command -v cr &> /dev/null; then
+          echo "Please install chart-releaser: https://github.com/helm/chart-releaser#installation"
+          echo "  brew install chart-releaser"
+          echo "  or download from releases"
+          exit 1
+        fi
+      - echo "Checking helm..."
       - which helm || (echo "Please install Helm first" && exit 1)
-      - which kubectl || echo "kubectl not found - integration tests will not work"
+      - echo "Checking kubectl..."
+      - which kubectl || echo "kubectl not found - install tests will not work"
+      - echo "Adding helm repositories..."
+      - helm repo add bitnami https://charts.bitnami.com/bitnami || true
+      - helm repo add stable https://charts.helm.sh/stable || true
+      - helm repo update
+      - echo "✓ All tools installed and configured"
 
   lint:
-    desc: Run helm lint on all charts
+    desc: "Run chart-testing lint on specific chart (usage: task lint CHART=mosquitto)"
     cmds:
-      - echo "Linting {{.CHART_NAME}} chart..."
-      - helm lint {{.CHART_NAME}}/
-
-  test-unit:
-    desc: Run unit tests with helm-unittest
+      - echo "Linting {{.CHART | default .DEFAULT_CHART}} with chart-testing..."
+      - ct lint --charts {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
+    # env:
+    #   PATH: ./.venv/bin:{{.PATH}}
+  lint-all:
+    desc: Run chart-testing lint on all charts
     cmds:
-      - echo "Running unit tests..."
-      - helm unittest {{.CHART_NAME}}/
+      - echo "Linting all charts with chart-testing..."
+      - ct lint
 
-  test-template:
-    desc: Test template rendering with different values
-    cmds:
-      - echo "Testing template rendering..."
-      - mkdir -p /tmp/helm-test
-      - helm template test-release {{.CHART_NAME}}/ > /tmp/helm-test/default.yaml
-      - helm template test-release {{.CHART_NAME}}/ --set auth.users[0].username=admin --set auth.users[0].password=admin123 > /tmp/helm-test/auth.yaml
-      - helm template test-release {{.CHART_NAME}}/ --set persistence.enabled=true > /tmp/helm-test/persistence.yaml
-      - echo "Templates rendered successfully to /tmp/helm-test/"
-
-  test-integration:
-    desc: Run integration tests on real cluster
+  test-install:
+    desc: "Run chart-testing install for specific chart (usage: task test-install CHART=mosquitto)"
     deps: [check-cluster]
     cmds:
-      - echo "Running integration tests..."
-      - ./tests/integration/scripts/test-runner.sh
+      - echo "Testing installation of {{.CHART | default .DEFAULT_CHART}} with chart-testing..."
+      - ct install --charts {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
+
+  test-install-all:
+    desc: Run chart-testing install for all charts
+    deps: [check-cluster]
+    cmds:
+      - echo "Testing installation of all charts with chart-testing..."
+      - ct install
+
+  test-custom:
+    desc: "Run custom integration tests for specific chart (usage: task test-custom CHART=mosquitto)"
+    deps: [check-cluster]
+    cmds:
+      - echo "Running custom integration tests for {{.CHART | default .DEFAULT_CHART}}..."
+      - |
+        chart_name="{{.CHART | default .DEFAULT_CHART}}"
+        if [ -f "tests/integration/charts/$chart_name/integration-test.sh" ]; then
+          export TEST_NAMESPACE="$chart_name-integration-test"
+          export TEST_RELEASE="$chart_name-test"
+          export CHART_DIR="{{.CHARTS_DIR}}/$chart_name"
+          ./tests/integration/charts/$chart_name/integration-test.sh
+        else
+          echo "No custom integration tests found for $chart_name"
+        fi
+
+  test-custom-all:
+    desc: Run custom integration tests for all charts
+    deps: [check-cluster]
+    cmds:
+      - |
+        for chart in $(task discover-charts --silent); do
+          if [ -f "tests/integration/charts/$chart/integration-test.sh" ]; then
+            echo "Running custom integration tests for $chart..."
+            export TEST_NAMESPACE="$chart-integration-test"
+            export TEST_RELEASE="$chart-test"
+            export CHART_DIR="{{.CHARTS_DIR}}/$chart"
+            ./tests/integration/charts/$chart/integration-test.sh
+          else
+            echo "No custom integration tests found for $chart"
+          fi
+        done
 
   test:
-    desc: Run all tests (lint + unit + template)
-    deps: [lint, test-unit, test-template]
+    desc: "Run all tests for specific chart (usage: task test CHART=mosquitto)"
+    deps: [lint, test-install]
+    cmds:
+      - task test-custom CHART={{.CHART | default .DEFAULT_CHART}}
 
-  test-quick:
-    desc: Run only unit tests (fast)
-    deps: [test-unit]
+  test-all:
+    desc: Run all tests for all charts
+    deps: [lint-all, test-install-all]
+    cmds:
+      - task test-custom-all
 
   test-ci:
-    desc: Full CI test suite
-    deps: [install-tools, test]
-
-  clean:
-    desc: Clean up test artifacts
-    cmds:
-      - rm -rf /tmp/helm-test
-      - rm -f tests/integration/{{.CHART_NAME}}/*.yaml.tmp
+    desc: "Full CI test suite (lint only, no cluster required)"
+    deps: [install-tools, lint-all]
 
   package:
-    desc: Package the chart after testing
-    deps: [lint, test-unit]
+    desc: "Package specific chart (usage: task package CHART=mosquitto)"
+    deps: [lint]
     cmds:
-      - helm package {{.CHART_NAME}}/
+      - echo "Packaging {{.CHART | default .DEFAULT_CHART}}..."
+      - helm package {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --destination .
 
-  install-local:
-    desc: Install chart to current kubectl context
-    deps: [check-cluster]
+  package-all:
+    desc: Package all charts
+    deps: [lint-all]
     cmds:
-      - echo "Installing {{.CHART_NAME}} chart locally..."
-      - helm upgrade --install {{.TEST_RELEASE}} {{.CHART_NAME}}/ 
-          --create-namespace 
-          --namespace {{.TEST_NAMESPACE}}
+      - |
+        for chart in $(task discover-charts --silent); do
+          echo "Packaging $chart..."
+          helm package {{.CHARTS_DIR}}/$chart --destination .
+        done
 
-  uninstall-local:
-    desc: Uninstall local test installation
+  release-local:
+    desc: Create local release packages for testing
+    deps: [package-all]
     cmds:
-      - helm uninstall {{.TEST_RELEASE}} --namespace {{.TEST_NAMESPACE}} || true
-      - kubectl delete namespace {{.TEST_NAMESPACE}} || true
+      - echo "Creating local release packages..."
+      - mkdir -p .cr-release-packages
+      - mv *.tgz .cr-release-packages/ 2>/dev/null || true
+      - helm repo index .cr-release-packages --url file://.cr-release-packages
+      - echo "Local packages created in .cr-release-packages/"
+      - 'echo "To test: helm repo add local file://$(pwd)/.cr-release-packages"'
+
+  clean:
+    desc: Clean up artifacts
+    cmds:
+      - rm -rf .cr-release-packages
+      - rm -f *.tgz
+      - echo "Cleaned up release artifacts"
 
   check-cluster:
     desc: Check if kubernetes cluster is available
     cmds:
-      - which kubectl || (echo "kubectl required" && exit 1)
+      - which kubectl || (echo "kubectl required for install tests" && exit 1)
       - kubectl cluster-info >/dev/null || (echo "No kubernetes cluster available" && exit 1)
     silent: true
 
-  watch:
-    desc: Watch for changes and run tests
-    cmds:
-      - echo "Watching for changes..."
-      - |
-        if command -v inotifywait >/dev/null; then
-          while inotifywait -r -e modify {{.CHART_NAME}}/ tests/; do
-            echo "Files changed, running tests..."
-            task test-quick
-          done
-        else
-          echo "inotify-tools not available, install for file watching"
-          exit 1
-        fi
-
   # Development helpers
   dev:
-    desc: Development mode - install tools and run quick test
-    deps: [install-tools, test-quick]
+    desc: Development setup - install tools and run quick tests
+    deps: [install-tools, lint-all]
 
   debug-template:
-    desc: Debug template rendering with verbose output
+    desc: "Debug template rendering for specific chart (usage: task debug-template CHART=mosquitto)"
     cmds:
-      - echo "Debugging template for {{.CHART_NAME}}..."
-      - helm template {{.TEST_RELEASE}} {{.CHART_NAME}}/ --debug
+      - echo "Debugging template for {{.CHART | default .DEFAULT_CHART}}..."
+      - helm template test-release {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --debug
 
-  validate-schema:
-    desc: Validate chart schema if schema file exists
+  # Chart-testing specific commands
+  ct-list:
+    desc: List charts that would be tested by chart-testing
     cmds:
-      - |
-        if [ -f "{{.CHART_NAME}}/values.schema.json" ]; then
-          echo "Validating values schema..."
-          helm lint {{.CHART_NAME}}/ --strict
-        else
-          echo "No schema file found, skipping validation"
-        fi
+      - ct list-changed
+
+  ct-lint:
+    desc: Run chart-testing lint with full output
+    cmds:
+      - ct lint --debug
+
+  ct-install:
+    desc: Run chart-testing install with full output
+    deps: [check-cluster]
+    cmds:
+      - ct install --debug
+
+  # Chart-releaser commands
+  cr-package:
+    desc: Package charts using chart-releaser
+    cmds:
+      - cr package
+
+  cr-upload:
+    desc: "Upload packages using chart-releaser (requires CR_TOKEN)"
+    cmds:
+      - cr upload --skip-existing
+
+  cr-index:
+    desc: Update repository index using chart-releaser
+    cmds:
+      - cr index
 
   # Security scanning
   security-scan:
-    desc: Run security scan on chart templates
+    desc: "Run security scan on specific chart (usage: task security-scan CHART=mosquitto)"
     cmds:
-      - echo "Running security scan..."
+      - echo "Running security scan for {{.CHART | default .DEFAULT_CHART}}..."
       - |
         if command -v trivy >/dev/null; then
-          trivy config {{.CHART_NAME}}/
+          trivy config {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
         else
           echo "Trivy not installed, skipping security scan"
+          echo "Install with: brew install trivy"
+        fi
+
+  security-scan-all:
+    desc: Run security scan on all charts
+    cmds:
+      - |
+        if command -v trivy >/dev/null; then
+          for chart in $(task discover-charts --silent); do
+            echo "Running security scan for $chart..."
+            trivy config {{.CHARTS_DIR}}/$chart
+          done
+        else
+          echo "Trivy not installed, skipping security scan"
+          echo "Install with: brew install trivy"
         fi

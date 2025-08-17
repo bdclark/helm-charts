@@ -1,0 +1,16 @@
+Mosquitto MQTT broker has been installed.
+
+{{- if contains "ClusterIP" .Values.service.type }}
+To connect from within the cluster:
+  Host: {{ include "mosquitto.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  Port: {{ .Values.service.ports.mqtt.port }}
+
+For external access, use port forwarding:
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "mosquitto.fullname" . }} {{ .Values.service.ports.mqtt.port }}:{{ .Values.service.ports.mqtt.port }}
+{{- else if contains "LoadBalancer" .Values.service.type }}
+Get the external IP:
+  kubectl get svc --namespace {{ .Release.Namespace }} {{ include "mosquitto.fullname" . }}
+{{- else if contains "NodePort" .Values.service.type }}
+Get the node port:
+  kubectl get svc --namespace {{ .Release.Namespace }} {{ include "mosquitto.fullname" . }}
+{{- end }}

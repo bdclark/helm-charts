@@ -1,0 +1,31 @@
+# Chart Releaser (cr) configuration
+# https://github.com/helm/chart-releaser
+
+# GitHub repository owner and name
+owner: bdclark  # Update this to your GitHub username
+repo: helm-charts  # Update this to your repository name
+
+# Package path where chart packages will be stored
+package-path: .cr-release-packages
+
+# Git configuration
+git-repo: https://github.com/bdclark/helm-charts  # Update this URL
+git-base-url: https://api.github.com/
+git-upload-url: https://uploads.github.com/
+
+# Release configuration
+generate-release-notes: true
+make-release-latest: true
+
+# Pages configuration for GitHub Pages
+pages-branch: gh-pages
+pages-index-dir: .
+
+# Token (set via environment variable CR_TOKEN)
+# Do not put token in this file
+
+# Skip existing releases
+skip-existing: true
+
+# Chart path
+charts-repo-url: https://bdclark.github.io/helm-charts  # Update this URL

@@ -1,0 +1,23 @@
+# Test values for mosquitto integration tests
+replicaCount: 1
+
+auth:
+  users:
+    - username: testuser
+      password: testpass
+
+persistence:
+  enabled: true
+  size: 1Gi
+
+service:
+  type: ClusterIP
+  port: 1883
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi

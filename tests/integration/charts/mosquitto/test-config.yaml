@@ -1,0 +1,11 @@
+# Mosquitto-specific test configuration
+timeout: 300
+customValues: |
+  auth:
+    users:
+      - username: testuser
+        password: testpass
+  persistence:
+    enabled: true
+    size: 1Gi
+skipTests: []
