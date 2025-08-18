@@ -17,19 +17,17 @@ helm repo update
 |-------|-------------|---------|-------------|
 | [mosquitto](charts/mosquitto/) | Eclipse Mosquitto MQTT broker | 0.1.0 | 2.0.18 |
 
-### Mosquitto
-
-Eclipse Mosquitto MQTT broker with comprehensive authentication, TLS, and persistence support.
+### Quick Start
 
 ```bash
-# Install from repository
-helm install mosquitto your-charts/mosquitto
+# Install any chart from repository
+helm install my-release your-charts/<chart-name>
 
 # Install from source
-helm install mosquitto ./charts/mosquitto/
-
-# See charts/mosquitto/README.md for detailed configuration
+helm install my-release ./charts/<chart-name>/
 ```
+
+See individual chart READMEs for detailed configuration options.
 
 ## Development
 
@@ -58,32 +56,13 @@ task install-tools
 task lint-all
 
 # Test specific chart
-task test CHART=mosquitto
+task test CHART=<chart-name>
 
 # Test all charts (requires cluster)
 task test-all
 
 # Package for local testing
 task package-all
-```
-
-### Repository Structure
-
-```text
-helm-charts/
-├── charts/                     # Chart packages
-│   └── mosquitto/              # Eclipse Mosquitto MQTT broker
-├── tests/
-│   └── integration/            # Custom integration tests
-│       ├── common/             # Shared test framework
-│       └── charts/             # Chart-specific tests
-├── .github/workflows/          # CI/CD automation
-│   ├── lint-test.yaml          # PR testing
-│   └── release.yaml            # Release automation
-├── ct.yaml                     # Chart Testing configuration
-├── cr.yaml                     # Chart Releaser configuration
-├── artifacthub-repo.yml        # Artifact Hub metadata
-└── Taskfile.yml               # Development automation
 ```
 
 ### Development Workflow
@@ -98,6 +77,7 @@ helm-charts/
 ### Testing
 
 #### Chart Testing (ct)
+
 Professional linting and testing with change detection:
 
 ```bash
@@ -112,11 +92,12 @@ task ct-install
 ```
 
 #### Custom Integration Tests
+
 Chart-specific tests for advanced validation:
 
 ```bash
 # Run custom tests for specific chart
-task test-custom CHART=mosquitto
+task test-custom CHART=<chart-name>
 
 # Run custom tests for all charts
 task test-custom-all
@@ -161,15 +142,6 @@ All charts must include:
 - Security best practices
 - Clear documentation with examples
 - Version bumps for changes
-
-### Artifact Hub Integration
-
-This repository is configured for [Artifact Hub](https://artifacthub.io/) discovery:
-
-- Repository metadata in `artifacthub-repo.yml`
-- Chart annotations in `Chart.yaml`
-- Automated security scanning
-- Usage analytics and metrics
 
 ## License
 

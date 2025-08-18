@@ -74,31 +74,10 @@ helm uninstall mosquitto
 | Parameter                         | Description                  | Default     |
 |-----------------------------------|------------------------------|-------------|
 | `service.type`                    | Service type                 | `ClusterIP` |
-| `service.annotations`             | Service annotations          | `{}`        |
-| `service.loadBalancerIP`          | LoadBalancer IP address      | `""`        |
-| `service.loadBalancerSourceRanges`| LoadBalancer source ranges   | `[]`        |
-| `service.externalTrafficPolicy`   | External traffic policy      | `Cluster`   |
-| `service.sessionAffinity`         | Session affinity             | `None`      |
 | `service.ports.mqtt.enabled`      | Enable MQTT port (1883)      | `true`      |
-| `service.ports.mqtt.nodePort`     | NodePort for MQTT            | `""`        |
 | `service.ports.mqttTls.enabled`   | Enable MQTT TLS port (8883)  | `false`     |
-| `service.ports.mqttTls.nodePort`  | NodePort for MQTT TLS        | `""`        |
 | `service.ports.websocket.enabled` | Enable WebSocket port (9001) | `false`     |
-| `service.ports.websocket.nodePort`| NodePort for WebSocket       | `""`        |
 
-### External Exposure Configuration
-
-| Parameter                         | Description                  | Default     |
-|-----------------------------------|------------------------------|-------------|
-| `hostNetwork.enabled`             | Use host networking          | `false`     |
-| `hostNetwork.dnsPolicy`           | DNS policy for host network  | `ClusterFirstWithHostNet` |
-| `hostPorts.enabled`               | Enable host port binding     | `false`     |
-| `hostPorts.mqtt.port`             | Host port for MQTT           | `""`        |
-| `hostPorts.mqtt.hostIP`           | Host IP for MQTT             | `""`        |
-| `hostPorts.mqttTls.port`          | Host port for MQTT TLS       | `""`        |
-| `hostPorts.mqttTls.hostIP`        | Host IP for MQTT TLS         | `""`        |
-| `hostPorts.websocket.port`        | Host port for WebSocket      | `""`        |
-| `hostPorts.websocket.hostIP`      | Host IP for WebSocket        | `""`        |
 
 ### Authentication Configuration
 
@@ -119,15 +98,7 @@ helm uninstall mosquitto
 
 ## Examples
 
-### 1. Basic MQTT Broker
-
-```yaml
-# values.yaml
-service:
-  type: LoadBalancer
-```
-
-### 2. Authenticated Broker
+### Basic Authenticated Broker
 
 ```yaml
 # values.yaml
@@ -138,39 +109,21 @@ auth:
   users:
     - username: admin
       password: admin123
-    - username: sensor1
-      passwordHash: "$6$salt$hash..."
 
-  acls:
-    - user: admin
-      topic: "#"
-      access: readwrite
-    - user: sensor1
-      topic: "sensors/sensor1/#"
-      access: write
+service:
+  type: LoadBalancer
 ```
 
-### 3. Production Setup with TLS and StatefulSet
+### Production Setup with Persistence
 
 ```yaml
 # values.yaml
 workload:
-  type: statefulset  # Use StatefulSet for stable network identity
-
-service:
-  type: LoadBalancer
-  ports:
-    mqtt:
-      enabled: true
-    mqttTls:
-      enabled: true
-      tls:
-        secretName: mosquitto-tls-secret
+  type: StatefulSet
 
 persistence:
   enabled: true
   size: 10Gi
-  storageClass: fast-ssd
 
 resources:
   limits:
@@ -181,143 +134,22 @@ resources:
     memory: 128Mi
 ```
 
-### 4. WebSocket for Web Clients
-
-```yaml
-# values.yaml
-service:
-  ports:
-    websocket:
-      enabled: true
-
-ingress:
-  enabled: true
-  hosts:
-    - host: mqtt.example.com
-      paths:
-        - path: /mqtt
-          pathType: Prefix
-          service:
-            name: websocket
-```
-
-### 5. External Exposure with LoadBalancer (MetalLB)
-
-```yaml
-# values.yaml
-service:
-  type: LoadBalancer
-  annotations:
-    metallb.universe.tf/address-pool: "production-public-ips"
-    metallb.universe.tf/loadBalancerIPs: "192.168.1.100"
-  loadBalancerSourceRanges:
-    - "10.0.0.0/8"
-    - "192.168.0.0/16"
-  externalTrafficPolicy: Local
-```
-
-### 6. External Exposure with NodePort
-
-```yaml
-# values.yaml
-service:
-  type: NodePort
-  ports:
-    mqtt:
-      nodePort: 31883
-    mqttTls:
-      enabled: true
-      nodePort: 31884
-  externalTrafficPolicy: Local
-```
-
-### 7. Host Network for Maximum Performance
-
-```yaml
-# values.yaml
-hostNetwork:
-  enabled: true
-  dnsPolicy: ClusterFirstWithHostNet
-
-# Ensure only one replica when using hostNetwork
-workload:
-  type: deployment
-
-nodeSelector:
-  kubernetes.io/hostname: worker-node-1
-```
-
-### 8. Host Ports for Selective Exposure
-
-```yaml
-# values.yaml
-hostPorts:
-  enabled: true
-  mqtt:
-    port: 1883
-    hostIP: "192.168.1.10"  # Bind to specific interface
-  mqttTls:
-    port: 8883
-    hostIP: "192.168.1.10"
-
-# Pin to specific node
-nodeSelector:
-  kubernetes.io/hostname: worker-node-1
-```
-
-### 9. Cloud Provider LoadBalancer (AWS/GCP/Azure)
-
-```yaml
-# values.yaml - AWS Network Load Balancer
-service:
-  type: LoadBalancer
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-  externalTrafficPolicy: Local
-
----
-# values.yaml - Azure LoadBalancer
-service:
-  type: LoadBalancer
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-resource-group: "myResourceGroup"
-  loadBalancerSourceRanges:
-    - "0.0.0.0/0"
-
----
-# values.yaml - GCP LoadBalancer
-service:
-  type: LoadBalancer
-  annotations:
-    cloud.google.com/load-balancer-type: "External"
-```
-
 ## Authentication
 
 For detailed authentication setup, see [AUTH.md](./AUTH.md).
 
 ## TLS Configuration
 
-1. **Create TLS secret**:
+Create a TLS secret and enable in values:
 
-   ```bash
-   kubectl create secret generic mosquitto-tls \
-     --from-file=ca.crt=ca.crt \
-     --from-file=tls.crt=server.crt \
-     --from-file=tls.key=server.key
-   ```
-
-2. **Enable TLS in values**:
-
-   ```yaml
-   service:
-     ports:
-       mqttTls:
-         enabled: true
-         tls:
-           secretName: mosquitto-tls
-   ```
+```yaml
+service:
+  ports:
+    mqttTls:
+      enabled: true
+      tls:
+        secretName: mosquitto-tls
+```
 
 ## Testing
 
