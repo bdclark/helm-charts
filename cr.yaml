@@ -20,6 +20,7 @@ make-release-latest: true
 # Pages configuration for GitHub Pages
 pages-branch: gh-pages
 pages-index-dir: .
+remote: origin
 
 # Token (set via environment variable CR_TOKEN)
 # Do not put token in this file
