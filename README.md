@@ -15,7 +15,7 @@ helm repo update
 
 | Chart | Description | Version | App Version |
 |-------|-------------|---------|-------------|
-| [mosquitto](charts/mosquitto/) | Eclipse Mosquitto MQTT broker | 0.1.0 | 2.0.18 |
+| [mosquitto](charts/mosquitto/) | Eclipse Mosquitto MQTT broker | 0.2.0 | 2.0.18 |
 
 ### Quick Start
 
