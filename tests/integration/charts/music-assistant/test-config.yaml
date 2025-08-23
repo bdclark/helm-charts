@@ -32,3 +32,4 @@ environment:
     path: "/"
     expectedStatusCode: 200
     timeoutSeconds: 30
+

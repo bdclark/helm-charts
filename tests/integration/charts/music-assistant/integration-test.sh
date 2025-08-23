@@ -245,3 +245,4 @@ echo "Cleaning up custom test installation..."
 helm uninstall "$TEST_RELEASE" --namespace "$TEST_NAMESPACE" || true
 kubectl delete namespace "$TEST_NAMESPACE" || true
 echo "Cleanup complete"
+

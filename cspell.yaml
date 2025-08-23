@@ -5,7 +5,9 @@ words:
   - artifacthub
   - automount
   - bdclark
+  - bitnami
   - configmap
+  - elif
   - kubectl
   - metallb
   - monitorpass

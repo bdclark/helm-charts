@@ -51,7 +51,7 @@ This repository uses professional Helm tooling for multi-chart management:
 - [chart-testing](https://github.com/helm/chart-testing#installation)
 - [chart-releaser](https://github.com/helm/chart-releaser#installation)
 
-### Quick Start
+### Development Quick Start
 
 ```bash
 # Install development tools
@@ -109,10 +109,12 @@ task test-custom-all
 ```
 
 **Available Integration Tests:**
+
 - **mosquitto**: MQTT connectivity, authentication, configuration, persistence
 - **music-assistant**: Web interface, streaming ports, application startup, networking modes
 
 **GitHub CI Integration:**
+
 - Integration tests run automatically on PRs and pushes to main/develop
 - Tests run in parallel using matrix strategy for efficiency
 - Separate workflow from lint-test for better visibility and control
