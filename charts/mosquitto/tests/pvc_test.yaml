@@ -75,3 +75,24 @@ tests:
     asserts:
       - isNull:
           path: spec.storageClassName
+
+  - it: should apply annotations when specified
+    set:
+      persistence.enabled: true
+      persistence.annotations:
+        custom.annotation: "test-value"
+        storage.annotation: "production"
+    asserts:
+      - equal:
+          path: metadata.annotations["custom.annotation"]
+          value: "test-value"
+      - equal:
+          path: metadata.annotations["storage.annotation"]
+          value: "production"
+
+  - it: should not have annotations when not specified
+    set:
+      persistence.enabled: true
+    asserts:
+      - isNull:
+          path: metadata.annotations

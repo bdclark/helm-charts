@@ -2,7 +2,7 @@ apiVersion: v2
 name: mosquitto
 description: Eclipse Mosquitto MQTT broker with authentication and persistence support
 type: application
-version: 0.2.0
+version: 0.3.0
 appVersion: 2.0.18
 home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
 sources:
@@ -28,8 +28,8 @@ annotations:
     - name: Eclipse Mosquitto
       url: https://mosquitto.org/
   artifacthub.io/changes: |
-    - kind: added
-      description: Initial chart implementation with authentication and persistence support
+    - kind: changed
+      description: Removed StatefulSet support - simplified to Deployment only for single-replica MQTT broker
   artifacthub.io/images: |
     - name: mosquitto
       image: eclipse-mosquitto:2.0.18

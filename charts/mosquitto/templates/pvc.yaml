@@ -1,10 +1,14 @@
-{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) (eq .Values.workload.type "Deployment") -}}
+{{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ include "mosquitto.fullname" . }}-data
   labels:
     {{- include "mosquitto.labels" . | nindent 4 }}
+  {{- with .Values.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   accessModes:
     {{- range .Values.persistence.accessModes }}

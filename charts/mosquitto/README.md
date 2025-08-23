@@ -2,7 +2,7 @@
 
 Eclipse Mosquitto MQTT broker for Kubernetes with comprehensive authentication, TLS support, and persistence.
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)
 ![AppVersion: 2.0.18](https://img.shields.io/badge/AppVersion-2.0.18-informational?style=flat-square)
 
 ## TL;DR
@@ -62,12 +62,11 @@ helm uninstall mosquitto
 
 ### Basic Configuration
 
-| Parameter             | Description                               | Default                |
-|-----------------------|-------------------------------------------|------------------------|
-| `workload.type`       | Workload type (Deployment or StatefulSet) | `Deployment`           |
-| `image.repository`    | Container image repository                | `eclipse-mosquitto`    |
-| `image.tag`           | Container image tag                       | `""` (uses appVersion) |
-| `image.pullPolicy`    | Image pull policy                         | `IfNotPresent`         |
+| Parameter             | Description                | Default                |
+|-----------------------|----------------------------|------------------------|
+| `image.repository`    | Container image repository | `eclipse-mosquitto`    |
+| `image.tag`           | Container image tag        | `""` (uses appVersion) |
+| `image.pullPolicy`    | Image pull policy          | `IfNotPresent`         |
 
 ### Service Configuration
 
@@ -118,9 +117,6 @@ service:
 
 ```yaml
 # values.yaml
-workload:
-  type: StatefulSet
-
 persistence:
   enabled: true
   size: 10Gi

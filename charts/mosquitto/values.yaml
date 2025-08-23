@@ -2,12 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Workload type - Deployment or StatefulSet
-# StatefulSet provides stable network identity and persistent storage
-# Recommended when persistence is enabled
-workload:
-  type: Deployment  # Deployment or StatefulSet
-
 image:
   repository: eclipse-mosquitto
   pullPolicy: IfNotPresent
@@ -194,10 +188,10 @@ persistence:
   accessModes:
     - ReadWriteOnce
   size: 1Gi
-  # Use an existing PVC instead of creating a new one (deployment only)
+  # Use an existing PVC instead of creating a new one
   # If defined, PVC must be created manually before volume will be bound
   # existingClaim:
-  # Annotations for PVC (StatefulSet only)
+  # Annotations for PVC
   annotations: {}
 
 nodeSelector: {}

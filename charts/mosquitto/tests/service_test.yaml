@@ -84,20 +84,6 @@ tests:
             targetPort: 1884
             protocol: TCP
 
-  - it: should be headless when using statefulset
-    set:
-      workload.type: StatefulSet
-    asserts:
-      - equal:
-          path: spec.clusterIP
-          value: None
-
-  - it: should not be headless when using deployment
-    set:
-      workload.type: Deployment
-    asserts:
-      - isNull:
-          path: spec.clusterIP
 
   - it: should apply service annotations
     set:

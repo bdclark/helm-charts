@@ -2,13 +2,6 @@ suite: test deployment
 templates:
   - deployment.yaml
 tests:
-  - it: should not create deployment when workload type is statefulset
-    set:
-      workload.type: StatefulSet
-    asserts:
-      - hasDocuments:
-          count: 0
-
   - it: should create deployment with default values
     asserts:
       - isKind:

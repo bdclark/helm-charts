@@ -48,19 +48,9 @@ helm install "$TEST_RELEASE" "$CHART_DIR" \
 
 # Wait for deployment to be ready
 echo "Verifying deployment is ready..."
-if kubectl get deployment "$TEST_RELEASE" --namespace "$TEST_NAMESPACE" >/dev/null 2>&1; then
-    kubectl wait --for=condition=available deployment/"$TEST_RELEASE" \
-        --namespace "$TEST_NAMESPACE" \
-        --timeout=300s
-else
-    echo "No deployment found, checking for other workload types..."
-    # Check for StatefulSet
-    if kubectl get statefulset "$TEST_RELEASE" --namespace "$TEST_NAMESPACE" >/dev/null 2>&1; then
-        kubectl wait --for=jsonpath='{.status.readyReplicas}'=1 statefulset/"$TEST_RELEASE" \
-            --namespace "$TEST_NAMESPACE" \
-            --timeout=300s
-    fi
-fi
+kubectl wait --for=condition=available deployment/"$TEST_RELEASE" \
+    --namespace "$TEST_NAMESPACE" \
+    --timeout=300s
 
 # Test 2: Service connectivity (if service exists)
 if kubectl get service "$TEST_RELEASE" --namespace "$TEST_NAMESPACE" >/dev/null 2>&1; then
