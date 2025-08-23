@@ -1,0 +1,199 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
+      - 'tests/integration/**'
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'charts/**'
+      - 'tests/integration/**'
+  workflow_dispatch:
+    inputs:
+      charts:
+        description: 'Charts to test (comma-separated, or "all")'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: read
+
+jobs:
+  # Detect which charts have changed
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.list.outputs.charts }}
+      changed: ${{ steps.list.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: List changed charts
+        id: list
+        run: |
+          # Get changed charts from ct
+          changed_charts=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }} --print-config=false)
+
+          # Handle workflow_dispatch input
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ github.event.inputs.charts }}" = "all" ]; then
+              changed_charts=$(find charts -name Chart.yaml -exec dirname {} \; | sed 's|charts/||' | sort)
+            else
+              changed_charts="${{ github.event.inputs.charts }}"
+            fi
+          fi
+
+          # Convert to JSON array and check if any changes
+          if [ -n "$changed_charts" ]; then
+            charts_json=$(echo "$changed_charts" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "charts=$charts_json" >> $GITHUB_OUTPUT
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Changed charts: $charts_json"
+          else
+            echo "charts=[]" >> $GITHUB_OUTPUT
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No charts changed"
+          fi
+
+  # Run integration tests for each changed chart
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.changed == 'true'
+    strategy:
+      matrix:
+        chart: ${{ fromJson(needs.detect-changes.outputs.charts) }}
+      fail-fast: false  # Continue testing other charts even if one fails
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+        with:
+          version: v3.14.0
+
+      - name: Set up Task
+        uses: arduino/setup-task@v1
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add helm repositories
+        run: |
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add stable https://charts.helm.sh/stable
+          helm repo update
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.10.0
+        with:
+          wait: 120s
+          config: |
+            kind: Cluster
+            apiVersion: kind.x-k8s.io/v1alpha4
+            nodes:
+            - role: control-plane
+              kubeadmConfigPatches:
+              - |
+                kind: InitConfiguration
+                nodeRegistration:
+                  kubeletExtraArgs:
+                    node-labels: "ingress-ready=true"
+              extraPortMappings:
+              - containerPort: 80
+                hostPort: 80
+                protocol: TCP
+              - containerPort: 443
+                hostPort: 443
+                protocol: TCP
+
+      - name: Wait for cluster to be ready
+        run: |
+          kubectl cluster-info
+          kubectl wait --for=condition=ready nodes --all --timeout=300s
+          kubectl get nodes -o wide
+
+      - name: Check if integration test exists
+        id: check-test
+        run: |
+          if [ -f "tests/integration/charts/${{ matrix.chart }}/integration-test.sh" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Integration test found for ${{ matrix.chart }}"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "No integration test found for ${{ matrix.chart }}"
+          fi
+
+      - name: Run chart lint (prerequisite)
+        if: steps.check-test.outputs.exists == 'true'
+        run: task lint CHART=${{ matrix.chart }}
+
+      - name: Run integration tests
+        if: steps.check-test.outputs.exists == 'true'
+        run: task test-custom CHART=${{ matrix.chart }}
+        timeout-minutes: 10
+
+      - name: Debug on failure
+        if: failure() && steps.check-test.outputs.exists == 'true'
+        run: |
+          echo "=== DEBUGGING INTEGRATION TEST FAILURE ==="
+          echo "Chart: ${{ matrix.chart }}"
+          echo "Namespace: ${{ matrix.chart }}-integration-test"
+
+          echo "=== CLUSTER STATE ==="
+          kubectl get nodes -o wide || true
+          kubectl get pods -A -o wide || true
+          kubectl get svc -A || true
+          kubectl get pvc -A || true
+
+          echo "=== CHART PODS ==="
+          kubectl get pods -n "${{ matrix.chart }}-integration-test" -o wide || true
+
+          echo "=== CHART LOGS ==="
+          kubectl logs -n "${{ matrix.chart }}-integration-test" --selector="app.kubernetes.io/name=${{ matrix.chart }}" --tail=50 || true
+
+          echo "=== EVENTS ==="
+          kubectl get events -n "${{ matrix.chart }}-integration-test" --sort-by='.lastTimestamp' || true
+
+      - name: Cleanup test namespace (if exists)
+        if: always()
+        run: |
+          kubectl delete namespace "${{ matrix.chart }}-integration-test" --timeout=60s || true
+
+  # Summary job that depends on all integration tests
+  integration-summary:
+    runs-on: ubuntu-latest
+    needs: [detect-changes, integration-test]
+    if: always() && needs.detect-changes.outputs.changed == 'true'
+    steps:
+      - name: Check integration test results
+        run: |
+          echo "=== INTEGRATION TEST SUMMARY ==="
+          if [ "${{ needs.integration-test.result }}" = "success" ]; then
+            echo "✅ All integration tests passed!"
+            echo "Charts tested: ${{ needs.detect-changes.outputs.charts }}"
+          elif [ "${{ needs.integration-test.result }}" = "failure" ]; then
+            echo "❌ Some integration tests failed"
+            echo "Charts tested: ${{ needs.detect-changes.outputs.charts }}"
+            echo "Check the individual job results above for details"
+            exit 1
+          elif [ "${{ needs.integration-test.result }}" = "skipped" ]; then
+            echo "⏭️ Integration tests were skipped"
+            echo "Reason: No charts with integration tests were changed"
+          else
+            echo "⚠️ Integration tests completed with status: ${{ needs.integration-test.result }}"
+          fi

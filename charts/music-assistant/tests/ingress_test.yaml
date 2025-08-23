@@ -1,0 +1,188 @@
+suite: test ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: should NOT create ingress with default values
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should NOT create ingress when service disabled
+    set:
+      ingress.enabled: true
+      service.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create ingress when both ingress and service enabled
+    set:
+      ingress.enabled: true
+      service.enabled: true
+      ingress.hosts:
+        - host: music-assistant.local
+          paths:
+            - path: /
+              pathType: Prefix
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-music-assistant
+      - equal:
+          path: apiVersion
+          value: networking.k8s.io/v1
+
+  - it: should configure hosts correctly
+    set:
+      ingress.enabled: true
+      service.enabled: true
+      ingress.hosts:
+        - host: music-assistant.local
+          paths:
+            - path: /
+              pathType: Prefix
+        - host: music.example.com
+          paths:
+            - path: /app
+              pathType: Exact
+    asserts:
+      - equal:
+          path: spec.rules[0].host
+          value: music-assistant.local
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /
+      - equal:
+          path: spec.rules[0].http.paths[0].pathType
+          value: Prefix
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: RELEASE-NAME-music-assistant
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8095
+      - equal:
+          path: spec.rules[1].host
+          value: music.example.com
+      - equal:
+          path: spec.rules[1].http.paths[0].path
+          value: /app
+      - equal:
+          path: spec.rules[1].http.paths[0].pathType
+          value: Exact
+
+  - it: should apply ingress class name
+    set:
+      ingress.enabled: true
+      service.enabled: true
+      ingress.className: nginx
+      ingress.hosts:
+        - host: music-assistant.local
+          paths:
+            - path: /
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+
+  - it: should apply annotations
+    set:
+      ingress.enabled: true
+      service.enabled: true
+      ingress.annotations:
+        nginx.ingress.kubernetes.io/rewrite-target: /
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+      ingress.hosts:
+        - host: music-assistant.local
+          paths:
+            - path: /
+    asserts:
+      - equal:
+          path: metadata.annotations["nginx.ingress.kubernetes.io/rewrite-target"]
+          value: /
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: letsencrypt-prod
+
+  - it: should configure TLS
+    set:
+      ingress.enabled: true
+      service.enabled: true
+      ingress.tls:
+        - secretName: music-assistant-tls
+          hosts:
+            - music-assistant.local
+            - music.example.com
+        - secretName: wildcard-tls
+          hosts:
+            - "*.example.com"
+      ingress.hosts:
+        - host: music-assistant.local
+          paths:
+            - path: /
+    asserts:
+      - equal:
+          path: spec.tls[0].secretName
+          value: music-assistant-tls
+      - equal:
+          path: spec.tls[0].hosts[0]
+          value: music-assistant.local
+      - equal:
+          path: spec.tls[0].hosts[1]
+          value: music.example.com
+      - equal:
+          path: spec.tls[1].secretName
+          value: wildcard-tls
+      - equal:
+          path: spec.tls[1].hosts[0]
+          value: "*.example.com"
+
+  - it: should use custom service port
+    set:
+      ingress.enabled: true
+      service.enabled: true
+      service.webPort: 8080
+      ingress.hosts:
+        - host: music-assistant.local
+          paths:
+            - path: /
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8080
+
+  - it: should handle multiple paths per host
+    set:
+      ingress.enabled: true
+      service.enabled: true
+      ingress.hosts:
+        - host: music-assistant.local
+          paths:
+            - path: /
+              pathType: Prefix
+            - path: /api
+              pathType: Prefix
+            - path: /health
+              pathType: Exact
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /
+      - equal:
+          path: spec.rules[0].http.paths[0].pathType
+          value: Prefix
+      - equal:
+          path: spec.rules[0].http.paths[1].path
+          value: /api
+      - equal:
+          path: spec.rules[0].http.paths[1].pathType
+          value: Prefix
+      - equal:
+          path: spec.rules[0].http.paths[2].path
+          value: /health
+      - equal:
+          path: spec.rules[0].http.paths[2].pathType
+          value: Exact
+

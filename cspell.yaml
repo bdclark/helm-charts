@@ -4,6 +4,7 @@ words:
   - adminaccess
   - artifacthub
   - automount
+  - bdclark
   - configmap
   - kubectl
   - metallb
@@ -15,6 +16,7 @@ words:
   - mypassword
   - mysecret
   - nindent
+  - persistentvolumes
   - readwrite
   - replicaset
   - secretpassword

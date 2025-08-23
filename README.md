@@ -1,5 +1,9 @@
 # Helm Charts Collection
 
+[![Lint and Test Charts](https://github.com/bdclark/helm-charts/actions/workflows/lint-test.yaml/badge.svg)](https://github.com/bdclark/helm-charts/actions/workflows/lint-test.yaml)
+[![Integration Tests](https://github.com/bdclark/helm-charts/actions/workflows/integration-test.yaml/badge.svg)](https://github.com/bdclark/helm-charts/actions/workflows/integration-test.yaml)
+[![Release Charts](https://github.com/bdclark/helm-charts/actions/workflows/release.yaml/badge.svg)](https://github.com/bdclark/helm-charts/actions/workflows/release.yaml)
+
 A collection of production-ready Helm charts for various applications, built with industry-standard tooling and ready for Artifact Hub discovery.
 
 ## Installation
@@ -15,7 +19,8 @@ helm repo update
 
 | Chart | Description | Version | App Version |
 |-------|-------------|---------|-------------|
-| [mosquitto](charts/mosquitto/) | Eclipse Mosquitto MQTT broker | 0.2.0 | 2.0.18 |
+| [mosquitto](charts/mosquitto/) | Eclipse Mosquitto MQTT broker | 0.3.0 | 2.0.18 |
+| [music-assistant](charts/music-assistant/) | Music Assistant media library manager | 0.1.0 | 2.5.8 |
 
 ### Quick Start
 
@@ -91,17 +96,26 @@ task ct-lint
 task ct-install
 ```
 
-#### Custom Integration Tests
+#### Integration Tests
 
 Chart-specific tests for advanced validation:
 
 ```bash
-# Run custom tests for specific chart
+# Run integration tests for specific chart
 task test-custom CHART=<chart-name>
 
-# Run custom tests for all charts
+# Run integration tests for all charts
 task test-custom-all
 ```
+
+**Available Integration Tests:**
+- **mosquitto**: MQTT connectivity, authentication, configuration, persistence
+- **music-assistant**: Web interface, streaming ports, application startup, networking modes
+
+**GitHub CI Integration:**
+- Integration tests run automatically on PRs and pushes to main/develop
+- Tests run in parallel using matrix strategy for efficiency
+- Separate workflow from lint-test for better visibility and control
 
 ### Releases
 

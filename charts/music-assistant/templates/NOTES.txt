@@ -1,0 +1,52 @@
+Music Assistant has been installed successfully!
+
+{{- if .Values.hostNetwork }}
+
+Access the web interface directly on the cluster node:
+  http://<NODE_IP>:{{ .Values.service.webPort }}
+
+{{- else if .Values.service.enabled }}
+
+{{- if contains "ClusterIP" .Values.service.type }}
+To connect from within the cluster:
+  Host: {{ include "music-assistant.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+  Port: {{ .Values.service.webPort }}
+
+For external access, use port forwarding:
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "music-assistant.fullname" . }} {{ .Values.service.webPort }}:{{ .Values.service.webPort }}
+
+{{- else if contains "LoadBalancer" .Values.service.type }}
+Get the external IP:
+  kubectl get svc --namespace {{ .Release.Namespace }} {{ include "music-assistant.fullname" . }}
+
+{{- else if contains "NodePort" .Values.service.type }}
+Get the node port:
+  kubectl get svc --namespace {{ .Release.Namespace }} {{ include "music-assistant.fullname" . }}
+
+{{- end }}
+{{- if .Values.ingress.enabled }}
+
+Web interface also available via ingress:
+{{- range $host := .Values.ingress.hosts }}
+  {{- range .paths }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
+  {{- end }}
+{{- end }}
+{{- end }}
+
+{{- else }}
+
+Service disabled. Access via:
+{{- if .Values.hostNetwork }}
+- Host network: http://<NODE_IP>:{{ .Values.service.webPort }}
+{{- else }}
+- Direct pod IP (get with: kubectl get pod -l app.kubernetes.io/name={{ include "music-assistant.name" . }} -o wide)
+- Or enable service: --set service.enabled=true
+{{- end }}
+
+{{- end }}
+
+{{- if not .Values.persistence.enabled }}
+
+Data persistence is DISABLED. Configuration will be lost on pod restart.
+{{- end }}

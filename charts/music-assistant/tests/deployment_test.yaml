@@ -1,0 +1,264 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should create deployment with default values
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-music-assistant
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "ghcr.io/music-assistant/server:2.5.8"
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+
+  - it: should use custom image
+    set:
+      image.repository: my-music-assistant
+      image.tag: "custom"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "my-music-assistant:custom"
+
+  - it: should enable host networking by default
+    asserts:
+      - equal:
+          path: spec.template.spec.hostNetwork
+          value: true
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirst
+
+  - it: should disable host networking when set to false
+    set:
+      hostNetwork: false
+    asserts:
+      - isNull:
+          path: spec.template.spec.hostNetwork
+      - isNull:
+          path: spec.template.spec.dnsPolicy
+
+  - it: should use custom DNS policy with host networking
+    set:
+      dnsPolicy: ClusterFirstWithHostNet
+    asserts:
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: ClusterFirstWithHostNet
+
+  - it: should mount persistence volume when enabled
+    set:
+      persistence.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-music-assistant-data
+
+  - it: should use existing claim when specified
+    set:
+      persistence.enabled: true
+      persistence.existingClaim: my-existing-pvc
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: my-existing-pvc
+
+  - it: should not mount persistence volume when disabled
+    set:
+      persistence.enabled: false
+    asserts:
+      - isEmpty:
+          path: spec.template.spec.containers[0].volumeMounts
+      - isEmpty:
+          path: spec.template.spec.volumes
+
+  - it: should mount additional volumes
+    set:
+      additionalVolumes:
+        - name: media
+          hostPath:
+            path: /mnt/media
+      additionalMounts:
+        - name: media
+          mountPath: /media
+          readOnly: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: media
+            mountPath: /media
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: media
+            hostPath:
+              path: /mnt/media
+
+  - it: should apply pod annotations
+    set:
+      podAnnotations:
+        annotation1: value1
+        k8s.v1.cni.cncf.io/networks: "vlan-config"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations.annotation1
+          value: value1
+      - equal:
+          path: spec.template.metadata.annotations["k8s.v1.cni.cncf.io/networks"]
+          value: "vlan-config"
+
+  - it: should apply security context
+    set:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsGroup
+          value: 1000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: should apply capabilities when enabled
+    set:
+      securityContext:
+        capabilities:
+          enabled: true
+          add:
+            - DAC_READ_SEARCH
+            - SYS_ADMIN
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.add[0]
+          value: DAC_READ_SEARCH
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.add[1]
+          value: SYS_ADMIN
+
+  - it: should not add capabilities when disabled
+    set:
+      securityContext:
+        capabilities:
+          enabled: false
+          add:
+            - DAC_READ_SEARCH
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].securityContext.capabilities
+
+  - it: should apply resource limits
+    set:
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: 1000m
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 1Gi
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 100m
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: 256Mi
+
+  - it: should apply environment variables
+    set:
+      env:
+        - name: TZ
+          value: "America/New_York"
+        - name: LOG_LEVEL
+          value: "DEBUG"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TZ
+            value: "America/New_York"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: LOG_LEVEL
+            value: "DEBUG"
+
+  - it: should apply node selector
+    set:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        storage: ssd
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector["kubernetes.io/arch"]
+          value: amd64
+      - equal:
+          path: spec.template.spec.nodeSelector.storage
+          value: ssd
+
+  - it: should apply tolerations
+    set:
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+
+  - it: should apply affinity
+    set:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key
+          value: kubernetes.io/arch
+      - equal:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator
+          value: In
+      - contains:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values
+          content: amd64

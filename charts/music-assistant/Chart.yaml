@@ -1,0 +1,40 @@
+apiVersion: v2
+name: music-assistant
+description: Music Assistant - Universal media library manager for streaming services and connected audio devices
+type: application
+version: 0.1.0
+appVersion: 2.5.8
+home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+  - https://github.com/music-assistant/server
+  - https://music-assistant.io/
+icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon-192x192.png
+keywords:
+  - music
+  - audio
+  - streaming
+  - media
+  - assistant
+  - home-automation
+maintainers:
+  - name: Brian Clark
+    email: brian@noreply.com
+    url: https://github.com/bdclark
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - name: Music Assistant
+      url: https://music-assistant.io/
+    - name: GitHub Repository
+      url: https://github.com/music-assistant/server
+  artifacthub.io/changes: |
+    - kind: added
+      description: Initial chart implementation with networking flexibility and persistence support
+  artifacthub.io/images: |
+    - name: music-assistant
+      image: ghcr.io/music-assistant/server:2.5.8
+  artifacthub.io/operator: "false"
+  artifacthub.io/prerelease: "false"

@@ -1,0 +1,194 @@
+# Default values for music-assistant.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Image configuration
+image:
+  repository: ghcr.io/music-assistant/server
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion
+  tag: ""
+
+# Secrets for pulling images from private repositories
+imagePullSecrets: []
+
+# Override the chart name
+nameOverride: ""
+fullnameOverride: ""
+
+# Pod annotations and labels
+podAnnotations: {}
+  # Example Multi-CNI configuration:
+  # k8s.v1.cni.cncf.io/networks: "mac-vlan-vlan100"
+  # Example monitoring annotation:
+  # prometheus.io/scrape: "false"  # MA doesn't expose metrics yet
+
+podLabels: {}
+
+# Pod security context
+podSecurityContext: {}
+  # fsGroup: 568
+
+# Container security context
+securityContext:
+  runAsNonRoot: false  # Default false for current MA images
+  runAsUser: 0         # Default 0, configurable for custom images
+  runAsGroup: 0        # Default 0, configurable for custom images
+  # Capabilities for advanced use cases (SMB/network shares, local media access)
+  # Default: no additional capabilities for better security
+  capabilities:
+    enabled: false
+    add: []
+    # Example capabilities for advanced features:
+    # add:
+    #   - DAC_READ_SEARCH  # Required for SMB/network share access
+    #   - SYS_ADMIN        # Required for mounting network shares
+    drop:
+      - ALL
+
+# Host networking configuration
+# Default: true for maximum device discovery compatibility
+hostNetwork: true
+# DNS policy when using host networking
+dnsPolicy: ClusterFirst
+
+# Host port configuration (alternative to hostNetwork)
+hostPort:
+  enabled: false
+  webPort: 8095
+  streamPort: 8097
+
+# Service configuration
+# Default: disabled to match hostNetwork=true default
+# Set to true when using standard Kubernetes networking
+service:
+  enabled: false
+  type: ClusterIP
+  # Service annotations for load balancer configuration
+  annotations: {}
+    # MetalLB examples:
+    # metallb.universe.tf/address-pool: "production-public-ips"
+    # Cloud provider examples:
+    # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+
+  # Port configuration
+  webPort: 8095      # Music Assistant web interface
+  streamPort: 8097   # Audio streaming port
+
+  # LoadBalancer configuration
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  # External traffic policy for LoadBalancer and NodePort
+  externalTrafficPolicy: Cluster
+  # Session affinity for service
+  sessionAffinity: None
+
+# Ingress configuration (for web interface only)
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  hosts:
+    - host: music-assistant.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: music-assistant-tls
+  #    hosts:
+  #      - music-assistant.local
+
+# Resource limits and requests
+resources: {}
+  # limits:
+  #   cpu: 1000m
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 256Mi
+
+# Health checks
+livenessProbe:
+  httpGet:
+    path: /
+    port: web
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: web
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+startupProbe:
+  httpGet:
+    path: /
+    port: web
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+
+# Data persistence
+persistence:
+  enabled: true
+  # Storage class for PVC
+  # Set to "-" to disable dynamic provisioning and use default storage class
+  # Set to "" to use cluster default storage class
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 2Gi
+  # Use an existing PVC instead of creating a new one
+  # If defined, PVC must be created manually before volume will be bound
+  existingClaim: ""
+  # Annotations for PVC (useful for backup solutions like k8up)
+  annotations: {}
+    # k8up.io/backup: "true"
+
+# Additional volumes and volume mounts for media files
+additionalVolumes: []
+  # - name: media-nfs
+  #   nfs:
+  #     server: nas.example.com
+  #     path: /volume1/media
+  # - name: media-local
+  #   hostPath:
+  #     path: /mnt/media
+  #     type: Directory
+
+additionalMounts: []
+  # - name: media-nfs
+  #   mountPath: /media/nfs
+  #   readOnly: true
+  # - name: media-local
+  #   mountPath: /media/local
+  #   readOnly: true
+
+# Environment variables
+env: []
+  # - name: MA_LOG_LEVEL
+  #   value: "INFO"
+  # - name: TZ
+  #   value: "America/New_York"
+
+envFrom: []
+  # - configMapRef:
+  #     name: music-assistant-config
+  # - secretRef:
+  #     name: music-assistant-secrets
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

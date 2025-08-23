@@ -1,0 +1,90 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "music-assistant.fullname" . }}-test-connection"
+  labels:
+    {{- include "music-assistant.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: web-test
+      image: curlimages/curl:latest
+      command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Testing Music Assistant connection to {{ include "music-assistant.fullname" . }}"
+          
+          # Test web interface connectivity
+          echo "Testing web interface connectivity..."
+          nc -zv {{ include "music-assistant.fullname" . }} {{ .Values.service.webPort }}
+          
+          # Test streaming port connectivity  
+          echo "Testing streaming port connectivity..."
+          nc -zv {{ include "music-assistant.fullname" . }} {{ .Values.service.streamPort }}
+          
+          # Wait for service to be ready
+          echo "Waiting for Music Assistant to be ready..."
+          timeout 60 sh -c 'until curl -f -s http://{{ include "music-assistant.fullname" . }}:{{ .Values.service.webPort }}/health || curl -f -s http://{{ include "music-assistant.fullname" . }}:{{ .Values.service.webPort }}/ ; do echo "Waiting for web interface..."; sleep 2; done'
+          
+          # Test web interface response
+          echo "Testing web interface response..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://{{ include "music-assistant.fullname" . }}:{{ .Values.service.webPort }}/)
+          if [ "$response" = "200" ] || [ "$response" = "302" ] || [ "$response" = "301" ]; then
+            echo "Web interface is responding (HTTP $response)"
+          else
+            echo "Warning: Web interface returned HTTP $response (may still be starting up)"
+          fi
+          
+          echo "All connectivity tests passed!"
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+{{- else }}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "music-assistant.fullname" . }}-test-connection"
+  labels:
+    {{- include "music-assistant.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: info-test
+      image: busybox:latest
+      command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Music Assistant is running in host networking mode"
+          echo "Service creation is disabled - using direct node access"
+          echo "Access the web interface at: http://<NODE_IP>:{{ .Values.service.webPort }}"
+          echo "Streaming available at: http://<NODE_IP>:{{ .Values.service.streamPort }}"
+          echo ""
+          echo "To test connectivity from within cluster:"
+          echo "kubectl get pods -l app.kubernetes.io/name=music-assistant -o wide"
+          echo ""
+          echo "Connection test completed (host network mode)"
+      resources:
+        limits:
+          cpu: 10m
+          memory: 16Mi
+        requests:
+          cpu: 5m
+          memory: 8Mi
+{{- end }}

@@ -1,0 +1,158 @@
+suite: test service
+templates:
+  - service.yaml
+tests:
+  - it: should NOT create service with default values
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create service when enabled
+    set:
+      service.enabled: true
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-music-assistant
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - contains:
+          path: spec.ports
+          content:
+            name: web
+            port: 8095
+            targetPort: web
+            protocol: TCP
+      - contains:
+          path: spec.ports
+          content:
+            name: stream
+            port: 8097
+            targetPort: stream
+            protocol: TCP
+
+  - it: should NOT create service when explicitly disabled
+    set:
+      service.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should use custom service type
+    set:
+      service.enabled: true
+      service.type: LoadBalancer
+    asserts:
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+
+  - it: should use custom port numbers
+    set:
+      service.enabled: true
+      service.webPort: 8080
+      service.streamPort: 8090
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: web
+            port: 8080
+            targetPort: web
+            protocol: TCP
+      - contains:
+          path: spec.ports
+          content:
+            name: stream
+            port: 8090
+            targetPort: stream
+            protocol: TCP
+
+  - it: should apply service annotations
+    set:
+      service.enabled: true
+      service.annotations:
+        metallb.universe.tf/address-pool: "production"
+        custom.annotation: "value"
+    asserts:
+      - equal:
+          path: metadata.annotations["metallb.universe.tf/address-pool"]
+          value: "production"
+      - equal:
+          path: metadata.annotations["custom.annotation"]
+          value: "value"
+
+  - it: should set loadBalancerIP when specified
+    set:
+      service.enabled: true
+      service.type: LoadBalancer
+      service.loadBalancerIP: "192.168.1.100"
+    asserts:
+      - equal:
+          path: spec.loadBalancerIP
+          value: "192.168.1.100"
+
+  - it: should not set loadBalancerIP for ClusterIP
+    set:
+      service.enabled: true
+      service.type: ClusterIP
+      service.loadBalancerIP: "192.168.1.100"
+    asserts:
+      - isNull:
+          path: spec.loadBalancerIP
+
+  - it: should set loadBalancerSourceRanges when specified
+    set:
+      service.enabled: true
+      service.type: LoadBalancer
+      service.loadBalancerSourceRanges:
+        - "10.0.0.0/8"
+        - "192.168.0.0/16"
+    asserts:
+      - equal:
+          path: spec.loadBalancerSourceRanges[0]
+          value: "10.0.0.0/8"
+      - equal:
+          path: spec.loadBalancerSourceRanges[1]
+          value: "192.168.0.0/16"
+
+  - it: should set externalTrafficPolicy for LoadBalancer
+    set:
+      service.enabled: true
+      service.type: LoadBalancer
+      service.externalTrafficPolicy: Local
+    asserts:
+      - equal:
+          path: spec.externalTrafficPolicy
+          value: Local
+
+  - it: should set externalTrafficPolicy for NodePort
+    set:
+      service.enabled: true
+      service.type: NodePort
+      service.externalTrafficPolicy: Local
+    asserts:
+      - equal:
+          path: spec.externalTrafficPolicy
+          value: Local
+
+  - it: should not set externalTrafficPolicy for ClusterIP
+    set:
+      service.enabled: true
+      service.type: ClusterIP
+      service.externalTrafficPolicy: Local
+    asserts:
+      - isNull:
+          path: spec.externalTrafficPolicy
+
+  - it: should set sessionAffinity when specified
+    set:
+      service.enabled: true
+      service.sessionAffinity: ClientIP
+    asserts:
+      - equal:
+          path: spec.sessionAffinity
+          value: ClientIP

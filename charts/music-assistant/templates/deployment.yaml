@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "music-assistant.fullname" . }}
+  labels:
+    {{- include "music-assistant.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "music-assistant.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "music-assistant.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.hostNetwork }}
+      hostNetwork: true
+      dnsPolicy: {{ .Values.dnsPolicy }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- if .capabilities.enabled }}
+            capabilities:
+              {{- if .capabilities.add }}
+              add:
+                {{- toYaml .capabilities.add | nindent 16 }}
+              {{- end }}
+              {{- if .capabilities.drop }}
+              drop:
+                {{- toYaml .capabilities.drop | nindent 16 }}
+              {{- end }}
+            {{- end }}
+            {{- if hasKey . "runAsNonRoot" }}
+            runAsNonRoot: {{ .runAsNonRoot }}
+            {{- end }}
+            {{- if hasKey . "runAsUser" }}
+            runAsUser: {{ .runAsUser }}
+            {{- end }}
+            {{- if hasKey . "runAsGroup" }}
+            runAsGroup: {{ .runAsGroup }}
+            {{- end }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: web
+              containerPort: {{ .Values.service.webPort }}
+              protocol: TCP
+              {{- if and .Values.hostPort.enabled (not .Values.hostNetwork) }}
+              hostPort: {{ .Values.hostPort.webPort }}
+              {{- end }}
+            - name: stream
+              containerPort: {{ .Values.service.streamPort }}
+              protocol: TCP
+              {{- if and .Values.hostPort.enabled (not .Values.hostNetwork) }}
+              hostPort: {{ .Values.hostPort.streamPort }}
+              {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /data
+            {{- end }}
+            {{- with .Values.additionalMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if or .Values.env .Values.envFrom }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "music-assistant.pvcName" . }}
+        {{- end }}
+        {{- with .Values.additionalVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
