@@ -3,6 +3,48 @@ entries:
   mosquitto:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: Removed StatefulSet support - simplified to Deployment only for single-replica MQTT broker
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto:2.0.18
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 2.0.18
+    created: "2025-08-23T10:51:53.445359088Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: a582e473cec5cdcb1d86ca66fd26b442cbf31c6edf91836b011dce5a88165fb5
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    maintainers:
+    - email: brian@noreply.com
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.3.0/mosquitto-0.3.0.tgz
+    version: 0.3.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: Initial chart implementation with authentication and persistence support
       artifacthub.io/images: |
@@ -43,4 +85,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.2.0/mosquitto-0.2.0.tgz
     version: 0.2.0
-generated: "2025-08-18T01:59:04.358021309Z"
+generated: "2025-08-23T10:51:53.445367373Z"
