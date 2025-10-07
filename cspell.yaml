@@ -6,6 +6,8 @@ words:
   - automount
   - bdclark
   - bitnami
+  - cafile
+  - certfile
   - configmap
   - elif
   - kubectl

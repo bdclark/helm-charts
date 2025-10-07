@@ -68,9 +68,26 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.auth.secretRef.name }}
+            - name: config
+              mountPath: /mosquitto/config/mosquitto.conf
+              subPath: mosquitto.conf
+              readOnly: true
+            {{- if .Values.auth.acls }}
+            - name: config
+              mountPath: /mosquitto/config/acl
+              subPath: acl
+              readOnly: true
+            {{- end }}
+            - name: auth-secret
+              mountPath: /mosquitto/config/passwd
+              subPath: {{ .Values.auth.secretRef.key | default "passwd" }}
+              readOnly: true
+            {{- else }}
             - name: config
               mountPath: /mosquitto/config
               readOnly: true
+            {{- end }}
             {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: /mosquitto/data
@@ -84,6 +101,11 @@ spec:
         - name: config
           configMap:
             name: {{ include "mosquitto.fullname" . }}-config
+        {{- if .Values.auth.secretRef.name }}
+        - name: auth-secret
+          secret:
+            secretName: {{ .Values.auth.secretRef.name }}
+        {{- end }}
         {{- if .Values.persistence.enabled }}
         - name: data
           persistentVolumeClaim:

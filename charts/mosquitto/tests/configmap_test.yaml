@@ -123,3 +123,48 @@ tests:
       - notMatchRegex:
           path: data["mosquitto.conf"]
           pattern: "max_connections"
+
+  - it: should disable anonymous when secretRef is set
+    set:
+      auth.secretRef.name: mosquitto-auth
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "allow_anonymous false"
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "password_file /mosquitto/config/passwd"
+      - isNull:
+          path: data.passwd
+
+  - it: should not include passwd in ConfigMap when using secretRef
+    set:
+      auth.users:
+        - username: testuser
+          password: testpass
+      auth.secretRef.name: mosquitto-auth
+    asserts:
+      - isNull:
+          path: data.passwd
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "password_file /mosquitto/config/passwd"
+
+  - it: should include passwd in ConfigMap when using users without secretRef
+    set:
+      auth.users:
+        - username: testuser
+          password: testpass
+    asserts:
+      - equal:
+          path: data.passwd
+          value: "testuser:testpass\n"
+
+  - it: should support custom secretRef key
+    set:
+      auth.secretRef.name: mosquitto-auth
+      auth.secretRef.key: custom-passwd
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "password_file /mosquitto/config/passwd"

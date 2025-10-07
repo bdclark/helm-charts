@@ -14,7 +14,7 @@ data:
     persistence false
     {{- end }}
 
-    {{- if and .Values.config.allowAnonymous (not .Values.auth.users) }}
+    {{- if and .Values.config.allowAnonymous (not .Values.auth.secretRef.name) (not .Values.auth.users) }}
     allow_anonymous true
     {{- else }}
     allow_anonymous false
@@ -29,7 +29,7 @@ data:
     max_connections {{ .Values.config.maxConnections }}
     {{- end }}
 
-    {{- if .Values.auth.users }}
+    {{- if or .Values.auth.secretRef.name .Values.auth.users }}
     password_file /mosquitto/config/passwd
     {{- end }}
 
@@ -61,7 +61,7 @@ data:
 {{ .Values.config.extraConfig | indent 4 }}
     {{- end }}
 
-  {{- if .Values.auth.users }}
+  {{- if and .Values.auth.users (not .Values.auth.secretRef.name) }}
   passwd: |
     {{- range .Values.auth.users }}
     {{- if .passwordHash }}

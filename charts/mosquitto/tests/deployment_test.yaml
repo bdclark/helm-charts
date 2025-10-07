@@ -48,7 +48,7 @@ tests:
           content:
             name: mqttTls
 
-  - it: should mount config volume
+  - it: should mount config volume when secretRef not used
     asserts:
       - contains:
           path: spec.template.spec.containers[0].volumeMounts
@@ -62,6 +62,24 @@ tests:
             name: config
             configMap:
               name: RELEASE-NAME-mosquitto-config
+
+  - it: should mount config files individually when using secretRef
+    set:
+      auth.secretRef.name: mosquitto-auth
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /mosquitto/config/mosquitto.conf
+            subPath: mosquitto.conf
+            readOnly: true
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /mosquitto/config
+            readOnly: true
 
   - it: should mount persistence volume when enabled
     set:
@@ -226,3 +244,45 @@ tests:
           path: spec.template.spec.containers[0].ports
           content:
             hostPort: 1883
+
+  - it: should mount auth secret when secretRef is set
+    set:
+      auth.secretRef.name: mosquitto-auth
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: auth-secret
+            mountPath: /mosquitto/config/passwd
+            subPath: passwd
+            readOnly: true
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: auth-secret
+            secret:
+              secretName: mosquitto-auth
+
+  - it: should mount auth secret with custom key
+    set:
+      auth.secretRef.name: mosquitto-auth
+      auth.secretRef.key: custom-passwd
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: auth-secret
+            mountPath: /mosquitto/config/passwd
+            subPath: custom-passwd
+            readOnly: true
+
+  - it: should not mount auth secret when not configured
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: auth-secret
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: auth-secret

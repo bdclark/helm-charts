@@ -2,7 +2,7 @@
 
 Eclipse Mosquitto MQTT broker for Kubernetes with comprehensive authentication, TLS support, and persistence.
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)
 ![AppVersion: 2.0.18](https://img.shields.io/badge/AppVersion-2.0.18-informational?style=flat-square)
 
 ## TL;DR
@@ -80,11 +80,13 @@ helm uninstall mosquitto
 
 ### Authentication Configuration
 
-| Parameter              | Description                    | Default |
-|------------------------|--------------------------------|---------|
-| `config.allowAnonymous`| Allow anonymous connections   | `true`   |
-| `auth.users`           | List of users with passwords  | `[]`     |
-| `auth.acls`            | Access control lists          | `[]`     |
+| Parameter                | Description                                  | Default  |
+|--------------------------|----------------------------------------------|----------|
+| `config.allowAnonymous`  | Allow anonymous connections                  | `true`   |
+| `auth.users`             | List of users with passwords (stored in CM)  | `[]`     |
+| `auth.secretRef.name`    | Reference to existing secret with passwd     | `""`     |
+| `auth.secretRef.key`     | Key in secret containing passwd file         | `passwd` |
+| `auth.acls`              | Access control lists                         | `[]`     |
 
 ### Persistence Configuration
 
@@ -129,6 +131,33 @@ resources:
     cpu: 100m
     memory: 128Mi
 ```
+
+### Using External Secrets (SOPS/Sealed Secrets)
+
+For production environments using FluxCD with SOPS or Sealed Secrets:
+
+```yaml
+# Create a secret with encrypted password file
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mosquitto-auth
+type: Opaque
+stringData:
+  passwd: |
+    user1:$7$101$...
+    user2:$7$101$...
+```
+
+```yaml
+# values.yaml
+auth:
+  secretRef:
+    name: mosquitto-auth
+    # key: passwd  # Optional, defaults to "passwd"
+```
+
+The `auth.secretRef` takes precedence over `auth.users`, allowing you to manage passwords outside of Helm values.
 
 ## Authentication
 

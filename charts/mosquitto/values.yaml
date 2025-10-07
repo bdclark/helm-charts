@@ -162,12 +162,22 @@ config:
 
 # Authentication configuration
 auth:
-  # Users for password-based authentication
+  # Users for password-based authentication (stored in ConfigMap)
+  # Note: Ignored if auth.secretRef.name is set
   users: []
     # - username: admin
     #   password: admin123        # Plaintext password (development)
     # - username: user1
     #   passwordHash: "$6$..."    # Pre-hashed password (production)
+
+  # Reference to existing secret containing password file
+  # If set, this takes precedence over auth.users
+  secretRef:
+    # Name of the secret containing the password file
+    name: ""
+    # Key in the secret containing the password file content
+    # Defaults to "passwd" if not specified
+    key: "passwd"
 
   # Access Control Lists
   acls: []
