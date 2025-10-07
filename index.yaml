@@ -3,6 +3,48 @@ entries:
   mosquitto:
   - annotations:
       artifacthub.io/changes: |
+        - kind: added
+          description: Support for external secrets via auth.secretRef for SOPS/Sealed Secrets integration
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto:2.0.18
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 2.0.18
+    created: "2025-10-07T22:12:11.427109013Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: 75f8b0785f1e371abc29790abd6d07ed37ad66945e72eb041482c0e9cfe6a51a
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    maintainers:
+    - email: brian@noreply.com
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.4.0/mosquitto-0.4.0.tgz
+    version: 0.4.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: Removed StatefulSet support - simplified to Deployment only for single-replica MQTT broker
       artifacthub.io/images: |
@@ -131,4 +173,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-23T15:00:22.598227796Z"
+generated: "2025-10-07T22:12:11.427121987Z"
