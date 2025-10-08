@@ -59,3 +59,16 @@ jobs:
           mark_as_latest: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Copy index.html to gh-pages
+        run: |
+          git checkout gh-pages
+          git checkout main -- index.html
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "No changes to index.html"
+          else
+            git commit -m "Update landing page"
+            git push origin gh-pages
+          fi
+          git checkout main
