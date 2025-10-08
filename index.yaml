@@ -3,6 +3,52 @@ entries:
   mosquitto:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: BREAKING - auth.acls now uses multi-line string format (Mosquitto ACL file format) instead of structured list
+        - kind: changed
+          description: Updated Mosquitto version from 2.0.18 to 2.0.22
+        - kind: added
+          description: Added values.schema.json for Helm values validation
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto:2.0.22
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 2.0.22
+    created: "2025-10-08T10:53:02.768251982Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: 089559e7de29f63aee1f4817159137708ba1e881546bd28188829b6461494921
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    maintainers:
+    - email: brian@noreply.com
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.5.0/mosquitto-0.5.0.tgz
+    version: 0.5.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: Support for external secrets via auth.secretRef for SOPS/Sealed Secrets integration
       artifacthub.io/images: |
@@ -173,4 +219,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-07T22:12:11.427121987Z"
+generated: "2025-10-08T10:53:02.768267Z"
