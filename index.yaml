@@ -3,6 +3,50 @@ entries:
   mosquitto:
   - annotations:
       artifacthub.io/changes: |
+        - kind: added
+          description: Added checksum annotation to trigger pod restarts on ConfigMap changes
+        - kind: fixed
+          description: Fixed password generation script to remove incorrect dollar sign escaping
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto:2.0.22
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 2.0.22
+    created: "2025-10-08T11:41:58.289413632Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: 2011d22e514b51fbf7a2e030f8705335a36485bd626dd75b7841aa0d7667e5a0
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    maintainers:
+    - email: brian@noreply.com
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.5.1/mosquitto-0.5.1.tgz
+    version: 0.5.1
+  - annotations:
+      artifacthub.io/changes: |
         - kind: changed
           description: BREAKING - auth.acls now uses multi-line string format (Mosquitto ACL file format) instead of structured list
         - kind: changed
@@ -266,4 +310,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-08T11:10:26.679673761Z"
+generated: "2025-10-08T11:41:58.289437379Z"
