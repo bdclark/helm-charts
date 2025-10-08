@@ -2,7 +2,7 @@ apiVersion: v2
 name: mosquitto
 description: Eclipse Mosquitto MQTT broker with authentication and persistence support
 type: application
-version: 0.5.0
+version: 0.5.1
 appVersion: 2.0.22
 home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
 sources:
@@ -28,12 +28,10 @@ annotations:
     - name: Eclipse Mosquitto
       url: https://mosquitto.org/
   artifacthub.io/changes: |
-    - kind: changed
-      description: BREAKING - auth.acls now uses multi-line string format (Mosquitto ACL file format) instead of structured list
-    - kind: changed
-      description: Updated Mosquitto version from 2.0.18 to 2.0.22
     - kind: added
-      description: Added values.schema.json for Helm values validation
+      description: Added checksum annotation to trigger pod restarts on ConfigMap changes
+    - kind: fixed
+      description: Fixed password generation script to remove incorrect dollar sign escaping
   artifacthub.io/images: |
     - name: mosquitto
       image: eclipse-mosquitto:2.0.22
