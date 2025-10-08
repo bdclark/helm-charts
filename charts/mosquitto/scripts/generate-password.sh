@@ -108,15 +108,12 @@ generate_hash() {
 echo "Generating password hash for user '$USERNAME'..." >&2
 HASH=$(generate_hash "$USERNAME" "$PASSWORD")
 
-# Escape the hash for YAML (escape $ characters)
-ESCAPED_HASH=$(echo "$HASH" | sed 's/\$/\\$/g')
-
 # Output based on format preference
 if [[ "$FORMAT_OUTPUT" == "true" ]]; then
     OUTPUT="    - username: $USERNAME
-      passwordHash: \"$ESCAPED_HASH\""
+      passwordHash: \"$HASH\""
 else
-    OUTPUT="$ESCAPED_HASH"
+    OUTPUT="$HASH"
 fi
 
 echo "$OUTPUT"
