@@ -176,6 +176,53 @@ entries:
   music-assistant:
   - annotations:
       artifacthub.io/changes: |
+        - kind: changed
+          description: Updated Music Assistant version from 2.5.8 to 2.6.0
+        - kind: added
+          description: Added values.schema.json for Helm values validation
+      artifacthub.io/images: |
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server:2.6.0
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+        - name: Music Assistant
+          url: https://music-assistant.io/
+        - name: GitHub Repository
+          url: https://github.com/music-assistant/server
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: 2.6.0
+    created: "2025-10-08T11:10:26.679659534Z"
+    description: Music Assistant - Universal media library manager for streaming services
+      and connected audio devices
+    digest: 4908c9d112eff4e583cae9cf135f67ba46ea82f323a31fdfa896b3ff8eacbeda
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon-192x192.png
+    keywords:
+    - music
+    - audio
+    - streaming
+    - media
+    - assistant
+    - home-automation
+    maintainers:
+    - email: brian@noreply.com
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: music-assistant
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - https://github.com/music-assistant/server
+    - https://music-assistant.io/
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.2.0/music-assistant-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/changes: |
         - kind: added
           description: Initial chart implementation with networking flexibility and persistence support
       artifacthub.io/images: |
@@ -219,4 +266,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-08T10:53:02.768267Z"
+generated: "2025-10-08T11:10:26.679673761Z"
