@@ -2,8 +2,8 @@ apiVersion: v2
 name: music-assistant
 description: Music Assistant - Universal media library manager for streaming services and connected audio devices
 type: application
-version: 0.1.0
-appVersion: 2.5.8
+version: 0.2.0
+appVersion: 2.6.0
 home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
 sources:
   - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
@@ -31,10 +31,12 @@ annotations:
     - name: GitHub Repository
       url: https://github.com/music-assistant/server
   artifacthub.io/changes: |
+    - kind: changed
+      description: Updated Music Assistant version from 2.5.8 to 2.6.0
     - kind: added
-      description: Initial chart implementation with networking flexibility and persistence support
+      description: Added values.schema.json for Helm values validation
   artifacthub.io/images: |
     - name: music-assistant
-      image: ghcr.io/music-assistant/server:2.5.8
+      image: ghcr.io/music-assistant/server:2.6.0
   artifacthub.io/operator: "false"
   artifacthub.io/prerelease: "false"

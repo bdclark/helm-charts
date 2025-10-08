@@ -14,7 +14,7 @@ tests:
           value: 1
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "ghcr.io/music-assistant/server:2.5.8"
+          value: "ghcr.io/music-assistant/server:2.6.0"
       - equal:
           path: spec.strategy.type
           value: Recreate

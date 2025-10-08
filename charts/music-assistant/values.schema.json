@@ -1,0 +1,289 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Music Assistant Helm Chart Values",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "description": "Container image repository"
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "description": "Image pull policy"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Image tag (overrides appVersion from Chart.yaml)"
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Secrets for pulling images from private repositories"
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "Override the full name"
+    },
+    "podAnnotations": {
+      "type": "object",
+      "description": "Annotations to add to the pod"
+    },
+    "podLabels": {
+      "type": "object",
+      "description": "Labels to add to the pod"
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "description": "Security context for the pod"
+    },
+    "securityContext": {
+      "type": "object",
+      "properties": {
+        "runAsNonRoot": {
+          "type": "boolean",
+          "description": "Run container as non-root user"
+        },
+        "runAsUser": {
+          "type": "integer",
+          "description": "User ID to run container as"
+        },
+        "runAsGroup": {
+          "type": "integer",
+          "description": "Group ID to run container as"
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Enable custom capabilities"
+            },
+            "add": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Capabilities to add"
+            },
+            "drop": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Capabilities to drop"
+            }
+          }
+        }
+      },
+      "description": "Security context for the container"
+    },
+    "hostNetwork": {
+      "type": "boolean",
+      "description": "Enable host networking for maximum device discovery compatibility"
+    },
+    "dnsPolicy": {
+      "type": "string",
+      "enum": ["ClusterFirst", "ClusterFirstWithHostNet", "Default", "None"],
+      "description": "DNS policy for the pod"
+    },
+    "hostPort": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable binding to host ports"
+        },
+        "webPort": {
+          "type": "integer",
+          "description": "Host port for web interface"
+        },
+        "streamPort": {
+          "type": "integer",
+          "description": "Host port for audio streaming"
+        }
+      },
+      "description": "Host port configuration (alternative to hostNetwork)"
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Kubernetes service (typically disabled when using hostNetwork)"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
+          "description": "Kubernetes service type"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Service annotations"
+        },
+        "webPort": {
+          "type": "integer",
+          "description": "Port for web interface"
+        },
+        "streamPort": {
+          "type": "integer",
+          "description": "Port for audio streaming"
+        },
+        "loadBalancerIP": {
+          "type": "string",
+          "description": "Load balancer IP address"
+        },
+        "loadBalancerSourceRanges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Source IP ranges allowed to access the load balancer"
+        },
+        "externalTrafficPolicy": {
+          "type": "string",
+          "enum": ["Cluster", "Local"],
+          "description": "External traffic policy"
+        },
+        "sessionAffinity": {
+          "type": "string",
+          "enum": ["None", "ClientIP"],
+          "description": "Session affinity"
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable ingress for web interface"
+        },
+        "className": {
+          "type": "string",
+          "description": "Ingress class name"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Ingress annotations"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Ingress hosts configuration"
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "TLS configuration"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "description": "Resource limits and requests"
+    },
+    "livenessProbe": {
+      "type": "object",
+      "description": "Liveness probe configuration"
+    },
+    "readinessProbe": {
+      "type": "object",
+      "description": "Readiness probe configuration"
+    },
+    "startupProbe": {
+      "type": "object",
+      "description": "Startup probe configuration"
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable persistence for application data"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Storage class for PVC"
+        },
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Access modes for PVC"
+        },
+        "size": {
+          "type": "string",
+          "description": "Size of the PVC"
+        },
+        "existingClaim": {
+          "type": "string",
+          "description": "Use an existing PVC instead of creating a new one"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations for PVC"
+        }
+      }
+    },
+    "additionalVolumes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Additional volumes for media files"
+    },
+    "additionalMounts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Additional volume mounts for media files"
+    },
+    "env": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Environment variables"
+    },
+    "envFrom": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Environment variables from ConfigMaps or Secrets"
+    },
+    "nodeSelector": {
+      "type": "object",
+      "description": "Node selector for pod assignment"
+    },
+    "tolerations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Tolerations for pod assignment"
+    },
+    "affinity": {
+      "type": "object",
+      "description": "Affinity rules for pod assignment"
+    }
+  }
+}
