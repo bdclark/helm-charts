@@ -34,28 +34,72 @@ auth:
 ```yaml
 # values.yaml
 auth:
-  acls:
-    # Admin full access
-    - user: admin
-      topic: "#"
-      access: readwrite
+  acls: |
+    # Anonymous user topics (only if allow_anonymous is true)
+    # These must appear BEFORE the first "user" line
+    topic read public/#
+    topic read status/#
 
-    # Device-specific access
-    - user: sensor1
-      topic: "sensors/sensor1/#"
-      access: write
+    # Pattern rules apply to ALL authenticated users
+    pattern readwrite devices/%u/#
 
-    # Pattern-based access
-    - pattern: "read devices/%u/status"  # %u = username
+    # User-specific access
+    user admin
+    topic readwrite #
+
+    user sensor1
+    topic write sensors/sensor1/data
+    topic read sensors/sensor1/commands
 ```
 
 ## Access Control Reference
+
+### ACL File Format
+
+The `auth.acls` field uses Mosquitto's native ACL file format as a multi-line string. This provides maximum flexibility and direct compatibility with Mosquitto documentation.
 
 ### Access Types
 
 - `read` - Subscribe only
 - `write` - Publish only
 - `readwrite` - Both publish and subscribe
+
+### ACL Rules
+
+#### Anonymous Topics
+
+Topics defined before the first `user` line apply to anonymous clients (only if `allow_anonymous: true`):
+
+```yaml
+auth:
+  acls: |
+    topic read public/#
+    topic readwrite temp/#
+```
+
+#### Pattern Rules
+
+Use `pattern` keyword for rules that apply to ALL authenticated users:
+
+```yaml
+auth:
+  acls: |
+    pattern readwrite devices/%u/#
+    pattern read notifications/%c
+```
+
+#### User-Specific Rules
+
+Define per-user access after a `user` line. Multiple topics per user are supported:
+
+```yaml
+auth:
+  acls: |
+    user sensor1
+    topic write sensors/sensor1/data
+    topic read sensors/sensor1/config
+    topic read sensors/sensor1/commands
+```
 
 ### Topic Patterns
 

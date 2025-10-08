@@ -51,10 +51,9 @@ tests:
 
   - it: should create acl file when acls defined
     set:
-      auth.acls:
-        - user: admin
-          topic: "#"
-          access: readwrite
+      auth.acls: |
+        user admin
+        topic readwrite #
     asserts:
       - matchRegex:
           path: data["mosquitto.conf"]
@@ -62,6 +61,24 @@ tests:
       - equal:
           path: data.acl
           value: "user admin\ntopic readwrite #\n"
+
+  - it: should support multi-user acls with anonymous and pattern rules
+    set:
+      auth.acls: |
+        topic read public/#
+        pattern readwrite devices/%u/#
+        user admin
+        topic readwrite #
+        user sensor1
+        topic write sensors/sensor1/data
+        topic read sensors/sensor1/commands
+    asserts:
+      - matchRegex:
+          path: data["mosquitto.conf"]
+          pattern: "acl_file /mosquitto/config/acl"
+      - equal:
+          path: data.acl
+          value: "topic read public/#\npattern readwrite devices/%u/#\nuser admin\ntopic readwrite #\nuser sensor1\ntopic write sensors/sensor1/data\ntopic read sensors/sensor1/commands\n"
 
   - it: should only create listeners for enabled ports
     set:
@@ -102,11 +119,11 @@ tests:
 
   - it: should set custom log level
     set:
-      config.logLevel: debug
+      config.logLevel: warning
     asserts:
       - matchRegex:
           path: data["mosquitto.conf"]
-          pattern: "log_type debug"
+          pattern: "log_type warning"
 
   - it: should set max connections when specified
     set:

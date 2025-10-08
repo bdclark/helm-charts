@@ -86,7 +86,7 @@ helm uninstall mosquitto
 | `auth.users`             | List of users with passwords (stored in CM)  | `[]`     |
 | `auth.secretRef.name`    | Reference to existing secret with passwd     | `""`     |
 | `auth.secretRef.key`     | Key in secret containing passwd file         | `passwd` |
-| `auth.acls`              | Access control lists                         | `[]`     |
+| `auth.acls`              | Access control lists (Mosquitto ACL format)  | `""`     |
 
 ### Persistence Configuration
 
@@ -110,6 +110,9 @@ auth:
   users:
     - username: admin
       password: admin123
+  acls: |
+    user admin
+    topic readwrite #
 
 service:
   type: LoadBalancer

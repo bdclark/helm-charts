@@ -2,8 +2,8 @@ apiVersion: v2
 name: mosquitto
 description: Eclipse Mosquitto MQTT broker with authentication and persistence support
 type: application
-version: 0.4.0
-appVersion: 2.0.18
+version: 0.5.0
+appVersion: 2.0.22
 home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
 sources:
   - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
@@ -28,10 +28,14 @@ annotations:
     - name: Eclipse Mosquitto
       url: https://mosquitto.org/
   artifacthub.io/changes: |
+    - kind: changed
+      description: BREAKING - auth.acls now uses multi-line string format (Mosquitto ACL file format) instead of structured list
+    - kind: changed
+      description: Updated Mosquitto version from 2.0.18 to 2.0.22
     - kind: added
-      description: Support for external secrets via auth.secretRef for SOPS/Sealed Secrets integration
+      description: Added values.schema.json for Helm values validation
   artifacthub.io/images: |
     - name: mosquitto
-      image: eclipse-mosquitto:2.0.18
+      image: eclipse-mosquitto:2.0.22
   artifacthub.io/operator: "false"
   artifacthub.io/prerelease: "false"

@@ -5,6 +5,10 @@ auth:
   users:
     - username: testuser
       password: testpass
+  acls: |
+    topic read public/#
+    user testuser
+    topic readwrite test/#
 
 persistence:
   enabled: true

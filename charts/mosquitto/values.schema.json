@@ -1,0 +1,398 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mosquitto Helm Chart Values",
+  "type": "object",
+  "properties": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "description": "Container image repository"
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "description": "Image pull policy"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Image tag (overrides appVersion from Chart.yaml)"
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Secrets for pulling images from private repositories"
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "Override the full name"
+    },
+    "podAnnotations": {
+      "type": "object",
+      "description": "Annotations to add to the pod"
+    },
+    "podLabels": {
+      "type": "object",
+      "description": "Labels to add to the pod"
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "description": "Security context for the pod"
+    },
+    "securityContext": {
+      "type": "object",
+      "description": "Security context for the container"
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
+          "description": "Kubernetes service type"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Service annotations"
+        },
+        "loadBalancerIP": {
+          "type": "string",
+          "description": "Load balancer IP address"
+        },
+        "loadBalancerSourceRanges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Source IP ranges allowed to access the load balancer"
+        },
+        "externalTrafficPolicy": {
+          "type": "string",
+          "enum": ["Cluster", "Local"],
+          "description": "External traffic policy"
+        },
+        "sessionAffinity": {
+          "type": "string",
+          "enum": ["None", "ClientIP"],
+          "description": "Session affinity"
+        },
+        "ports": {
+          "type": "object",
+          "properties": {
+            "mqtt": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "port": {
+                  "type": "integer"
+                },
+                "targetPort": {
+                  "type": "integer"
+                },
+                "protocol": {
+                  "type": "string"
+                },
+                "nodePort": {
+                  "oneOf": [
+                    {"type": "integer"},
+                    {"type": "string"}
+                  ]
+                }
+              }
+            },
+            "mqttTls": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "port": {
+                  "type": "integer"
+                },
+                "targetPort": {
+                  "type": "integer"
+                },
+                "protocol": {
+                  "type": "string"
+                },
+                "nodePort": {
+                  "oneOf": [
+                    {"type": "integer"},
+                    {"type": "string"}
+                  ]
+                },
+                "tls": {
+                  "type": "object",
+                  "properties": {
+                    "secretName": {
+                      "type": "string"
+                    },
+                    "caFile": {
+                      "type": "string"
+                    },
+                    "certFile": {
+                      "type": "string"
+                    },
+                    "keyFile": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "websocket": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "port": {
+                  "type": "integer"
+                },
+                "targetPort": {
+                  "type": "integer"
+                },
+                "protocol": {
+                  "type": "string"
+                },
+                "nodePort": {
+                  "oneOf": [
+                    {"type": "integer"},
+                    {"type": "string"}
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "hostNetwork": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable host networking"
+        },
+        "dnsPolicy": {
+          "type": "string",
+          "description": "DNS policy when using host networking"
+        }
+      }
+    },
+    "hostPorts": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable binding to host ports"
+        },
+        "mqtt": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "oneOf": [
+                {"type": "integer"},
+                {"type": "string"}
+              ]
+            },
+            "hostIP": {
+              "type": "string"
+            }
+          }
+        },
+        "mqttTls": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "oneOf": [
+                {"type": "integer"},
+                {"type": "string"}
+              ]
+            },
+            "hostIP": {
+              "type": "string"
+            }
+          }
+        },
+        "websocket": {
+          "type": "object",
+          "properties": {
+            "port": {
+              "oneOf": [
+                {"type": "integer"},
+                {"type": "string"}
+              ]
+            },
+            "hostIP": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "className": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "description": "Resource limits and requests"
+    },
+    "livenessProbe": {
+      "type": "object",
+      "description": "Liveness probe configuration"
+    },
+    "readinessProbe": {
+      "type": "object",
+      "description": "Readiness probe configuration"
+    },
+    "config": {
+      "type": "object",
+      "properties": {
+        "allowAnonymous": {
+          "type": "boolean",
+          "description": "Allow anonymous connections (automatically disabled if users are defined)"
+        },
+        "logLevel": {
+          "type": "string",
+          "enum": ["error", "warning", "notice", "information", "subscribe", "unsubscribe", "websockets", "none", "all"],
+          "description": "Mosquitto log level"
+        },
+        "maxConnections": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum concurrent client connections (0 = unlimited)"
+        },
+        "extraConfig": {
+          "type": "string",
+          "description": "Additional custom mosquitto configuration"
+        }
+      }
+    },
+    "auth": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string"
+              },
+              "password": {
+                "type": "string",
+                "description": "Plaintext password (development only)"
+              },
+              "passwordHash": {
+                "type": "string",
+                "description": "Pre-hashed password (production)"
+              }
+            },
+            "required": ["username"]
+          },
+          "description": "Users for password-based authentication (ignored if auth.secretRef.name is set)"
+        },
+        "secretRef": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the secret containing the password file"
+            },
+            "key": {
+              "type": "string",
+              "description": "Key in the secret containing the password file content"
+            }
+          },
+          "description": "Reference to existing secret containing password file"
+        },
+        "acls": {
+          "type": "string",
+          "description": "Access Control Lists in Mosquitto ACL file format (multi-line string)"
+        }
+      }
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable persistence"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Storage class for PVC"
+        },
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Access modes for PVC"
+        },
+        "size": {
+          "type": "string",
+          "description": "Size of the PVC"
+        },
+        "existingClaim": {
+          "type": "string",
+          "description": "Use an existing PVC instead of creating a new one"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations for PVC"
+        }
+      }
+    },
+    "nodeSelector": {
+      "type": "object",
+      "description": "Node selector for pod assignment"
+    },
+    "tolerations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Tolerations for pod assignment"
+    },
+    "affinity": {
+      "type": "object",
+      "description": "Affinity rules for pod assignment"
+    }
+  }
+}

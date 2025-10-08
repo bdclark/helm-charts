@@ -74,12 +74,5 @@ data:
 
   {{- if .Values.auth.acls }}
   acl: |
-    {{- range .Values.auth.acls }}
-    {{- if .user }}
-    user {{ .user }}
-    topic {{ .access }} {{ .topic }}
-    {{- else if .pattern }}
-    {{ .pattern }}
-    {{- end }}
-    {{- end }}
+{{ .Values.auth.acls | indent 4 }}
   {{- end }}

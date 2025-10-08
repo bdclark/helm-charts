@@ -181,6 +181,21 @@ test_configuration() {
         else
             echo "ℹ Persistence not configured (this is normal if disabled)"
         fi
+
+        # Check ACL configuration if test-values.yaml includes ACLs
+        if echo "$CONFIG" | grep -q "acl_file /mosquitto/config/acl"; then
+            echo "✓ ACL file configuration found"
+
+            # Verify ACL content
+            ACL_CONTENT=$(kubectl get configmap "$CONFIG_MAP" --namespace="$TEST_NAMESPACE" -o jsonpath='{.data.acl}')
+            if echo "$ACL_CONTENT" | grep -q "user testuser"; then
+                echo "✓ ACL content includes testuser"
+            else
+                echo "✗ ACL content missing expected user"
+            fi
+        else
+            echo "ℹ ACL not configured (this is normal if disabled)"
+        fi
     else
         echo "✗ ConfigMap not found: $CONFIG_MAP"
         return 1

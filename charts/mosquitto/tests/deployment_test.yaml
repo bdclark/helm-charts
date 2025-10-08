@@ -14,7 +14,7 @@ tests:
           value: 1
       - equal:
           path: spec.template.spec.containers[0].image
-          value: "eclipse-mosquitto:2.0.18"
+          value: "eclipse-mosquitto:2.0.22"
 
   - it: should use custom image
     set:
