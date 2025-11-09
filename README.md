@@ -1,6 +1,6 @@
 # Helm Charts Collection
 
-[![Lint and Test Charts](https://github.com/bdclark/helm-charts/actions/workflows/lint-test.yaml/badge.svg)](https://github.com/bdclark/helm-charts/actions/workflows/lint-test.yaml)
+[![CI](https://github.com/bdclark/helm-charts/actions/workflows/ci.yaml/badge.svg)](https://github.com/bdclark/helm-charts/actions/workflows/ci.yaml)
 [![Integration Tests](https://github.com/bdclark/helm-charts/actions/workflows/integration-test.yaml/badge.svg)](https://github.com/bdclark/helm-charts/actions/workflows/integration-test.yaml)
 [![Release Charts](https://github.com/bdclark/helm-charts/actions/workflows/release.yaml/badge.svg)](https://github.com/bdclark/helm-charts/actions/workflows/release.yaml)
 
@@ -38,7 +38,8 @@ See individual chart READMEs for detailed configuration options.
 
 This repository uses professional Helm tooling for multi-chart management:
 
-- **[Chart Testing (ct)](https://github.com/helm/chart-testing)** - Linting and testing
+- **Helm lint + helm-unittest + kubeconform** - Static and template validation
+- **[Chart Testing (ct)](https://github.com/helm/chart-testing)** - Change detection utilities
 - **[Chart Releaser (cr)](https://github.com/helm/chart-releaser)** - Automated releases
 - **GitHub Actions** - CI/CD automation
 - **[Artifact Hub](https://artifacthub.io/)** - Chart discovery
@@ -48,7 +49,9 @@ This repository uses professional Helm tooling for multi-chart management:
 - [Helm 3.x](https://helm.sh/docs/intro/install/)
 - [Task](https://taskfile.dev/installation/) (for automation)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) (for testing)
-- [chart-testing](https://github.com/helm/chart-testing#installation)
+- [helm-unittest plugin](https://github.com/helm-unittest/helm-unittest)
+- [kubeconform](https://github.com/yannh/kubeconform#installation)
+- [chart-testing](https://github.com/helm/chart-testing#installation) (optional for manual change detection)
 - [chart-releaser](https://github.com/helm/chart-releaser#installation)
 
 ### Development Quick Start
@@ -57,14 +60,17 @@ This repository uses professional Helm tooling for multi-chart management:
 # Install development tools
 task install-tools
 
-# Lint all charts
-task lint-all
+# YAML lint / static analysis
+task lint
 
-# Test specific chart
-task test CHART=<chart-name>
+# Verify a single chart with helm lint + helm-unittest + kubeconform
+task verify-chart CHART=<chart-name>
 
-# Test all charts (requires cluster)
-task test-all
+# Verify every chart
+task verify-all
+
+# Run integration suite (kind cluster required)
+task pytest
 
 # Package for local testing
 task package-all
@@ -73,39 +79,50 @@ task package-all
 ### Development Workflow
 
 1. **Create/modify charts** in `charts/` directory
-2. **Add tests** in `tests/integration/charts/<chart-name>/`
-3. **Test locally**: `task test CHART=<chart-name>`
-4. **Create PR** - triggers lint and test workflow
-5. **Merge to main** - triggers release workflow
-6. **Charts published** to GitHub Pages and indexed by Artifact Hub
+2. **Add/maintain Helm unit tests** in `charts/<chart>/tests/`
+3. **Add/maintain integration tests** in `tests/integration/pytest_suite/charts/test_<chart>.py`
+4. **Validate locally** with `task verify-chart CHART=<chart-name>` and targeted `task pytest`
+5. **Create PR** - triggers the CI workflow (static validation + per-chart verification)
+6. **Merge to main** - triggers release workflow and publishes to Artifact Hub
 
 ### Testing
 
-#### Chart Testing (ct)
-
-Professional linting and testing with change detection:
+#### Static Validation
 
 ```bash
-# List charts that would be tested
-task ct-list
+# Run yamllint across every chart
+task lint
 
-# Lint with chart-testing
-task ct-lint
+# Run Helm lint, helm-unittest, and kubeconform for one chart
+task verify-chart CHART=<chart-name>
 
-# Install test with chart-testing
-task ct-install
+# Run the full static suite for every chart
+task verify-all
+```
+
+#### Chart Testing (ct) utilities
+
+Change detection helpers are still available when you need ct locally:
+
+```bash
+task ct-list     # show changed charts
+task ct-lint     # run ct lint with debug output
+task ct-install  # run ct install (requires a cluster)
 ```
 
 #### Integration Tests
 
-Chart-specific tests for advanced validation:
+Chart-specific tests use the pytest + kind harness:
 
 ```bash
-# Run integration tests for specific chart
-task test-custom CHART=<chart-name>
+# Create/update the virtual environment
+task pyenv
 
-# Run integration tests for all charts
-task test-custom-all
+# Run the full integration suite (spins up its own kind cluster)
+task pytest
+
+# Run only one chart's tests
+task pytest PYTEST_ARGS=tests/integration/pytest_suite/charts/test_<chart>.py
 ```
 
 **Available Integration Tests:**
@@ -113,20 +130,31 @@ task test-custom-all
 - **mosquitto**: MQTT connectivity, authentication, configuration, persistence
 - **music-assistant**: Web interface, streaming ports, application startup, networking modes
 
+#### Pytest Harness
+
+The pytest + kind integration harness lives under `tests/integration/pytest_suite`. It:
+
+- provisions a disposable kind cluster per test session,
+- installs charts with Helm via reusable helpers, and
+- inspects Kubernetes resources through the official Python client.
+
+Use `task pyenv` to create the local virtual environment and `task pytest` to execute
+the suite.
+
 **GitHub CI Integration:**
 
-- Integration tests run automatically on PRs and pushes to main/develop
-- Tests run in parallel using matrix strategy for efficiency
-- Separate workflow from lint-test for better visibility and control
+- The `CI` workflow performs yamllint, helm lint, helm-unittest, and kubeconform checks per changed chart
+- Integration tests run in parallel via the dedicated `integration-test` workflow
 
 ### Releases
 
 Releases are automated via GitHub Actions:
 
-1. **Push to main** triggers release workflow
-2. **Chart Releaser** packages and releases charts
-3. **GitHub Pages** serves the repository
-4. **Artifact Hub** indexes releases automatically
+1. **Merge to main** runs CI + Integration Tests
+2. **Successful Integration Tests** trigger the release workflow
+3. **Chart Releaser** packages and publishes charts to `gh-pages`
+4. **Charts are also pushed to OCI** (`ghcr.io/<owner>/helm-charts`)
+5. **Artifact Hub** indexes releases automatically
 
 Manual release testing:
 
@@ -138,6 +166,20 @@ task release-local
 helm repo add local file://$(pwd)/.cr-release-packages
 helm search repo local/
 ```
+
+### OCI Registry Support
+
+Charts are published to GitHub Container Registry as OCI artifacts. To install directly:
+
+```bash
+helm registry login ghcr.io -u <github-username> -p <token>
+
+# Pull and install a chart release
+helm pull oci://ghcr.io/bdclark/helm-charts/mosquitto --version <version>
+helm install my-mosquitto oci://ghcr.io/bdclark/helm-charts/mosquitto --version <version>
+```
+
+The OCI repository path follows the convention `ghcr.io/<owner>/helm-charts/<chart>`.
 
 ## Contributing
 

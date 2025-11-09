@@ -6,6 +6,12 @@
 
 # Python virtual environment
 .venv/
+.python-version
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
 
 # IDE files
 .vscode/

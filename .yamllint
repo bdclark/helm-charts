@@ -1,0 +1,14 @@
+extends: default
+
+ignore: |
+  tests/integration/pytest_suite/.venv/*
+  charts/*/templates/*
+  charts/*/tests/*
+  tests/integration/charts/*
+
+rules:
+  document-start: disable
+  comments-indentation: disable
+  line-length:
+    max: 120
+    level: warning

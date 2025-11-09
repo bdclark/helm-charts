@@ -10,8 +10,10 @@ words:
   - certfile
   - configmap
   - elif
+  - kubeconform
   - kubectl
   - metallb
+  - mktemp
   - monitorpass
   - mosquitto
   - Mosquitto
@@ -20,16 +22,25 @@ words:
   - mypassword
   - mysecret
   - nindent
+  - nullglob
   - persistentvolumes
+  - pipefail
+  - popd
+  - pushd
+  - pvcs
+  - pytest
   - readwrite
   - replicaset
   - secretpassword
   - Shellcheck
+  - shopt
   - statefulset
   - Taskfile
   - tolerations
   - traefik
   - Traefik
+  - virtualenv
+  - worktree
   - wrongpass
 ignorePaths: []
 dictionaries: []
