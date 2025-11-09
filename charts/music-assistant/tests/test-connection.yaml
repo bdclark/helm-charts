@@ -20,19 +20,19 @@ spec:
         - |
           set -e
           echo "Testing Music Assistant connection to {{ include "music-assistant.fullname" . }}"
-          
+
           # Test web interface connectivity
           echo "Testing web interface connectivity..."
           nc -zv {{ include "music-assistant.fullname" . }} {{ .Values.service.webPort }}
-          
-          # Test streaming port connectivity  
+
+          # Test streaming port connectivity
           echo "Testing streaming port connectivity..."
           nc -zv {{ include "music-assistant.fullname" . }} {{ .Values.service.streamPort }}
-          
+
           # Wait for service to be ready
           echo "Waiting for Music Assistant to be ready..."
           timeout 60 sh -c 'until curl -f -s http://{{ include "music-assistant.fullname" . }}:{{ .Values.service.webPort }}/health || curl -f -s http://{{ include "music-assistant.fullname" . }}:{{ .Values.service.webPort }}/ ; do echo "Waiting for web interface..."; sleep 2; done'
-          
+
           # Test web interface response
           echo "Testing web interface response..."
           response=$(curl -s -o /dev/null -w "%{http_code}" http://{{ include "music-assistant.fullname" . }}:{{ .Values.service.webPort }}/)
@@ -41,7 +41,7 @@ spec:
           else
             echo "Warning: Web interface returned HTTP $response (may still be starting up)"
           fi
-          
+
           echo "All connectivity tests passed!"
       resources:
         limits:

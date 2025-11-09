@@ -19,11 +19,11 @@ spec:
         - |
           set -e
           echo "Testing MQTT connection to {{ include "mosquitto.fullname" . }}"
-          
+
           # Test basic connectivity
           echo "Testing basic connectivity..."
           nc -zv {{ include "mosquitto.fullname" . }} {{ .Values.service.ports.mqtt.port }}
-          
+
           {{- if .Values.service.ports.mqtt.enabled }}
           # Test MQTT publish (anonymous)
           {{- if and .Values.config.allowAnonymous (not .Values.auth.users) }}
@@ -31,25 +31,25 @@ spec:
           mosquitto_pub -h {{ include "mosquitto.fullname" . }} -p {{ .Values.service.ports.mqtt.port }} -t "test/connection" -m "helm test message" --capath /etc/ssl/certs/
           echo "Anonymous publish test passed"
           {{- end }}
-          
+
           {{- if .Values.auth.users }}
           # Test authenticated MQTT (if users configured)
           echo "Authentication is enabled - testing connectivity only"
           {{- end }}
           {{- end }}
-          
+
           {{- if and .Values.service.ports.websocket.enabled .Values.service.ports.websocket.enabled }}
           # Test WebSocket port
           echo "Testing WebSocket port connectivity..."
           nc -zv {{ include "mosquitto.fullname" . }} {{ .Values.service.ports.websocket.port }}
           {{- end }}
-          
+
           {{- if and .Values.service.ports.mqttTls.enabled .Values.service.ports.mqttTls.enabled }}
           # Test TLS port
           echo "Testing TLS port connectivity..."
           nc -zv {{ include "mosquitto.fullname" . }} {{ .Values.service.ports.mqttTls.port }}
           {{- end }}
-          
+
           echo "All connectivity tests passed!"
       resources:
         limits:
