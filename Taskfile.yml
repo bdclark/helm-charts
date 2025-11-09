@@ -16,50 +16,21 @@ tasks:
       - find {{.CHARTS_DIR}} -name Chart.yaml -exec dirname {} \; | sed 's|{{.CHARTS_DIR}}/||' | sort
     silent: true
 
-  install-tools:
-    desc: Install linting, chart-testing, and releaser tools
+  tools:
+    desc: Ensure Helm plugins and kubeconform are installed
     cmds:
-      - echo "Installing chart-testing..."
-      - |
-        if ! command -v ct &> /dev/null; then
-          echo "Please install chart-testing: https://github.com/helm/chart-testing#installation"
-          echo "  brew install chart-testing"
-          echo "  or download from releases"
-          exit 1
-        fi
-      - echo "Installing chart-releaser..."
-      - |
-        if ! command -v cr &> /dev/null; then
-          echo "Please install chart-releaser: https://github.com/helm/chart-releaser#installation"
-          echo "  brew install chart-releaser"
-          echo "  or download from releases"
-          exit 1
-        fi
-      - echo "Checking helm..."
       - which helm || (echo "Please install Helm first" && exit 1)
-      - echo "Checking kubectl..."
-      - which kubectl || echo "kubectl not found - install tests will not work"
-      - echo "Checking helm-unittest plugin..."
+      - echo "Ensuring helm-unittest plugin..."
       - |
         if ! helm plugin list 2>/dev/null | grep -q "unittest"; then
-          echo "Installing helm-unittest plugin..."
           helm plugin install https://github.com/helm-unittest/helm-unittest --version v0.3.5
-        else
-          echo "helm-unittest plugin already installed"
         fi
-      - echo "Checking kubeconform..."
+      - echo "Ensuring kubeconform..."
       - |
         if ! command -v kubeconform &> /dev/null; then
-          echo "Please install kubeconform: https://github.com/yannh/kubeconform#installation"
-          echo "  brew install kubeconform"
-          echo "  or download the release binary"
+          echo "Install kubeconform: https://github.com/yannh/kubeconform#installation"
           exit 1
         fi
-      - echo "Adding helm repositories..."
-      - helm repo add bitnami https://charts.bitnami.com/bitnami || true
-      - helm repo add stable https://charts.helm.sh/stable || true
-      - helm repo update
-      - echo "✓ All tools installed and configured"
 
   pyenv:
     desc: Create local Python virtual environment for pytest integration tests
@@ -70,14 +41,6 @@ tasks:
         fi
       - . .venv/bin/activate && pip install --upgrade pip
       - . .venv/bin/activate && pip install -r tests/integration/pytest_suite/requirements.txt
-
-  pytest:
-    desc: Run pytest-based integration tests (set PYTEST_ARGS for extra options)
-    deps: [pyenv]
-    cmds:
-      - |
-        . .venv/bin/activate
-        pytest {{if .PYTEST_ARGS}}{{.PYTEST_ARGS}} {{end}}tests/integration/pytest_suite
 
   lint:
     desc: Run YAML linting across all charts
@@ -94,11 +57,13 @@ tasks:
 
   helm-unittest:
     desc: "Run helm-unittest plugin for a chart (usage: task helm-unittest CHART=mosquitto)"
+    deps: [tools]
     cmds:
       - helm unittest {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
 
   kubeconform:
     desc: "Render a chart and validate with kubeconform (usage: task kubeconform CHART=mosquitto)"
+    deps: [tools]
     cmds:
       - |
         helm template task-{{.CHART | default .DEFAULT_CHART}} {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} \
@@ -106,6 +71,7 @@ tasks:
 
   verify-chart:
     desc: "Run helm lint, helm-unittest, and kubeconform for a chart (usage: task verify-chart CHART=mosquitto)"
+    deps: [tools]
     cmds:
       - task helm-lint CHART={{.CHART | default .DEFAULT_CHART}}
       - task helm-unittest CHART={{.CHART | default .DEFAULT_CHART}}
@@ -113,6 +79,7 @@ tasks:
 
   verify-all:
     desc: Run helm lint, helm-unittest, and kubeconform for all charts
+    deps: [tools]
     cmds:
       - |
         for chart in $(task discover-charts --silent); do
@@ -120,16 +87,29 @@ tasks:
           task verify-chart CHART=$chart
         done
 
+  lint-all:
+    desc: Alias for verify-all (for backwards compatibility)
+    cmds:
+      - task verify-all
+
+  pytest:
+    desc: Run pytest-based integration tests (set PYTEST_ARGS for extra options)
+    deps: [pyenv]
+    cmds:
+      - |
+        . .venv/bin/activate
+        pytest {{if .PYTEST_ARGS}}{{.PYTEST_ARGS}} {{end}}tests/integration/pytest_suite
+
   package:
     desc: "Package specific chart (usage: task package CHART=mosquitto)"
-    deps: [lint]
+    deps: [tools, lint]
     cmds:
       - echo "Packaging {{.CHART | default .DEFAULT_CHART}}..."
       - helm package {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --destination .
 
   package-all:
     desc: Package all charts
-    deps: [lint-all]
+    deps: [tools, lint]
     cmds:
       - |
         for chart in $(task discover-charts --silent); do
@@ -149,28 +129,17 @@ tasks:
       - 'echo "To test: helm repo add local file://$(pwd)/.cr-release-packages"'
 
   clean:
-    desc: Clean up artifacts
+    desc: Clean up gitignored artifacts
     cmds:
       - rm -rf .cr-release-packages
       - rm -f *.tgz
-      - echo "Cleaned up release artifacts"
-
-  check-cluster:
-    desc: Check if kubernetes cluster is available
-    cmds:
-      - which kubectl || (echo "kubectl required for cluster-based tests" && exit 1)
-      - kubectl cluster-info >/dev/null || (echo "No kubernetes cluster available" && exit 1)
-    silent: true
-
-  # Development helpers
-  dev:
-    desc: Development setup - install tools and run quick tests
-    deps: [install-tools, lint-all]
+      - rm -rf .venv
+      - git clean -fdX
+      - echo "Workspace cleaned"
 
   debug-template:
-    desc: "Debug template rendering for specific chart (usage: task debug-template CHART=mosquitto)"
+    desc: "Debug template rendering for a chart (usage: task debug-template CHART=mosquitto)"
     cmds:
-      - echo "Debugging template for {{.CHART | default .DEFAULT_CHART}}..."
       - helm template test-release {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --debug
 
   # Chart-releaser commands
@@ -202,37 +171,5 @@ tasks:
 
   ct-install:
     desc: Run chart-testing install with full output
-    deps: [check-cluster]
     cmds:
       - ct install --debug
-
-  # Security scanning
-  security-scan:
-    desc: "Run security scan on specific chart (usage: task security-scan CHART=mosquitto)"
-    cmds:
-      - echo "Running security scan for {{.CHART | default .DEFAULT_CHART}}..."
-      - |
-        if command -v trivy >/dev/null; then
-          trivy config {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
-        else
-          echo "Trivy not installed, skipping security scan"
-          echo "Install with: brew install trivy"
-        fi
-
-  security-scan-all:
-    desc: Run security scan on all charts
-    cmds:
-      - |
-        if command -v trivy >/dev/null; then
-          for chart in $(task discover-charts --silent); do
-            echo "Running security scan for $chart..."
-            trivy config {{.CHARTS_DIR}}/$chart
-          done
-        else
-          echo "Trivy not installed, skipping security scan"
-          echo "Install with: brew install trivy"
-        fi
-  lint-all:
-    desc: Run helm lint, helm-unittest, and kubeconform for all charts (alias for verify-all)
-    cmds:
-      - task verify-all
