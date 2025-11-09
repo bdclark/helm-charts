@@ -1,0 +1,98 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+### From repo
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install music-assistant bdclark/music-assistant
+```
+
+### From source
+
+```bash
+helm install music-assistant ./charts/music-assistant
+```
+
+### Uninstall
+
+```bash
+helm uninstall music-assistant
+```
+
+## Networking Modes
+
+| Mode | Use case | Notes |
+|------|----------|-------|
+| `hostNetwork=true` *(default)* | Direct VLAN / UPnP / Chromecast discovery | Pod shares node network namespace. Disable `service.*` unless you still need a ClusterIP for probes. |
+| `hostNetwork=false` | Standard Kubernetes networking (ingress, services) | Enables `service.*` ports; device discovery depends on CNI support. |
+
+## Persistence
+
+```yaml
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: fast-ssd
+```
+
+Stores configuration, metadata, and cache data. Disable only for ephemeral testing.
+
+## Common overrides
+
+### Cluster networking + ingress
+
+```yaml
+hostNetwork: false
+service:
+  enabled: true
+  type: ClusterIP
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: music-assistant.local
+      paths:
+        - path: /
+          pathType: Prefix
+```
+
+### Host networking with media mounts
+
+```yaml
+hostNetwork: true
+additionalVolumes:
+  - name: media-nfs
+    nfs:
+      server: nas.example.com
+      path: /volume1/media
+additionalMounts:
+  - name: media-nfs
+    mountPath: /media
+    readOnly: true
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## Contributing
+
+- Bump `version`/`appVersion` in `Chart.yaml` for any change.
+- Keep unit tests (`charts/music-assistant/tests/`) and integration tests (`tests/integration/pytest_suite/charts/test_music_assistant.py`) up to date.
+- Run `task verify-chart CHART=music-assistant` + targeted `task pytest` before opening a PR.
+
+## License
+
+MIT — see [LICENSE](../../LICENSE).

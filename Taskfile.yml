@@ -173,3 +173,26 @@ tasks:
     desc: Run chart-testing install with full output
     cmds:
       - ct install --debug
+
+  helm-docs:
+    desc: "Regenerate README files for a chart (usage: task helm-docs CHART=music-assistant)"
+    vars:
+      TARGET_CHART:
+        sh: |
+          if [ -n "{{.CHART}}" ]; then
+            echo "{{.CHARTS_DIR}}/{{.CHART}}"
+          else
+            echo ""
+          fi
+    cmds:
+      - |
+        if [ -z "{{.TARGET_CHART}}" ]; then
+          echo "Usage: task helm-docs CHART=<chart-name>"
+          exit 1
+        fi
+        helm-docs --chart-search-root {{.TARGET_CHART}} --sort-values-order file
+
+  helm-docs-all:
+    desc: Regenerate README files for all charts
+    cmds:
+      - helm-docs --sort-values-order file

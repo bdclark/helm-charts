@@ -1,407 +1,146 @@
-# Music Assistant Helm Chart
+# Music-Assistant Helm Chart
 
-Music Assistant is a free, open-source media library manager that connects streaming services with various connected speakers and players on your network.
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.6.0](https://img.shields.io/badge/AppVersion-2.6.0-informational?style=flat-square)](Chart.yaml)
 
-![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)
-![AppVersion: 2.6.0](https://img.shields.io/badge/AppVersion-2.6.0-informational?style=flat-square)
+Music Assistant - Universal media library manager for streaming services and connected audio devices
 
-## TL;DR
+## Installing
 
-```bash
-# Basic installation with host networking (recommended)
-helm install music-assistant ./music-assistant
-
-# Standard Kubernetes networking
-helm install music-assistant ./music-assistant \
-  --set hostNetwork=false
-
-# With persistence and ingress
-helm install music-assistant ./music-assistant \
-  --set hostNetwork=false \
-  --set persistence.enabled=true \
-  --set ingress.enabled=true \
-  --set ingress.hosts[0].host=music-assistant.local
-```
-
-## Introduction
-
-This chart deploys Music Assistant on Kubernetes with support for:
-
-- **Flexible Networking** - Host networking (default) or standard Kubernetes networking
-- **Device Discovery** - UPnP/D-LNA, Chrome-cast, AirPlay device discovery
-- **Data Persistence** - Optional persistent storage for configuration and database
-- **Multi-CNI Support** - Works with Multi-CNI for VLAN access
-- **Web Interface** - HTTP access via service or ingress
-
-## Prerequisites
-
-- Kubernetes 1.21+
-- Helm 3.8+
-- PV provisioner support (for persistence)
-
-## Installing the Chart
+### From repo
 
 ```bash
-# Install with release name "music-assistant"
-helm install music-assistant ./music-assistant
-
-# Install in a specific namespace
-helm install music-assistant ./music-assistant --namespace media --create-namespace
-
-# Install with custom values
-helm install music-assistant ./music-assistant -f my-values.yaml
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install music-assistant bdclark/music-assistant
 ```
 
-## Uninstalling the Chart
+### From source
+
+```bash
+helm install music-assistant ./charts/music-assistant
+```
+
+### Uninstall
 
 ```bash
 helm uninstall music-assistant
 ```
 
-## Configuration
+## Networking Modes
 
-### Basic Configuration
+| Mode | Use case | Notes |
+|------|----------|-------|
+| `hostNetwork=true` *(default)* | Direct VLAN / UPnP / Chromecast discovery | Pod shares node network namespace. Disable `service.*` unless you still need a ClusterIP for probes. |
+| `hostNetwork=false` | Standard Kubernetes networking (ingress, services) | Enables `service.*` ports; device discovery depends on CNI support. |
 
-| Parameter             | Description                         | Default                              |
-|-----------------------|-------------------------------------|--------------------------------------|
-| `image.repository`    | Container image repository          | `ghcr.io/music-assistant/server`     |
-| `image.tag`           | Container image tag                 | `""` (uses appVersion)               |
-| `image.pullPolicy`    | Image pull policy                   | `IfNotPresent`                       |
-
-### Networking Configuration
-
-| Parameter              | Description                                    | Default        |
-|------------------------|------------------------------------------------|----------------|
-| `hostNetwork`          | Enable host networking mode                    | `true`         |
-| `dnsPolicy`            | DNS policy when using host networking          | `ClusterFirst` |
-| `service.enabled`      | Create service                                 | `false`        |
-| `service.type`         | Service type                                   | `ClusterIP`    |
-| `service.webPort`      | Web interface port                             | `8095`         |
-| `service.streamPort`   | Audio streaming port                           | `8097`         |
-
-### Ingress Configuration
-
-| Parameter           | Description               | Default |
-|---------------------|---------------------------|---------|
-| `ingress.enabled`   | Enable ingress            | `false` |
-| `ingress.className` | Ingress class name        | `""`    |
-| `ingress.hosts`     | Ingress hostnames         | `[]`    |
-| `ingress.tls`       | Ingress TLS configuration | `[]`    |
-
-### Persistence Configuration
-
-| Parameter                   | Description       | Default |
-|-----------------------------|-------------------|---------|
-| `persistence.enabled`       | Enable persistence| `true`  |
-| `persistence.size`          | PVC size          | `2Gi`   |
-| `persistence.storageClass`  | Storage class     | `""`    |
-| `persistence.existingClaim` | Use existing PVC  | `""`    |
-
-### Security Configuration
-
-| Parameter                              | Description                     | Default |
-|----------------------------------------|---------------------------------|---------|
-| `securityContext.runAsNonRoot`         | Run as non-root user            | `false` |
-| `securityContext.runAsUser`            | User ID to run container as     | `0`     |
-| `securityContext.capabilities.enabled` | Enable additional capabilities  | `false` |
-
-## Examples
-
-### Basic Installation with Host Networking
+## Persistence
 
 ```yaml
-# values.yaml
-hostNetwork: true
 persistence:
   enabled: true
   size: 5Gi
+  storageClass: fast-ssd
 ```
 
-This is the recommended configuration for maximum device discovery compatibility.
+Stores configuration, metadata, and cache data. Disable only for ephemeral testing.
 
-### Standard Kubernetes Networking with Ingress
+## Common overrides
+
+### Cluster networking + ingress
 
 ```yaml
-# values.yaml
 hostNetwork: false
 service:
+  enabled: true
   type: ClusterIP
 ingress:
   enabled: true
-  className: "nginx"
+  className: nginx
   hosts:
     - host: music-assistant.local
       paths:
         - path: /
           pathType: Prefix
-persistence:
-  enabled: true
-  size: 5Gi
 ```
 
-### Advanced Networking with Multi-CNI
+### Host networking with media mounts
 
 ```yaml
-# values.yaml
 hostNetwork: true
-service:
-  enabled: false  # Disable service when using direct network access
-podAnnotations:
-  k8s.v1.cni.cncf.io/networks: "mac-vlan-vlan100"
-persistence:
-  enabled: true
-  size: 10Gi
-```
-
-### Media Storage Configuration
-
-```yaml
-# values.yaml
 additionalVolumes:
   - name: media-nfs
     nfs:
       server: nas.example.com
       path: /volume1/media
-  - name: media-local
-    hostPath:
-      path: /mnt/media
-      type: Directory
-
 additionalMounts:
   - name: media-nfs
-    mountPath: /media/nfs
-    readOnly: true
-  - name: media-local
-    mountPath: /media/local
+    mountPath: /media
     readOnly: true
 ```
 
-### Production Configuration
+## Configuration
 
-```yaml
-# values.yaml
-hostNetwork: true
-persistence:
-  enabled: true
-  size: 20Gi
-  storageClass: "fast-ssd"
-  annotations:
-    backup.volume.io/backup-volumes: data
-
-resources:
-  limits:
-    cpu: 1000m
-    memory: 1Gi
-  requests:
-    cpu: 100m
-    memory: 256Mi
-
-nodeSelector:
-  kubernetes.io/arch: amd64
-
-env:
-  - name: TZ
-    value: "America/New_York"
-```
-
-## Networking Modes
-
-### Host Networking (Default)
-
-Host networking provides the best device discovery experience:
-
-```yaml
-hostNetwork: true  # Default
-service:
-  enabled: false   # Default: disabled for host networking
-```
-
-**Pros:**
-
-- Maximum device discovery compatibility
-- Direct access to network interfaces
-- Works with UPnP/D-LNA, Chrome-cast, AirPlay
-
-**Cons:**
-
-- Pod uses host's network namespace
-- Port conflicts possible with other host services
-
-### Standard Kubernetes Networking
-
-Standard networking with service exposure:
-
-```yaml
-hostNetwork: false
-service:
-  enabled: true    # Set to true for standard networking
-  type: ClusterIP  # or NodePort/LoadBalancer
-```
-
-**Pros:**
-
-- Proper Kubernetes networking isolation
-- Service discovery and load balancing
-- Network policies support
-
-**Cons:**
-
-- May limit device discovery capabilities
-- Requires proper service configuration
-
-### Multi-CNI Support
-
-For advanced networking with VLAN access:
-
-```yaml
-hostNetwork: true
-service:
-  enabled: false   # Disable when using direct network access
-podAnnotations:
-  k8s.v1.cni.cncf.io/networks: "vlan-config"
-```
-
-## Storage
-
-### Data Persistence
-
-Music Assistant requires persistent storage for:
-
-- Configuration files
-- Database (SQLite)
-- Cache and temporary files
-
-```yaml
-persistence:
-  enabled: true
-  size: 2Gi          # Minimum recommended
-  storageClass: ""   # Use default storage class
-```
-
-### Media Access
-
-For local media files, use additional volumes:
-
-```yaml
-additionalVolumes:
-  - name: music
-    hostPath:
-      path: /mnt/music
-      type: Directory
-
-additionalMounts:
-  - name: music
-    mountPath: /media/music
-    readOnly: true
-```
-
-## Health Checks
-
-The chart includes health checks on the web interface:
-
-- **Liveness Probe**: Checks if Music Assistant is running
-- **Readiness Probe**: Checks if the service is ready for connections
-- **Startup Probe**: Allows time for initial startup
-
-## Security
-
-### Capabilities
-
-For advanced features like SMB/network shares:
-
-```yaml
-securityContext:
-  capabilities:
-    enabled: true
-    add:
-      - DAC_READ_SEARCH  # For SMB/network share access
-      - SYS_ADMIN        # For mounting network shares
-```
-
-**Note**: Additional capabilities are disabled by default for better security.
-
-### Non-root Support
-
-When using custom images that support non-root:
-
-```yaml
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 568
-  runAsGroup: 568
-```
-
-## Troubleshooting
-
-### Device Discovery Issues
-
-1. **Check networking mode**:
-
-   ```bash
-   # Verify host networking is enabled
-   kubectl get pods -o wide
-   ```
-
-2. **Network policies**: Ensure no network policies block device discovery
-
-3. **Firewall rules**: Check cluster/node firewall rules for UPnP/mDNS
-
-### Connection Issues
-
-1. **Service configuration**:
-
-   ```bash
-   # Check service status
-   kubectl get svc music-assistant
-
-   # Port forward for testing
-   kubectl port-forward svc/music-assistant 8095:8095
-   ```
-
-2. **Pod logs**:
-
-   ```bash
-   kubectl logs -l app.kubernetes.io/name=music-assistant
-   ```
-
-### Storage Issues
-
-1. **PVC status**:
-
-   ```bash
-   # Check PVC binding
-   kubectl get pvc music-assistant-data
-   ```
-
-2. **Permissions**: Verify storage permissions if using hostPath or NFS
-
-## Home Assistant Integration
-
-Music Assistant integrates seamlessly with Home Assistant:
-
-1. **Automatic Discovery**: With host networking, Music Assistant should be automatically discovered
-2. **Manual Configuration**: For standard networking, configure Home Assistant to connect to your service endpoint
-3. **Network Access**: Ensure Home Assistant can reach Music Assistant's network segment
-
-## Values Reference
-
-For complete values documentation, see the inline comments in [values.yaml](./values.yaml).
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| image.repository | string | `"ghcr.io/music-assistant/server"` | Container image repository |
+| image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| image.tag | string | `""` | Overrides the image tag (defaults to chart appVersion) |
+| imagePullSecrets | list | `[]` | Secrets for pulling images from private repositories |
+| nameOverride | string | `""` | Override the chart name |
+| fullnameOverride | string | `""` | Override the full release name |
+| podLabels | object | `{}` | Extra labels applied to the pod |
+| podAnnotations | object | `{}` | Pod annotations applied to the Music Assistant pod |
+| podSecurityContext | object | `{}` | Pod security context |
+| resources | object | `{}` | Resource requests/limits for the pod |
+| securityContext.runAsNonRoot | bool | `false` | Whether to run the container as non-root |
+| securityContext.runAsUser | int | `0` | User ID to run the container as |
+| securityContext.runAsGroup | int | `0` | Group ID to run the container as |
+| securityContext.capabilities.enabled | bool | `false` |  |
+| securityContext.capabilities.add | list | `[]` |  |
+| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| hostNetwork | bool | `true` | Run the pod in the node network namespace |
+| dnsPolicy | string | `"ClusterFirst"` | DNS policy when using host networking |
+| hostPort.enabled | bool | `false` | Enable hostPort configuration |
+| hostPort.webPort | int | `8095` | Host port for the web interface |
+| hostPort.streamPort | int | `8097` | Host port for audio streaming |
+| service.enabled | bool | `false` | Create Service resources |
+| service.type | string | `"ClusterIP"` | Service type (ClusterIP/LoadBalancer/NodePort) |
+| service.annotations | object | `{}` | Additional service annotations |
+| service.webPort | int | `8095` | Port for the web interface |
+| service.streamPort | int | `8097` | Port for audio streaming |
+| service.loadBalancerIP | string | `""` | Static IP for LoadBalancer services |
+| service.loadBalancerSourceRanges | list | `[]` | Allowed source ranges for LoadBalancer |
+| service.externalTrafficPolicy | string | `"Cluster"` | Preserve client IP (Local) or use Cluster routing |
+| service.sessionAffinity | string | `"None"` | Service session affinity mode |
+| ingress.enabled | bool | `false` | Enable ingress |
+| ingress.className | string | `""` | Ingress class name |
+| ingress.annotations | object | `{}` | Additional ingress annotations |
+| ingress.hosts | list | `[{"host":"music-assistant.local","paths":[{"path":"/","pathType":"Prefix"}]}]` | Ingress rules configuration |
+| ingress.tls | list | `[]` | TLS configuration for ingress |
+| persistence.enabled | bool | `true` | Enable persistent volume for Music Assistant data |
+| persistence.storageClass | string | `""` | Storage class for PVC Set to "-" to disable dynamic provisioning and use default storage class Set to "" to use cluster default storage class |
+| persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes for the PVC |
+| persistence.size | string | `"2Gi"` | Requested PVC size |
+| persistence.existingClaim | string | `""` | Use an existing PVC instead of creating a new one If defined, PVC must be created manually before volume will be bound |
+| persistence.annotations | object | `{}` | Annotations for PVC |
+| additionalVolumes | list | `[]` | Extra volumes to mount (e.g., media libraries) |
+| additionalMounts | list | `[]` | Additional volume mounts matching `additionalVolumes` |
+| env | list | `[]` | Extra environment variables for the container |
+| envFrom | list | `[]` | Environment sources (ConfigMap/Secret refs) |
+| livenessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/","port":"web"},"initialDelaySeconds":60,"periodSeconds":30,"timeoutSeconds":10}` | Liveness probe configuration |
+| readinessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/","port":"web"},"initialDelaySeconds":30,"periodSeconds":10,"timeoutSeconds":5}` | Readiness probe configuration |
+| startupProbe | object | `{"failureThreshold":30,"httpGet":{"path":"/","port":"web"},"initialDelaySeconds":10,"periodSeconds":10,"timeoutSeconds":5}` | Startup probe configuration |
+| nodeSelector | object | `{}` | Node selector for scheduling |
+| tolerations | list | `[]` | Pod tolerations |
+| affinity | object | `{}` | Pod affinity/anti-affinity rules |
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch
-3. Add tests for new functionality
-4. Run the test suite: `helm unittest charts/music-assistant/`
-5. Submit a pull request
+- Bump `version`/`appVersion` in `Chart.yaml` for any change.
+- Keep unit tests (`charts/music-assistant/tests/`) and integration tests (`tests/integration/pytest_suite/charts/test_music_assistant.py`) up to date.
+- Run `task verify-chart CHART=music-assistant` + targeted `task pytest` before opening a PR.
 
 ## License
 
-This chart is licensed under the MIT License.
-
-## Links
-
-- **Music Assistant**: <https://music-assistant.io/>
-- **Docker Hub**: <https://github.com/music-assistant/server/pkgs/container/server>
-- **GitHub**: <https://github.com/music-assistant/server>
-- **Documentation**: <https://music-assistant.io/documentation/>
+MIT — see [LICENSE](../../LICENSE).

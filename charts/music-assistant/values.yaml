@@ -2,37 +2,53 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-# Image configuration
+# Container image configuration
 image:
+  # -- Container image repository
   repository: ghcr.io/music-assistant/server
+  # -- Image pull policy
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion
+  # -- Overrides the image tag (defaults to chart appVersion)
   tag: ""
 
-# Secrets for pulling images from private repositories
+# -- Secrets for pulling images from private repositories
 imagePullSecrets: []
 
-# Override the chart name
+# -- Override the chart name
 nameOverride: ""
+# -- Override the full release name
 fullnameOverride: ""
 
-# Pod annotations and labels
+# -- Extra labels applied to the pod
+podLabels: {}
+
+# -- Pod annotations applied to the Music Assistant pod
 podAnnotations: {}
   # Example Multi-CNI configuration:
   # k8s.v1.cni.cncf.io/networks: "mac-vlan-vlan100"
   # Example monitoring annotation:
   # prometheus.io/scrape: "false"  # MA doesn't expose metrics yet
 
-podLabels: {}
-
-# Pod security context
+# -- Pod security context
 podSecurityContext: {}
   # fsGroup: 568
 
+# -- Resource requests/limits for the pod
+resources: {}
+  # limits:
+  #   cpu: 1000m
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 256Mi
+
 # Container security context
 securityContext:
+  # -- Whether to run the container as non-root
   runAsNonRoot: false  # Default false for current MA images
+  # -- User ID to run the container as
   runAsUser: 0         # Default 0, configurable for custom images
+  # -- Group ID to run the container as
   runAsGroup: 0        # Default 0, configurable for custom images
   # Capabilities for advanced use cases (SMB/network shares, local media access)
   # Default: no additional capabilities for better security
@@ -46,25 +62,27 @@ securityContext:
     drop:
       - ALL
 
-# Host networking configuration
-# Default: true for maximum device discovery compatibility
+# -- Run the pod in the node network namespace
 hostNetwork: true
-# DNS policy when using host networking
+# -- DNS policy when using host networking
 dnsPolicy: ClusterFirst
 
-# Host port configuration (alternative to hostNetwork)
+# Expose ports via hostPort instead of hostNetwork
 hostPort:
+  # -- Enable hostPort configuration
   enabled: false
+  # -- Host port for the web interface
   webPort: 8095
+  # -- Host port for audio streaming
   streamPort: 8097
 
-# Service configuration
-# Default: disabled to match hostNetwork=true default
-# Set to true when using standard Kubernetes networking
+# Service configuration (use when hostNetwork=false)
 service:
+  # -- Create Service resources
   enabled: false
+  # -- Service type (ClusterIP/LoadBalancer/NodePort)
   type: ClusterIP
-  # Service annotations for load balancer configuration
+  # -- Additional service annotations
   annotations: {}
     # MetalLB examples:
     # metallb.universe.tf/address-pool: "production-public-ips"
@@ -72,90 +90,67 @@ service:
     # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
 
   # Port configuration
+  # -- Port for the web interface
   webPort: 8095      # Music Assistant web interface
+  # -- Port for audio streaming
   streamPort: 8097   # Audio streaming port
 
   # LoadBalancer configuration
+  # -- Static IP for LoadBalancer services
   loadBalancerIP: ""
+  # -- Allowed source ranges for LoadBalancer
   loadBalancerSourceRanges: []
   # External traffic policy for LoadBalancer and NodePort
+  # -- Preserve client IP (Local) or use Cluster routing
   externalTrafficPolicy: Cluster
   # Session affinity for service
+  # -- Service session affinity mode
   sessionAffinity: None
 
-# Ingress configuration (for web interface only)
+# Ingress configuration (web interface only)
 ingress:
+  # -- Enable ingress
   enabled: false
+  # -- Ingress class name
   className: ""
+  # -- Additional ingress annotations
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     # nginx.ingress.kubernetes.io/proxy-body-size: "0"
+  # -- Ingress rules configuration
   hosts:
     - host: music-assistant.local
       paths:
         - path: /
           pathType: Prefix
+  # -- TLS configuration for ingress
   tls: []
   #  - secretName: music-assistant-tls
   #    hosts:
   #      - music-assistant.local
 
-# Resource limits and requests
-resources: {}
-  # limits:
-  #   cpu: 1000m
-  #   memory: 1Gi
-  # requests:
-  #   cpu: 100m
-  #   memory: 256Mi
-
-# Health checks
-livenessProbe:
-  httpGet:
-    path: /
-    port: web
-  initialDelaySeconds: 60
-  periodSeconds: 30
-  timeoutSeconds: 10
-  failureThreshold: 3
-
-readinessProbe:
-  httpGet:
-    path: /
-    port: web
-  initialDelaySeconds: 30
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 3
-
-startupProbe:
-  httpGet:
-    path: /
-    port: web
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 5
-  failureThreshold: 30
-
-# Data persistence
+# Persistent storage for configuration/database
 persistence:
+  # -- Enable persistent volume for Music Assistant data
   enabled: true
-  # Storage class for PVC
+  # -- Storage class for PVC
   # Set to "-" to disable dynamic provisioning and use default storage class
   # Set to "" to use cluster default storage class
   storageClass: ""
+  # -- Access modes for the PVC
   accessModes:
     - ReadWriteOnce
+  # -- Requested PVC size
   size: 2Gi
-  # Use an existing PVC instead of creating a new one
+  # -- Use an existing PVC instead of creating a new one
   # If defined, PVC must be created manually before volume will be bound
   existingClaim: ""
-  # Annotations for PVC (useful for backup solutions like k8up)
+  # -- Annotations for PVC
   annotations: {}
     # k8up.io/backup: "true"
 
-# Additional volumes and volume mounts for media files
+# -- Extra volumes to mount (e.g., media libraries)
 additionalVolumes: []
   # - name: media-nfs
   #   nfs:
@@ -166,6 +161,7 @@ additionalVolumes: []
   #     path: /mnt/media
   #     type: Directory
 
+# -- Additional volume mounts matching `additionalVolumes`
 additionalMounts: []
   # - name: media-nfs
   #   mountPath: /media/nfs
@@ -174,21 +170,55 @@ additionalMounts: []
   #   mountPath: /media/local
   #   readOnly: true
 
-# Environment variables
+# -- Extra environment variables for the container
 env: []
   # - name: MA_LOG_LEVEL
   #   value: "INFO"
   # - name: TZ
   #   value: "America/New_York"
 
+# -- Environment sources (ConfigMap/Secret refs)
 envFrom: []
   # - configMapRef:
   #     name: music-assistant-config
   # - secretRef:
   #     name: music-assistant-secrets
 
+# -- Liveness probe configuration
+livenessProbe:
+  httpGet:
+    path: /
+    port: web
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+# -- Readiness probe configuration
+readinessProbe:
+  httpGet:
+    path: /
+    port: web
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# -- Startup probe configuration
+startupProbe:
+  httpGet:
+    path: /
+    port: web
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 30
+
+# -- Node selector for scheduling
 nodeSelector: {}
 
+# -- Pod tolerations
 tolerations: []
 
+# -- Pod affinity/anti-affinity rules
 affinity: {}

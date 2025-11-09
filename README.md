@@ -29,7 +29,14 @@ Typical loop:
 
 1. Edit charts in `charts/<name>/`.
 2. Update unit tests (`charts/<name>/tests/`) and integration tests (`tests/integration/pytest_suite/charts/test_<name>.py`).
-3. Validate locally:
+3. Update any chart README templates (`charts/<name>/README.md.gotmpl`) and re-render them with helm-docs if they exist:
+
+   ```shell
+   task helm-docs CHART=<name>        # regenerate a single chart README
+   task helm-docs-all                # regenerate all chart docs
+   ```
+
+4. Validate locally:
 
    ```shell
    task lint                                   # yamllint over charts/
@@ -37,8 +44,8 @@ Typical loop:
    task pytest PYTEST_ARGS=...test_<name>.py   # Kind-backed integration suite
    ```
 
-4. Open a PR; GitHub Actions (`ci.yaml`, `integration-test.yaml`) run the same validations.
-5. Merge → release workflow publishes chart packages (HTTPS + OCI).
+5. Open a PR; GitHub Actions (`ci.yaml`, `integration-test.yaml`) run the same validations.
+6. Merge → release workflow publishes chart packages (HTTPS + OCI).
 
 Other helpful commands:
 
@@ -69,7 +76,7 @@ helm install my-mosquitto oci://ghcr.io/bdclark/helm-charts/mosquitto --version 
 
 - Bump the chart `version` whenever you change a chart.
 - Keep unit tests and pytest suites up to date.
-- Update chart documentation/values tables as needed.
+- If a chart uses helm-docs templates, run `task helm-docs CHART=<name>` before opening a PR so the README stays in sync with `values.yaml`.
 - Run `task verify-chart` + targeted `task pytest` before sending a PR.
 
 ## License & Support
