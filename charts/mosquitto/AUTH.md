@@ -25,8 +25,6 @@ auth:
   users:
     - username: admin
       passwordHash: "$6$salt$hash..."
-    - username: sensor1
-      password: sensor123  # Only for development
 ```
 
 ### 3. Configure Access Control

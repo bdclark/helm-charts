@@ -9,17 +9,16 @@ sources:
   - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
   - https://github.com/music-assistant/server
   - https://music-assistant.io/
-icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon-192x192.png
+icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon.png
 keywords:
   - music
   - audio
   - streaming
   - media
-  - assistant
   - home-automation
 maintainers:
   - name: Brian Clark
-    email: brian@noreply.com
+    email: brian@clark.zone
     url: https://github.com/bdclark
 annotations:
   artifacthub.io/license: MIT
@@ -30,13 +29,6 @@ annotations:
       url: https://music-assistant.io/
     - name: GitHub Repository
       url: https://github.com/music-assistant/server
-  artifacthub.io/changes: |
-    - kind: changed
-      description: Updated Music Assistant version from 2.5.8 to 2.6.0
-    - kind: added
-      description: Added values.schema.json for Helm values validation
   artifacthub.io/images: |
     - name: music-assistant
       image: ghcr.io/music-assistant/server:2.6.0
-  artifacthub.io/operator: "false"
-  artifacthub.io/prerelease: "false"

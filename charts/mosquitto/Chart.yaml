@@ -16,9 +16,10 @@ keywords:
   - iot
   - broker
   - messaging
+  - home-automation
 maintainers:
   - name: Brian Clark
-    email: brian@noreply.com
+    email: brian@clark.zone
     url: https://github.com/bdclark
 annotations:
   artifacthub.io/license: MIT
@@ -27,13 +28,6 @@ annotations:
       url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
     - name: Eclipse Mosquitto
       url: https://mosquitto.org/
-  artifacthub.io/changes: |
-    - kind: added
-      description: Added checksum annotation to trigger pod restarts on ConfigMap changes
-    - kind: fixed
-      description: Fixed password generation script to remove incorrect dollar sign escaping
   artifacthub.io/images: |
     - name: mosquitto
       image: eclipse-mosquitto:2.0.22
-  artifacthub.io/operator: "false"
-  artifacthub.io/prerelease: "false"

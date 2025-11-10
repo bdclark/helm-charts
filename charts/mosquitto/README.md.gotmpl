@@ -1,0 +1,83 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+### From repo
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install mosquitto bdclark/mosquitto
+```
+
+### From source
+
+```bash
+helm install mosquitto ./charts/mosquitto
+```
+
+### Uninstall
+
+```bash
+helm uninstall mosquitto
+```
+
+## Features
+
+- Plain MQTT, TLS MQTT, and WebSocket MQTT endpoints
+- Optional host networking or host ports for bare-metal clusters
+- Configurable authentication (inline users or secrets) and ACLs (see [AUTH.md](AUTH.md))
+- Optional persistence for DB and offline messages
+- Helm tests + unit tests (helm-unittest) for confidence
+
+## Common overrides
+
+### Enable persistence + TLS port
+
+```yaml
+persistence:
+  enabled: true
+  size: 5Gi
+
+service:
+  type: LoadBalancer
+  ports:
+    mqttTls:
+      enabled: true
+      tls:
+        secretName: mosquitto-tls
+```
+
+### External secret for users
+
+```yaml
+auth:
+  secretRef:
+    name: mosquitto-auth
+    key: passwd
+config:
+  allowAnonymous: false
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## Contributing
+
+- Bump `version`/`appVersion` in `Chart.yaml` for any change.
+- Keep helm-unittest specs (`charts/mosquitto/tests/`) and integration tests (`tests/integration/pytest_suite/charts/test_mosquitto.py`) up to date.
+- Run `task verify-chart CHART=mosquitto` + targeted `task pytest` before opening a PR.
+
+## License
+
+MIT — see [LICENSE](../../LICENSE).

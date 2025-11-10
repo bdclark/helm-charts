@@ -1,177 +1,50 @@
 # Mosquitto Helm Chart
 
-Eclipse Mosquitto MQTT broker for Kubernetes with comprehensive authentication, TLS support, and persistence.
+[![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.0.22](https://img.shields.io/badge/AppVersion-2.0.22-informational?style=flat-square)](Chart.yaml)
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)
-![AppVersion: 2.0.18](https://img.shields.io/badge/AppVersion-2.0.18-informational?style=flat-square)
+Eclipse Mosquitto MQTT broker with authentication and persistence support
 
-## TL;DR
+## Installing
 
-```bash
-# Basic installation
-helm install mosquitto ./mosquitto
-
-# With authentication
-helm install mosquitto ./mosquitto \
-  --set auth.users[0].username=admin \
-  --set auth.users[0].password=secretpassword
-
-# Production setup with persistence and TLS
-helm install mosquitto ./mosquitto \
-  --set persistence.enabled=true \
-  --set service.ports.mqttTls.enabled=true \
-  --set service.ports.mqttTls.tls.secretName=mosquitto-tls
-```
-
-## Introduction
-
-This chart deploys Eclipse Mosquitto MQTT broker on Kubernetes with:
-
-- **Authentication & Authorization** - User management with ACLs
-- **TLS Support** - Secure MQTT connections
-- **Persistence** - Optional message and data persistence
-- **WebSocket Support** - MQTT over WebSockets for web clients
-- **Monitoring Ready** - Prometheus metrics (coming soon)
-
-## Prerequisites
-
-- Kubernetes 1.19+
-- Helm 3.2.0+
-- PV provisioner support (for persistence)
-
-## Installing the Chart
+### From repo
 
 ```bash
-# Install with release name "mosquitto"
-helm install mosquitto ./mosquitto
-
-# Install in a specific namespace
-helm install mosquitto ./mosquitto --namespace mqtt --create-namespace
-
-# Install with custom values
-helm install mosquitto ./mosquitto -f my-values.yaml
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install mosquitto bdclark/mosquitto
 ```
 
-## Uninstalling the Chart
+### From source
+
+```bash
+helm install mosquitto ./charts/mosquitto
+```
+
+### Uninstall
 
 ```bash
 helm uninstall mosquitto
 ```
 
-## Configuration
+## Features
 
-### Basic Configuration
+- Plain MQTT, TLS MQTT, and WebSocket MQTT endpoints
+- Optional host networking or host ports for bare-metal clusters
+- Configurable authentication (inline users or secrets) and ACLs (see [AUTH.md](AUTH.md))
+- Optional persistence for DB and offline messages
 
-| Parameter             | Description                | Default                |
-|-----------------------|----------------------------|------------------------|
-| `image.repository`    | Container image repository | `eclipse-mosquitto`    |
-| `image.tag`           | Container image tag        | `""` (uses appVersion) |
-| `image.pullPolicy`    | Image pull policy          | `IfNotPresent`         |
+## Common overrides
 
-### Service Configuration
-
-| Parameter                         | Description                  | Default     |
-|-----------------------------------|------------------------------|-------------|
-| `service.type`                    | Service type                 | `ClusterIP` |
-| `service.ports.mqtt.enabled`      | Enable MQTT port (1883)      | `true`      |
-| `service.ports.mqttTls.enabled`   | Enable MQTT TLS port (8883)  | `false`     |
-| `service.ports.websocket.enabled` | Enable WebSocket port (9001) | `false`     |
-
-
-### Authentication Configuration
-
-| Parameter                | Description                                  | Default  |
-|--------------------------|----------------------------------------------|----------|
-| `config.allowAnonymous`  | Allow anonymous connections                  | `true`   |
-| `auth.users`             | List of users with passwords (stored in CM)  | `[]`     |
-| `auth.secretRef.name`    | Reference to existing secret with passwd     | `""`     |
-| `auth.secretRef.key`     | Key in secret containing passwd file         | `passwd` |
-| `auth.acls`              | Access control lists (Mosquitto ACL format)  | `""`     |
-
-### Persistence Configuration
-
-| Parameter                    | Description              | Default |
-|------------------------------|--------------------------|---------|
-| `persistence.enabled`        | Enable persistence       | `false` |
-| `persistence.size`           | PVC size                 | `1Gi`   |
-| `persistence.storageClass`   | Storage class            | `""`    |
-| `persistence.existingClaim`  | Use existing PVC         | `""`    |
-
-## Examples
-
-### Basic Authenticated Broker
+### Enable persistence + TLS port
 
 ```yaml
-# values.yaml
-config:
-  allowAnonymous: false
-
-auth:
-  users:
-    - username: admin
-      password: admin123
-  acls: |
-    user admin
-    topic readwrite #
+persistence:
+  enabled: true
+  size: 5Gi
 
 service:
   type: LoadBalancer
-```
-
-### Production Setup with Persistence
-
-```yaml
-# values.yaml
-persistence:
-  enabled: true
-  size: 10Gi
-
-resources:
-  limits:
-    cpu: 500m
-    memory: 512Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
-```
-
-### Using External Secrets (SOPS/Sealed Secrets)
-
-For production environments using FluxCD with SOPS or Sealed Secrets:
-
-```yaml
-# Create a secret with encrypted password file
-apiVersion: v1
-kind: Secret
-metadata:
-  name: mosquitto-auth
-type: Opaque
-stringData:
-  passwd: |
-    user1:$7$101$...
-    user2:$7$101$...
-```
-
-```yaml
-# values.yaml
-auth:
-  secretRef:
-    name: mosquitto-auth
-    # key: passwd  # Optional, defaults to "passwd"
-```
-
-The `auth.secretRef` takes precedence over `auth.users`, allowing you to manage passwords outside of Helm values.
-
-## Authentication
-
-For detailed authentication setup, see [AUTH.md](./AUTH.md).
-
-## TLS Configuration
-
-Create a TLS secret and enable in values:
-
-```yaml
-service:
   ports:
     mqttTls:
       enabled: true
@@ -179,47 +52,97 @@ service:
         secretName: mosquitto-tls
 ```
 
-## Testing
+### External secret for users
 
-```bash
-# Test the installed chart
-helm test mosquitto
-
-# Run chart tests (development)
-task test-unit
+```yaml
+auth:
+  secretRef:
+    name: mosquitto-auth
+    key: passwd
+config:
+  allowAnonymous: false
 ```
 
-## Troubleshooting
+## Configuration
 
-```bash
-# Check logs
-kubectl logs -l app.kubernetes.io/name=mosquitto
-
-# View generated config
-kubectl get configmap mosquitto-config -o yaml
-
-# Test connectivity
-kubectl run mqtt-test --image=eclipse-mosquitto:latest --rm -it -- mosquitto_pub -h mosquitto -t test -m hello
-```
-
-## Values Reference
-
-For complete values documentation, see the inline comments in [values.yaml](./values.yaml).
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| image.repository | string | `"eclipse-mosquitto"` | Image repository |
+| image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion |
+| image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
+| imagePullSecrets | list | `[]` | Image pull secrets for private registries |
+| nameOverride | string | `""` | Override the chart name |
+| fullnameOverride | string | `""` | Override the full release name |
+| podAnnotations | object | `{}` | Pod annotations applied to the broker pod |
+| podLabels | object | `{}` | Extra labels applied to the broker pod |
+| podSecurityContext | object | `{}` | Pod-level security context |
+| securityContext | object | `{}` | Container-level security context |
+| resources | object | `{}` | Resource requests and limits |
+| service.type | string | `"ClusterIP"` | Service type (ClusterIP/LoadBalancer/NodePort) |
+| service.annotations | object | `{}` | Service annotations for load balancer configuration |
+| service.loadBalancerIP | string | `""` | Static IP for LoadBalancer services |
+| service.loadBalancerSourceRanges | list | `[]` | Allowed source ranges for LoadBalancer |
+| service.externalTrafficPolicy | string | `"Cluster"` | Preserve client IP for LoadBalancer/NodePort |
+| service.sessionAffinity | string | `"None"` | Session affinity mode |
+| service.ports.mqtt.enabled | bool | `true` | Enable plain MQTT port |
+| service.ports.mqtt.port | int | `1883` | MQTT port number |
+| service.ports.mqtt.targetPort | int | `1883` | Target port in the pod |
+| service.ports.mqtt.protocol | string | `"TCP"` | Protocol used by the service |
+| service.ports.mqtt.nodePort | string | `""` | NodePort for NodePort service type (leave empty for auto-assignment) |
+| service.ports.mqttTls.enabled | bool | `false` | Enable MQTT over TLS port |
+| service.ports.mqttTls.port | int | `8883` | MQTT over TLS port number |
+| service.ports.mqttTls.targetPort | int | `8883` | Target port in the pod |
+| service.ports.mqttTls.protocol | string | `"TCP"` | Protocol used by the service |
+| service.ports.mqttTls.nodePort | string | `""` | NodePort for NodePort service type (leave empty for auto-assignment) |
+| service.ports.mqttTls.tls.secretName | string | `""` | Secret containing TLS certificates |
+| service.ports.mqttTls.tls.caFile | string | `"ca.crt"` | CA certificate key in the secret |
+| service.ports.mqttTls.tls.certFile | string | `"tls.crt"` | Server certificate key in the secret |
+| service.ports.mqttTls.tls.keyFile | string | `"tls.key"` | Server private key key in the secret |
+| service.ports.websocket.enabled | bool | `false` | Enable MQTT over WebSocket port |
+| service.ports.websocket.port | int | `9001` | MQTT over WebSocket port number |
+| service.ports.websocket.targetPort | int | `9001` | Target port in the pod |
+| service.ports.websocket.protocol | string | `"TCP"` | Protocol used by the service |
+| service.ports.websocket.nodePort | string | `""` | NodePort for NodePort service type (leave empty for auto-assignment) |
+| hostNetwork.enabled | bool | `false` | Enable host networking (pod uses node network namespace) |
+| hostNetwork.dnsPolicy | string | `"ClusterFirstWithHostNet"` | DNS policy when using host networking |
+| hostPorts.enabled | bool | `false` | Enable hostPort configuration |
+| hostPorts.mqtt.port | string | `""` | Host port for plain MQTT (leave empty to disable) |
+| hostPorts.mqtt.hostIP | string | `""` | Specific host IP to bind (empty = all interfaces) |
+| hostPorts.mqttTls.port | string | `""` | Host port for TLS MQTT |
+| hostPorts.mqttTls.hostIP | string | `""` | Specific host IP to bind (empty = all interfaces) |
+| hostPorts.websocket.port | string | `""` | Host port for WebSocket MQTT |
+| hostPorts.websocket.hostIP | string | `""` | Specific host IP to bind (empty = all interfaces) |
+| ingress.enabled | bool | `false` | Enable ingress for WebSocket port |
+| ingress.className | string | `""` | Ingress class name |
+| ingress.annotations | object | `{}` | Additional ingress annotations |
+| ingress.hosts | list | `[{"host":"mosquitto.local","paths":[{"path":"/mqtt","pathType":"Prefix","service":{"name":"websocket"}}]}]` | Ingress rules configuration |
+| ingress.tls | list | `[]` | TLS configuration for ingress |
+| livenessProbe | object | `{"initialDelaySeconds":30,"periodSeconds":10,"tcpSocket":{"port":"mqtt"}}` | Liveness probe |
+| readinessProbe | object | `{"initialDelaySeconds":5,"periodSeconds":5,"tcpSocket":{"port":"mqtt"}}` | Readiness probe |
+| config.allowAnonymous | bool | `true` | Allow anonymous connections (auto-disabled when users are defined) |
+| config.logLevel | string | `"information"` | Broker log level |
+| config.maxConnections | int | `0` | Max concurrent client connections (0 = unlimited) |
+| config.extraConfig | string | `""` | Additional configuration appended verbatim |
+| auth.users | list | `[]` | Inline users/passwords stored in ConfigMap (development/testing) |
+| auth.secretRef.name | string | `""` | Name of secret containing passwd file (takes precedence over users) |
+| auth.secretRef.key | string | `"passwd"` | Key in the secret containing passwd file content |
+| auth.acls | string | `""` | ACL entries in Mosquitto ACL file format |
+| persistence.enabled | bool | `false` | Enable persistent volume for Mosquitto data |
+| persistence.storageClass | string | `""` | Storage class for PVC (set to "-" to disable dynamic provisioning) |
+| persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes for the PVC |
+| persistence.size | string | `"1Gi"` | Requested PVC size |
+| persistence.existingClaim | string | `""` | Use an existing PVC instead of creating a new one |
+| persistence.annotations | object | `{}` | Annotations for PVC |
+| nodeSelector | object | `{}` | Node selector for scheduling |
+| tolerations | list | `[]` | Pod tolerations |
+| affinity | object | `{}` | Pod affinity / anti-affinity rules |
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch
-3. Add tests for new functionality
-4. Run the test suite: `task test`
-5. Submit a pull request
+- Bump `version`/`appVersion` in `Chart.yaml` for any change.
+- Keep helm-unittest specs (`charts/mosquitto/tests/`) and integration tests (`tests/integration/pytest_suite/charts/test_mosquitto.py`) up to date.
+- Run `task verify-chart CHART=mosquitto` + targeted `task pytest` before opening a PR.
 
 ## License
 
-This chart is licensed under the MIT License.
-
-## Links
-
-- **Mosquitto Project**: <https://mosquitto.org/>
-- **Docker Hub**: <https://hub.docker.com/_/eclipse-mosquitto>
-- **GitHub**: <https://github.com/eclipse/mosquitto>
+MIT — see [LICENSE](../../LICENSE).

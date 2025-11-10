@@ -2,26 +2,33 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# Container image configuration
 image:
+  # -- Image repository
   repository: eclipse-mosquitto
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion
+  # -- Overrides the image tag whose default is the chart appVersion
   tag: ""
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
 
-# Secrets for pulling images from private repositories
+# -- Image pull secrets for private registries
 imagePullSecrets: []
 
-# Override the chart name
+# -- Override the chart name
 nameOverride: ""
+# -- Override the full release name
 fullnameOverride: ""
 
-# Pod annotations and labels
+# -- Pod annotations applied to the broker pod
 podAnnotations: {}
+# -- Extra labels applied to the broker pod
 podLabels: {}
 
+# -- Pod-level security context
 podSecurityContext: {}
   # fsGroup: 2000
 
+# -- Container-level security context
 securityContext: {}
   # capabilities:
   #   drop:
@@ -30,104 +37,7 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
-  # Service annotations for load balancer configuration
-  annotations: {}
-    # MetalLB examples:
-    # metallb.universe.tf/loadBalancerIPs: "192.168.1.100"
-    # metallb.universe.tf/address-pool: "production-public-ips"
-    # Traefik examples:
-    # traefik.ingress.kubernetes.io/service.loadbalancer.method: "drr"
-    # Cloud provider examples:
-    # service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    # service.beta.kubernetes.io/azure-load-balancer-resource-group: "myResourceGroup"
-  # LoadBalancer configuration (for MetalLB, cloud providers, etc.)
-  loadBalancerIP: ""
-  loadBalancerSourceRanges: []
-  # External traffic policy for LoadBalancer and NodePort
-  externalTrafficPolicy: Cluster
-  # Session affinity for service
-  sessionAffinity: None
-  # MQTT broker ports
-  ports:
-    mqtt:
-      enabled: true
-      port: 1883
-      targetPort: 1883
-      protocol: TCP
-      # NodePort for NodePort service type (leave empty for auto-assignment)
-      nodePort: ""
-    mqttTls:
-      enabled: false
-      port: 8883
-      targetPort: 8883
-      protocol: TCP
-      # NodePort for NodePort service type (leave empty for auto-assignment)
-      nodePort: ""
-      # TLS configuration (only used if enabled)
-      tls:
-        # Secret containing TLS certificates
-        secretName: ""
-        # Keys in the secret (customize if your secret uses different key names)
-        caFile: "ca.crt"      # CA certificate
-        certFile: "tls.crt"   # Server certificate
-        keyFile: "tls.key"    # Server private key
-    websocket:
-      enabled: false
-      port: 9001
-      targetPort: 9001
-      protocol: TCP
-      # NodePort for NodePort service type (leave empty for auto-assignment)
-      nodePort: ""
-
-# Host networking configuration
-hostNetwork:
-  # Enable host networking (pod uses host's network namespace)
-  enabled: false
-  # DNS policy when using host networking
-  dnsPolicy: ClusterFirstWithHostNet
-
-# Host port configuration (alternative to hostNetwork)
-hostPorts:
-  # Enable binding to host ports
-  enabled: false
-  # Host ports configuration
-  mqtt:
-    # Host port for MQTT (leave empty to disable)
-    port: ""
-    # Host IP to bind to (empty = all interfaces)
-    hostIP: ""
-  mqttTls:
-    # Host port for MQTT TLS (leave empty to disable)
-    port: ""
-    # Host IP to bind to (empty = all interfaces)
-    hostIP: ""
-  websocket:
-    # Host port for WebSocket (leave empty to disable)
-    port: ""
-    # Host IP to bind to (empty = all interfaces)
-    hostIP: ""
-
-ingress:
-  # Only needed for WebSocket connections (HTTP-based MQTT)
-  # Traditional MQTT (TCP) should use LoadBalancer or NodePort service type
-  enabled: false
-  className: ""
-  annotations: {}
-  hosts:
-    - host: mosquitto.local
-      paths:
-        - path: /mqtt
-          pathType: Prefix
-          service:
-            name: websocket  # Only websocket port is HTTP-compatible
-  tls: []
-  #  - secretName: mosquitto-tls
-  #    hosts:
-  #      - mosquitto.local
-
-# Resource limits and requests
+# -- Resource requests and limits
 resources: {}
   # limits:
   #   cpu: 100m
@@ -136,88 +46,178 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# Health checks
+# Service configuration
+service:
+  # -- Service type (ClusterIP/LoadBalancer/NodePort)
+  type: ClusterIP
+  # -- Service annotations for load balancer configuration
+  annotations: {}
+  # -- Static IP for LoadBalancer services
+  loadBalancerIP: ""
+  # -- Allowed source ranges for LoadBalancer
+  loadBalancerSourceRanges: []
+  # -- Preserve client IP for LoadBalancer/NodePort
+  externalTrafficPolicy: Cluster
+  # -- Session affinity mode
+  sessionAffinity: None
+
+  # MQTT/WebSocket port configuration
+  ports:
+    # Plain MQTT port
+    mqtt:
+      # -- Enable plain MQTT port
+      enabled: true
+      # -- MQTT port number
+      port: 1883
+      # -- Target port in the pod
+      targetPort: 1883
+      # -- Protocol used by the service
+      protocol: TCP
+      # -- NodePort for NodePort service type (leave empty for auto-assignment)
+      nodePort: ""
+    # MQTT over TLS port
+    mqttTls:
+      # -- Enable MQTT over TLS port
+      enabled: false
+      # -- MQTT over TLS port number
+      port: 8883
+      # -- Target port in the pod
+      targetPort: 8883
+      # -- Protocol used by the service
+      protocol: TCP
+      # -- NodePort for NodePort service type (leave empty for auto-assignment)
+      nodePort: ""
+      tls:
+        # -- Secret containing TLS certificates
+        secretName: ""
+        # -- CA certificate key in the secret
+        caFile: "ca.crt"
+        # -- Server certificate key in the secret
+        certFile: "tls.crt"
+        # -- Server private key key in the secret
+        keyFile: "tls.key"
+    # MQTT over WebSocket port
+    websocket:
+      # -- Enable MQTT over WebSocket port
+      enabled: false
+      # -- MQTT over WebSocket port number
+      port: 9001
+      # -- Target port in the pod
+      targetPort: 9001
+      # -- Protocol used by the service
+      protocol: TCP
+      # -- NodePort for NodePort service type (leave empty for auto-assignment)
+      nodePort: ""
+
+# Host networking configuration
+hostNetwork:
+  # -- Enable host networking (pod uses node network namespace)
+  enabled: false
+  # -- DNS policy when using host networking
+  dnsPolicy: ClusterFirstWithHostNet
+
+# Host port configuration (alternative to hostNetwork)
+hostPorts:
+  # -- Enable hostPort configuration
+  enabled: false
+  mqtt:
+    # -- Host port for plain MQTT (leave empty to disable)
+    port: ""
+    # -- Specific host IP to bind (empty = all interfaces)
+    hostIP: ""
+  mqttTls:
+    # -- Host port for TLS MQTT
+    port: ""
+    # -- Specific host IP to bind (empty = all interfaces)
+    hostIP: ""
+  websocket:
+    # -- Host port for WebSocket MQTT
+    port: ""
+    # -- Specific host IP to bind (empty = all interfaces)
+    hostIP: ""
+
+# Only needed for WebSocket connections (HTTP-based MQTT)
+ingress:
+  # -- Enable ingress for WebSocket port
+  enabled: false
+  # -- Ingress class name
+  className: ""
+  # -- Additional ingress annotations
+  annotations: {}
+  # -- Ingress rules configuration
+  hosts:
+    - host: mosquitto.local
+      paths:
+        - path: /mqtt
+          pathType: Prefix
+          service:
+            name: websocket  # Only websocket port is HTTP-compatible
+  # -- TLS configuration for ingress
+  tls: []
+
+# -- Liveness probe
 livenessProbe:
   tcpSocket:
     port: mqtt
   initialDelaySeconds: 30
   periodSeconds: 10
+
+# -- Readiness probe
 readinessProbe:
   tcpSocket:
     port: mqtt
   initialDelaySeconds: 5
   periodSeconds: 5
 
-
-# Mosquitto configuration
+# Mosquitto broker configuration
 config:
-  # Allow anonymous connections (automatically disabled if users are defined)
+  # -- Allow anonymous connections (auto-disabled when users are defined)
   allowAnonymous: true
-  # Log level: error, warning, notice, information, subscribe, unsubscribe, websockets, none, all
+  # -- Broker log level
   logLevel: information
-  # Maximum concurrent client connections (0 = unlimited)
+  # -- Max concurrent client connections (0 = unlimited)
   maxConnections: 0
-  # Additional custom configuration
+  # -- Additional configuration appended verbatim
   extraConfig: ""
 
-# Authentication configuration
+# Authentication settings
 auth:
-  # Users for password-based authentication (stored in ConfigMap)
-  # Note: Ignored if auth.secretRef.name is set
+  # -- Inline users/passwords stored in ConfigMap (development/testing)
   users: []
     # - username: admin
-    #   password: admin123        # Plaintext password (development)
+    #   password: admin123
     # - username: user1
-    #   passwordHash: "$6$..."    # Pre-hashed password (production)
-
-  # Reference to existing secret containing password file
-  # If set, this takes precedence over auth.users
+    #   passwordHash: "$6$..."
+  # Secret reference for users/passwords (preferred for production)
   secretRef:
-    # Name of the secret containing the password file
+    # -- Name of secret containing passwd file (takes precedence over users)
     name: ""
-    # Key in the secret containing the password file content
-    # Defaults to "passwd" if not specified
+    # -- Key in the secret containing passwd file content
     key: "passwd"
-
-  # Access Control Lists (ACL file format)
-  # Multi-line string in Mosquitto ACL file format
-  # Topics before first "user" line apply to anonymous clients (if allow_anonymous true)
-  # Use "pattern" keyword for rules that apply to all authenticated users
-  # See https://mosquitto.org/man/mosquitto-conf-5.html for full ACL syntax
+  # -- ACL entries in Mosquitto ACL file format
   acls: ""
-    # acls: |
-    #   # Anonymous user topics (only if allow_anonymous true)
-    #   topic read public/#
-    #   topic read status/#
-    #
-    #   # Pattern rules apply to all authenticated users
-    #   pattern readwrite devices/%u/#
-    #
-    #   # User-specific topics
-    #   user admin
-    #   topic readwrite #
-    #
-    #   user sensor1
-    #   topic write sensors/sensor1/data
-    #   topic read sensors/sensor1/commands
 
+# Persistent storage configuration
 persistence:
+  # -- Enable persistent volume for Mosquitto data
   enabled: false
-  # Storage class for PVC
-  # Set to "-" to disable dynamic provisioning and use default storage class
-  # Set to "" to use cluster default storage class
+  # -- Storage class for PVC (set to "-" to disable dynamic provisioning)
   storageClass: ""
+  # -- Access modes for the PVC
   accessModes:
     - ReadWriteOnce
+  # -- Requested PVC size
   size: 1Gi
-  # Use an existing PVC instead of creating a new one
-  # If defined, PVC must be created manually before volume will be bound
-  # existingClaim:
-  # Annotations for PVC
+  # -- Use an existing PVC instead of creating a new one
+  existingClaim: ""
+  # -- Annotations for PVC
   annotations: {}
 
+# -- Node selector for scheduling
 nodeSelector: {}
 
+# -- Pod tolerations
 tolerations: []
 
+# -- Pod affinity / anti-affinity rules
 affinity: {}
