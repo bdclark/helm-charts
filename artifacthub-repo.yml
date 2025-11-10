@@ -1,0 +1,7 @@
+# Artifact Hub repository metadata file
+# Schema: https://github.com/artifacthub/hub/blob/master/docs/metadata/artifacthub-repo.yml
+
+repositoryID: 1037c906-f444-4f4e-8fff-d448fe44a4c6
+owners:
+  - name: Brian Clark
+    email: brian@clark.zone
