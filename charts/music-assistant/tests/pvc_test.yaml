@@ -104,7 +104,7 @@ tests:
           path: metadata.labels
           content:
             helm.sh/chart: music-assistant-0.2.0
-            app.kubernetes.io/version: "2.6.0"
+            app.kubernetes.io/version: "2.6.2"
             app.kubernetes.io/managed-by: Helm
 
   - it: should not have selector (not implemented)
