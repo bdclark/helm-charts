@@ -1,6 +1,6 @@
 # Mosquitto Helm Chart
 
-[![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.5.2](https://img.shields.io/badge/Version-0.5.2-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.0.22](https://img.shields.io/badge/AppVersion-2.0.22-informational?style=flat-square)](Chart.yaml)
 
 Eclipse Mosquitto MQTT broker with authentication and persistence support
@@ -33,6 +33,7 @@ helm uninstall mosquitto
 - Optional host networking or host ports for bare-metal clusters
 - Configurable authentication (inline users or secrets) and ACLs (see [AUTH.md](AUTH.md))
 - Optional persistence for DB and offline messages
+- Helm tests + unit tests (helm-unittest) for confidence
 
 ## Common overrides
 
