@@ -63,7 +63,7 @@ jobs:
 
       - name: Upload changed chart list
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: changed-charts
           path: changed-charts.txt
