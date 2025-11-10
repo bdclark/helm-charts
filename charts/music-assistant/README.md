@@ -83,9 +83,9 @@ additionalMounts:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| image.repository | string | `"ghcr.io/music-assistant/server"` | Container image repository |
+| image.repository | string | `"ghcr.io/music-assistant/server"` | Image repository |
+| image.tag | string | `"2.6.2"` | Image tag |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| image.tag | string | `""` | Overrides the image tag (defaults to chart appVersion) |
 | imagePullSecrets | list | `[]` | Secrets for pulling images from private repositories |
 | nameOverride | string | `""` | Override the chart name |
 | fullnameOverride | string | `""` | Override the full release name |

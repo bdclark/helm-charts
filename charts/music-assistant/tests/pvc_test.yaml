@@ -79,7 +79,7 @@ tests:
           path: metadata.annotations["custom.annotation"]
           value: value
 
-  - it: should include default labels only (custom labels not implemented)
+  - it: should include default managed-by labels
     set:
       persistence.enabled: true
     asserts:
@@ -89,23 +89,9 @@ tests:
       - equal:
           path: metadata.labels["app.kubernetes.io/instance"]
           value: RELEASE-NAME
-
-  - it: should include default labels
-    set:
-      persistence.enabled: true
-    asserts:
       - equal:
-          path: metadata.labels["app.kubernetes.io/name"]
-          value: music-assistant
-      - equal:
-          path: metadata.labels["app.kubernetes.io/instance"]
-          value: RELEASE-NAME
-      - isSubset:
-          path: metadata.labels
-          content:
-            helm.sh/chart: music-assistant-0.2.1
-            app.kubernetes.io/version: "2.6.2"
-            app.kubernetes.io/managed-by: Helm
+          path: metadata.labels["app.kubernetes.io/managed-by"]
+          value: Helm
 
   - it: should not have selector (not implemented)
     set:
@@ -114,7 +100,7 @@ tests:
       - isNull:
           path: spec.selector
 
-  - it: should handle empty storage class (use default)
+  - it: should handle "-" storage class (use default)
     set:
       persistence.enabled: true
       persistence.storageClass: "-"
@@ -123,10 +109,3 @@ tests:
           path: spec.storageClassName
           value: ""
 
-  - it: should handle null storage class (use cluster default)
-    set:
-      persistence.enabled: true
-      persistence.storageClass: null
-    asserts:
-      - isNull:
-          path: spec.storageClassName

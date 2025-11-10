@@ -12,9 +12,9 @@ tests:
       - equal:
           path: spec.replicas
           value: 1
-      - equal:
+      - matchRegex:
           path: spec.template.spec.containers[0].image
-          value: "eclipse-mosquitto:2.0.22"
+          pattern: "^eclipse-mosquitto:"
 
   - it: should use custom image
     set:

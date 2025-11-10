@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "assert": {
+      "oneOf": [
+        {"required": ["isKind"]},
+        {"required": ["equal"]},
+        {"required": ["notEqual"]},
+        {"required": ["contains"]},
+        {"required": ["notContains"]},
+        {"required": ["matchRegex"]},
+        {"required": ["notMatchRegex"]},
+        {"required": ["hasDocuments"]},
+        {"required": ["isNull"]}
+      ]
+    }
+  }
+}

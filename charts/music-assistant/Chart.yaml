@@ -31,4 +31,4 @@ annotations:
       url: https://github.com/music-assistant/server
   artifacthub.io/images: |
     - name: music-assistant
-      image: ghcr.io/music-assistant/server:2.6.0
+      image: ghcr.io/music-assistant/server

@@ -4,12 +4,12 @@
 
 # Container image configuration
 image:
-  # -- Container image repository
+  # -- Image repository
   repository: ghcr.io/music-assistant/server
+  # -- Image tag
+  tag: "2.6.2"
   # -- Image pull policy
   pullPolicy: IfNotPresent
-  # -- Overrides the image tag (defaults to chart appVersion)
-  tag: ""
 
 # -- Secrets for pulling images from private repositories
 imagePullSecrets: []

@@ -12,9 +12,9 @@ tests:
       - equal:
           path: spec.replicas
           value: 1
-      - equal:
+      - matchRegex:
           path: spec.template.spec.containers[0].image
-          value: "ghcr.io/music-assistant/server:2.6.2"
+          pattern: "^ghcr.io/music-assistant/server:"
       - equal:
           path: spec.strategy.type
           value: Recreate

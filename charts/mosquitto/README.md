@@ -69,7 +69,7 @@ config:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | image.repository | string | `"eclipse-mosquitto"` | Image repository |
-| image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion |
+| image.tag | string | `"2.0.22"` | Image tag |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
 | nameOverride | string | `""` | Override the chart name |

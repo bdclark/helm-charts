@@ -6,8 +6,8 @@
 image:
   # -- Image repository
   repository: eclipse-mosquitto
-  # -- Overrides the image tag whose default is the chart appVersion
-  tag: ""
+  # -- Image tag
+  tag: "2.0.22"
   # -- Image pull policy
   pullPolicy: IfNotPresent
 

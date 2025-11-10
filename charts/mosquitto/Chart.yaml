@@ -30,4 +30,4 @@ annotations:
       url: https://mosquitto.org/
   artifacthub.io/images: |
     - name: mosquitto
-      image: eclipse-mosquitto:2.0.22
+      image: eclipse-mosquitto
