@@ -157,7 +157,7 @@ jobs:
             helm push "$pkg" "oci://$OCI_REPOSITORY"
           done
 
-      - name: Update gh-pages landing page
+      - name: Update gh-pages landing page and metadata
         if: steps.detect.outputs.release == 'true'
         run: |
           set -euo pipefail
@@ -165,12 +165,15 @@ jobs:
           worktree_dir=$(mktemp -d)
           git worktree add "$worktree_dir" gh-pages
           cp index.html "$worktree_dir/index.html"
+          if [ -f artifacthub-repo.yml ]; then
+            cp artifacthub-repo.yml "$worktree_dir/artifacthub-repo.yml"
+          fi
           pushd "$worktree_dir" >/dev/null
-          if git diff --quiet -- index.html; then
-            echo "No changes to index.html"
+          git add index.html artifacthub-repo.yml
+          if git diff --staged --quiet; then
+            echo "No changes to landing page or metadata"
           else
-            git add index.html
-            git commit -m "Update landing page"
+            git commit -m "Update landing page and metadata"
             git push origin gh-pages
           fi
           popd >/dev/null
