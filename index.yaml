@@ -2,6 +2,44 @@ apiVersion: v1
 entries:
   mosquitto:
   - annotations:
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto:2.0.22
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+    apiVersion: v2
+    appVersion: 2.0.22
+    created: "2025-11-10T03:22:35.152083271Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: bddb4570c07d6714b084ffce339bea9229bc262e658bdd23e97466c9827a992f
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.5.2/mosquitto-0.5.2.tgz
+    version: 0.5.2
+  - annotations:
       artifacthub.io/changes: |
         - kind: added
           description: Added checksum annotation to trigger pod restarts on ConfigMap changes
@@ -219,6 +257,45 @@ entries:
     version: 0.2.0
   music-assistant:
   - annotations:
+      artifacthub.io/images: |
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server:2.6.0
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+        - name: Music Assistant
+          url: https://music-assistant.io/
+        - name: GitHub Repository
+          url: https://github.com/music-assistant/server
+    apiVersion: v2
+    appVersion: 2.6.2
+    created: "2025-11-10T03:22:35.262381117Z"
+    description: Music Assistant - Universal media library manager for streaming services
+      and connected audio devices
+    digest: 5f94792680eb82a2573435783ad2ff9d0c1ca89a80f243e429ef12c5676d6422
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon.png
+    keywords:
+    - music
+    - audio
+    - streaming
+    - media
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: music-assistant
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - https://github.com/music-assistant/server
+    - https://music-assistant.io/
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.2.1/music-assistant-0.2.1.tgz
+    version: 0.2.1
+  - annotations:
       artifacthub.io/changes: |
         - kind: changed
           description: Updated Music Assistant version from 2.5.8 to 2.6.0
@@ -310,4 +387,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-08T11:41:58.289437379Z"
+generated: "2025-11-10T03:22:35.262415531Z"
