@@ -7,7 +7,7 @@ image:
   # -- Image repository
   repository: ghcr.io/music-assistant/server
   # -- Image tag
-  tag: "2.6.2"
+  tag: "2.7.5"
   # -- Image pull policy
   pullPolicy: IfNotPresent
 
