@@ -68,16 +68,28 @@ jobs:
             fi
           fi
 
+          # Filter charts to only those with integration tests
+          charts_with_tests=""
+          for chart in $changed_charts; do
+            test_file="tests/integration/pytest_suite/charts/test_${chart}.py"
+            if [ -f "$test_file" ]; then
+              charts_with_tests="${charts_with_tests}${chart}"$'\n'
+              echo "✓ Chart '$chart' has integration tests"
+            else
+              echo "⊘ Chart '$chart' has no integration tests (skipping)"
+            fi
+          done
+
           # Convert to JSON array and check if any changes
-          if [ -n "$changed_charts" ]; then
-            charts_json=$(echo "$changed_charts" | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          if [ -n "$charts_with_tests" ]; then
+            charts_json=$(echo "$charts_with_tests" | jq -R -s -c 'split("\n") | map(select(length > 0))')
             echo "charts=$charts_json" >> $GITHUB_OUTPUT
             echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Changed charts: $charts_json"
+            echo "Charts with integration tests: $charts_json"
           else
             echo "charts=[]" >> $GITHUB_OUTPUT
             echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No charts changed"
+            echo "No charts with integration tests found"
           fi
 
   # Run integration tests for each changed chart
@@ -144,27 +156,14 @@ jobs:
           pip install --upgrade pip
           pip install -r tests/integration/pytest_suite/requirements.txt
 
-      - name: Check if pytest suite exists
-        id: pytest-check
-        run: |
-          test_file="tests/integration/pytest_suite/charts/test_${{ matrix.chart }}.py"
-          if [ -f "$test_file" ]; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Pytest suite found for ${{ matrix.chart }}"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "No pytest suite found for ${{ matrix.chart }}"
-          fi
-
       - name: Run pytest integration suite
-        if: steps.pytest-check.outputs.exists == 'true'
         run: |
           . .venv/bin/activate
           pytest tests/integration/pytest_suite/charts/test_${{ matrix.chart }}.py
         timeout-minutes: 20
 
       - name: Debug on failure
-        if: failure() && steps.check-test.outputs.exists == 'true'
+        if: failure()
         run: |
           echo "=== DEBUGGING INTEGRATION TEST FAILURE ==="
           echo "Chart: ${{ matrix.chart }}"
