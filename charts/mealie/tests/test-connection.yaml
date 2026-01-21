@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "mealie.fullname" . }}-test-connection"
+  labels:
+    {{- include "mealie.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  restartPolicy: Never
+  containers:
+    - name: mealie-test
+      image: ghcr.io/mealie-recipes/mealie:{{ .Values.image.tag }}
+      command: 
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          echo "Testing Mealie connection to {{ include "mealie.fullname" . }}"
+
+          # Test web interface connectivity
+          echo "Testing web interface connectivity..."
+          nc -zv {{ include "mealie.fullname" . }} {{ .Values.service.port }}
+
+          # Wait for service to be ready
+          echo "Waiting for Mealie to be ready..."
+          timeout 60 sh -c 'until curl -f -s http://{{ include "mealie.fullname" . }}:{{ .Values.service.port }}/health || curl -f -s http://{{ include "mealie.fullname" . }}:{{ .Values.service.port }}/ ; do echo "Waiting for web interface..."; sleep 2; done'
+
+          # Test web interface response
+          echo "Testing web interface response..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://{{ include "mealie.fullname" . }}:{{ .Values.service.port }}/)
+          if [ "$response" = "200" ] || [ "$response" = "302" ] || [ "$response" = "301" ]; then
+            echo "Web interface is responding (HTTP $response)"
+          else
+            echo "Warning: Web interface returned HTTP $response (may still be starting up)"
+          fi
+
+          echo "All connectivity tests passed!"
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi

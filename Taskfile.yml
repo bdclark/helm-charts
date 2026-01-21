@@ -31,6 +31,12 @@ tasks:
           echo "Install kubeconform: https://github.com/yannh/kubeconform#installation"
           exit 1
         fi
+      - echo "Ensuring helm-docs..."
+      - |
+        if ! command -v helm-docs &> /dev/null; then
+          echo "Install helm-docs: https://github.com/norwoodj/helm-docs#installation"
+          exit 1
+        fi
 
   pyenv:
     desc: Create local Python virtual environment for pytest integration tests

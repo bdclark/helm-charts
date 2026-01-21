@@ -1,0 +1,331 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mealie Helm Chart Values",
+  "type": "object",
+  "properties": {
+    "replicaCount": {
+      "type": "integer",
+      "description": "Number of replicas for the mealie deployment"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "description": "Container image repository"
+        },
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"],
+          "description": "Image pull policy"
+        },
+        "tag": {
+          "type": "string",
+          "description": "Image tag (overrides appVersion from Chart.yaml)"
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Secrets for pulling images from private repositories"
+    },
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the chart name"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "Override the full name"
+    },
+    "podAnnotations": {
+      "type": "object",
+      "description": "Annotations to add to the pod"
+    },
+    "podLabels": {
+      "type": "object",
+      "description": "Labels to add to the pod"
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "description": "Security context for the pod"
+    },
+    "securityContext": {
+      "type": "object",
+      "description": "Security context for the container"
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
+          "description": "Kubernetes Service type"
+        },
+        "port": {
+          "type": "integer",
+          "description": "Port for the service"
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable ingress for web interface"
+        },
+        "className": {
+          "type": "string",
+          "description": "Ingress class name"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Ingress annotations"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "Ingress hosts configuration"
+        },
+        "tls": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "description": "TLS configuration"
+        }
+      }
+    },
+    "resources": {
+      "type": "object",
+      "description": "Resource limits and requests"
+    },
+    "livenessProbe": {
+      "type": "object",
+      "description": "Liveness probe configuration"
+    },
+    "readinessProbe": {
+      "type": "object",
+      "description": "Readiness probe configuration"
+    },
+    "startupProbe": {
+      "type": "object",
+      "description": "Startup probe configuration"
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable persistence for application data"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Storage class for PVC"
+        },
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Access modes for PVC"
+        },
+        "size": {
+          "type": "string",
+          "description": "Size of the PVC"
+        },
+        "existingClaim": {
+          "type": "string",
+          "description": "Use an existing PVC instead of creating a new one"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations for PVC"
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "properties": {
+        "engine": {
+          "type": "string",
+          "enum": ["sqlite", "postgres"],
+          "description": "Database engine to use"
+        },
+        "urlOverride": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Database connection URL override"
+            },
+            "existingSecret": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the existing secret"
+                },
+                "key": {
+                  "type": "string",
+                  "description": "Key in the secret for the URL override"
+                }
+              }
+            }
+          }
+        },
+        "server": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Database server hostname or IP"
+            },
+            "existingSecret": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the existing secret"
+                },
+                "key": {
+                  "type": "string",
+                  "description": "Key in the secret for the server value"
+                }
+              }
+            }
+          }
+        },
+        "port": {
+          "type": "integer",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Database port"
+            },
+            "existingSecret": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the existing secret"
+                },
+                "key": {
+                  "type": "string",
+                  "description": "Key in the secret for the port value"
+                }
+              }
+            }
+          }
+        },
+        "name": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Database name"
+            },
+            "existingSecret": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the existing secret"
+                },
+                "key": {
+                  "type": "string",
+                  "description": "Key in the secret for the database name"
+                }
+              }
+            }
+          }
+        },
+        "user": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Database user"
+            },
+            "existingSecret": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the existing secret"
+                },
+                "key": {
+                  "type": "string",
+                  "description": "Key in the secret for the user"
+                }
+              }
+            }
+          }
+        },
+        "password": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Database password"
+            },
+            "existingSecret": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the existing secret"
+                },
+                "key": {
+                  "type": "string",
+                  "description": "Key in the secret for the password"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "extraEnv": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Extra environment variables to add to the container"
+    },
+    "extraEnvFrom": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Extra environment variables from secrets or configmaps"
+    },
+    "volumeMounts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Additional volume mounts for the container"
+    },
+    "nodeSelector": {
+      "type": "object",
+      "description": "Node selector for pod assignment"
+    },
+    "tolerations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Tolerations for pod assignment"
+    },
+    "affinity": {
+      "type": "object",
+      "description": "Affinity rules for pod assignment"
+    }
+  }
+}

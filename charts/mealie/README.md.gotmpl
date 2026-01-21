@@ -1,0 +1,117 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+### From repo
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install mealie bdclark/mealie
+```
+
+### From source
+
+```bash
+helm install mealie ./charts/mealie
+```
+
+### Uninstall
+
+```bash
+helm uninstall mealie
+```
+
+## Database Configuration
+
+Mealie supports two database engine: SQLite (default) and PostgreSQL.
+
+### SQLite (default)
+
+**Requirements:**
+
+- `database.engine: sqlite`
+- `persistence.enabled: true` (SQLite needs persistent storage)
+- `replicaCount: 1` (SQLite does not support multiple replicas)
+
+This is the default configuration. No additional setup is required.
+
+### PostgreSQL
+
+**Requirements:**
+
+- A running PostgreSQL instance
+- `database.engine: postgres`
+- Configure database connection settings under `database.postgres`
+
+#### Option 1: Full connection URL
+
+Using a complete PostgreSQL connection string:
+
+```yaml
+database:
+  engine: postgres
+  postgres:
+    urlOverride:
+      value: "postgresql://mealie:password@postgres.example.com:5432/mealie"
+```
+
+Using a secret reference for the connection string:
+
+```yaml
+database:
+  engine: postgres
+  postgres:
+    urlOverride:
+      existingSecret:
+        name: "mealie-db-secret"
+        key: "connection-url"
+```
+
+#### Option 2: Individual connection parameters
+
+Specify each connection parameter separately (any combination of `value` and
+`existingSecret` can be used):
+
+```yaml
+database:
+  engine: postgres
+  postgres:
+    server:
+      value: "postgres.example.com"
+    port:
+      value: 5432
+    db:
+      value: "mealie"
+    user:
+      existingSecret:
+        name: "mealie-db-secret"
+        key: "username"
+    password:
+      existingSecret:
+        name: "mealie-db-secret"
+        key: "password"
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## Contributing
+
+- Bump `version`/`appVersion` in `Chart.yaml` for any change.
+- Keep unit tests (`charts/mealie/tests/`) up to date.
+- Run `task verify-chart CHART=mealie` before opening a PR.
+
+## License
+
+MIT — see [LICENSE](../../LICENSE).
