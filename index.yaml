@@ -1,5 +1,34 @@
 apiVersion: v1
 entries:
+  mealie:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+        - name: Mealie
+          url: https://mealie.io/
+    apiVersion: v2
+    appVersion: 3.9.2
+    created: "2026-01-21T20:54:11.090525992Z"
+    description: Mealie recipe manager and meal planner
+    digest: d8192f69a3334841bf4c44799a28094bb96877b8abb6585c1abd3f3faa9931bc
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    maintainers:
+    - email: brian@clark.zone
+      name: Brian Clark
+      url: https://github.com/bdclark
+    - email: ashleyclarkindy@gmail.com
+      name: Ashley Clark
+      url: https://github.com/ashleylclark
+    name: mealie
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    - https://github.com/mealie-recipes/mealie
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mealie-0.1.0/mealie-0.1.0.tgz
+    version: 0.1.0
   mosquitto:
   - annotations:
       artifacthub.io/images: |
@@ -426,4 +455,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-20T20:29:03.502580253Z"
+generated: "2026-01-21T20:54:11.090554656Z"
