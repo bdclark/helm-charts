@@ -1,0 +1,25 @@
+apiVersion: v2
+name: mealie
+description: Mealie recipe manager and meal planner
+type: application
+version: 0.1.0
+appVersion: 3.9.2
+home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+  - https://github.com/mealie-recipes/mealie
+# icon: https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/mealie.svg
+maintainers:
+  - name: Brian Clark
+    email: brian@clark.zone
+    url: https://github.com/bdclark
+  - name: Ashley Clark
+    email: ashleyclarkindy@gmail.com
+    url: https://github.com/ashleylclark
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    - name: Mealie
+      url: https://mealie.io/

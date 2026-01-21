@@ -1,0 +1,184 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should not let sqlite be used with multiple replicas
+    set:
+      replicaCount: 2
+      database.engine: sqlite
+    asserts:
+      - failedTemplate:
+          errorMessage: "SQLite cannot be used with multiple replicas. Please use Postgres or set replicaCount to 1."
+  
+  - it: should not let sqlite be used without persistence
+    set:
+      persistence.enabled: false
+      database.engine: sqlite
+    asserts:
+      - failedTemplate:
+          errorMessage: "SQLite requires persistence to be enabled. Please enable persistence or use Postgres as the database engine."
+
+  - it: should not let postgres be used with incomplete config
+    set:
+      database.engine: postgres
+      database.postgres.host.value: ""
+      database.postgres.port.value: 5432
+      database.postgres.user.value: ""
+      database.postgres.password.value: ""
+      database.postgres.db.value: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: "postgres requires server if not using urlOverride"
+
+  - it: should create deployment with default values
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-mealie
+      - equal:
+          path: spec.replicas
+          value: 1
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^ghcr.io/mealie-recipes/mealie:"
+
+  - it: should use custom image
+    set:
+      image.repository: my-mealie
+      image.tag: "custom"
+    asserts:
+      - equal: 
+          path: spec.template.spec.containers[0].image
+          value: "my-mealie:custom"
+
+  - it: should mount persistence volume when enabled
+    set:
+      persistence.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts 
+          content:
+            name: data
+            mountPath: /app/data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-mealie-data
+
+  - it: should not mount persistence volume when disabled
+    set:
+      persistence.enabled: false
+      database.engine: postgres
+      database.postgres.urlOverride.value: "postgres://user:password@host:5432/db"
+    asserts:
+      - isEmpty:
+          path: spec.template.spec.containers[0].volumeMounts
+      - isEmpty:
+          path: spec.template.spec.volumes
+
+  - it: should use existing claim when specified
+    set:
+      persistence.enabled: true
+      persistence.existingClaim: my-existing-pvc
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: my-existing-pvc
+
+  - it: should apply pod annotations
+    set:
+      podAnnotations:
+        annotation1: value1
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations.annotation1
+          value: value1
+
+  - it: should apply security context
+    set:
+      securityContext:
+        runAsUser: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000
+
+  - it: should apply resource limits
+    set:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: 100m
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 128Mi
+
+  - it: should include extra environment variables
+    set:
+      extraEnv:
+        - name: EXTRA_VAR
+          value: extra_value
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[?(@.name=="EXTRA_VAR")].value
+          value: extra_value
+
+  - it: should apply node selector
+    set:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+        storage: ssd
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector["kubernetes.io/arch"]
+          value: amd64
+      - equal:
+          path: spec.template.spec.nodeSelector.storage
+          value: ssd
+
+  - it: should apply tolerations
+    set:
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+
+  - it: should apply affinity
+    set:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key
+          value: kubernetes.io/arch
+      - equal:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator
+          value: In
+      - contains:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].values
+          content: amd64

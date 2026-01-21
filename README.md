@@ -12,6 +12,7 @@ Public Helm charts for my personal projects. Each chart has its own README under
 |--------------------------------------------|-------------------------------|
 | [mosquitto](charts/mosquitto/)             | Eclipse Mosquitto MQTT broker |
 | [music-assistant](charts/music-assistant/) | Music Assistant media server  |
+| [mealie](charts/mealie/)                   | Mealie recipe manager         |
 
 ## Local Workflow
 
@@ -22,6 +23,7 @@ Prerequisites:
 - `kubectl` (for Kind-based tests)
 - helm-unittest plugin
 - kubeconform
+- helm-docs
 
 Run `task tools` once to verify plugins/binaries.
 
