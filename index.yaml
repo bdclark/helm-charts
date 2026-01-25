@@ -33,6 +33,44 @@ entries:
   - annotations:
       artifacthub.io/images: |
         - name: mosquitto
+          image: eclipse-mosquitto
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+    apiVersion: v2
+    appVersion: 2.0.22
+    created: "2026-01-25T17:16:03.031333179Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: 7b149a069fef734485d75c0e050c8caeafc16d1ed3f088ec42639e162e512ae1
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.6.0/mosquitto-0.6.0.tgz
+    version: 0.6.0
+  - annotations:
+      artifacthub.io/images: |
+        - name: mosquitto
           image: eclipse-mosquitto:2.0.22
       artifacthub.io/license: MIT
       artifacthub.io/links: |
@@ -455,4 +493,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-21T20:54:11.090554656Z"
+generated: "2026-01-25T17:16:03.031367591Z"
