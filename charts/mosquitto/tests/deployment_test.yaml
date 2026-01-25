@@ -97,6 +97,31 @@ tests:
             persistentVolumeClaim:
               claimName: RELEASE-NAME-mosquitto-data
 
+  - it: should default to Recreate strategy when persistence is enabled
+    set:
+      persistence.enabled: true
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+
+  - it: should use explicit strategy when set
+    set:
+      persistence.enabled: true
+      strategy.type: RollingUpdate
+      strategy.rollingUpdate.maxSurge: 0
+      strategy.rollingUpdate.maxUnavailable: 1
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 0
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 1
+
   - it: should use existing claim when specified
     set:
       persistence.enabled: true
