@@ -46,6 +46,10 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+# -- Deployment update strategy. If not set, defaults to Recreate when persistence.enabled=true,
+# otherwise uses Kubernetes default (RollingUpdate).
+strategy: {}
+
 # Service configuration
 service:
   # -- Service type (ClusterIP/LoadBalancer/NodePort)

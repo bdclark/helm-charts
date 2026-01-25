@@ -73,7 +73,7 @@ tasks:
     cmds:
       - |
         helm template task-{{.CHART | default .DEFAULT_CHART}} {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} \
-          | kubeconform -strict -ignore-missing-schemas -summary
+          | kubeconform -strict -summary
 
   verify-chart:
     desc: "Run helm lint, helm-unittest, and kubeconform for a chart (usage: task verify-chart CHART=mosquitto)"
