@@ -38,7 +38,11 @@ helm uninstall music-assistant
 | `hostNetwork=true` *(default)* | Direct VLAN / UPnP / Chromecast discovery | Pod shares node network namespace. Disable `service.*` unless you still need a ClusterIP for probes. |
 | `hostNetwork=false` | Standard Kubernetes networking (ingress, services) | Enables `service.*` ports; device discovery depends on CNI support. |
 
-## Persistence
+## Persistence and update strategy
+
+Music Assistant runs as a single replica, with a single PVC when persistence is
+enabled. Persistence is recommended for production use to retain configuration,
+metadata, and cache data across pod restarts and upgrades.
 
 ```yaml
 persistence:
@@ -47,7 +51,22 @@ persistence:
   storageClass: fast-ssd
 ```
 
-Stores configuration, metadata, and cache data. Disable only for ephemeral testing.
+The deployment update strategy defaults depend on persistence settings:
+
+- Persistence disabled:
+  uses Kubernetes default update behavior (RollingUpdate unless otherwise set).
+- Persistence enabled:
+  defaults to Recreate to avoid ReadWriteOnce attach/mount conflicts.
+
+The deployment strategy may be overridden explicitly, for example:
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+```
 
 ## Common overrides
 

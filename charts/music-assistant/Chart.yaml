@@ -2,7 +2,7 @@ apiVersion: v2
 name: music-assistant
 description: Music Assistant - Universal media library manager for streaming services and connected audio devices
 type: application
-version: 0.2.2
+version: 0.3.0
 appVersion: 2.7.5
 home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
 sources:

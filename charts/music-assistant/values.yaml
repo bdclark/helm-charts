@@ -150,6 +150,13 @@ persistence:
   annotations: {}
     # k8up.io/backup: "true"
 
+# -- Deployment update strategy (default: Recreate when persistence.enabled)
+strategy: {}
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   maxSurge: 0
+  #   maxUnavailable: 1
+
 # -- Extra volumes to mount (e.g., media libraries)
 additionalVolumes: []
   # - name: media-nfs

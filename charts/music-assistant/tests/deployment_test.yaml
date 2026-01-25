@@ -19,6 +19,30 @@ tests:
           path: spec.strategy.type
           value: Recreate
 
+  - it: should not set strategy when persistence is disabled
+    set:
+      persistence.enabled: false
+    asserts:
+      - isNull:
+          path: spec.strategy
+
+  - it: should use explicit strategy when set
+    set:
+      persistence.enabled: true
+      strategy.type: RollingUpdate
+      strategy.rollingUpdate.maxSurge: 0
+      strategy.rollingUpdate.maxUnavailable: 1
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 0
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 1
+
   - it: should use custom image
     set:
       image.repository: my-music-assistant

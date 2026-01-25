@@ -1,6 +1,6 @@
 # Music-Assistant Helm Chart
 
-[![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.7.5](https://img.shields.io/badge/AppVersion-2.7.5-informational?style=flat-square)](Chart.yaml)
 
 Music Assistant - Universal media library manager for streaming services and connected audio devices
@@ -34,7 +34,11 @@ helm uninstall music-assistant
 | `hostNetwork=true` *(default)* | Direct VLAN / UPnP / Chromecast discovery | Pod shares node network namespace. Disable `service.*` unless you still need a ClusterIP for probes. |
 | `hostNetwork=false` | Standard Kubernetes networking (ingress, services) | Enables `service.*` ports; device discovery depends on CNI support. |
 
-## Persistence
+## Persistence and update strategy
+
+Music Assistant runs as a single replica, with a single PVC when persistence is
+enabled. Persistence is recommended for production use to retain configuration,
+metadata, and cache data across pod restarts and upgrades.
 
 ```yaml
 persistence:
@@ -43,7 +47,22 @@ persistence:
   storageClass: fast-ssd
 ```
 
-Stores configuration, metadata, and cache data. Disable only for ephemeral testing.
+The deployment update strategy defaults depend on persistence settings:
+
+- Persistence disabled:
+  uses Kubernetes default update behavior (RollingUpdate unless otherwise set).
+- Persistence enabled:
+  defaults to Recreate to avoid ReadWriteOnce attach/mount conflicts.
+
+The deployment strategy may be overridden explicitly, for example:
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+```
 
 ## Common overrides
 
@@ -124,6 +143,7 @@ additionalMounts:
 | persistence.size | string | `"2Gi"` | Requested PVC size |
 | persistence.existingClaim | string | `""` | Use an existing PVC instead of creating a new one If defined, PVC must be created manually before volume will be bound |
 | persistence.annotations | object | `{}` | Annotations for PVC |
+| strategy | object | `{}` | Deployment update strategy (default: Recreate when persistence.enabled) |
 | additionalVolumes | list | `[]` | Extra volumes to mount (e.g., media libraries) |
 | additionalMounts | list | `[]` | Additional volume mounts matching `additionalVolumes` |
 | env | list | `[]` | Extra environment variables for the container |
