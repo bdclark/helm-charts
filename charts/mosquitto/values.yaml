@@ -46,6 +46,15 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
+# -- Deployment strategy (use Recreate when using persistence with RWO access mode)
+strategy: {}
+  # type: Recreate
+  # -- or --
+  # type: RollingUpdate
+  # rollingUpdate:
+  #   maxSurge: 25%
+  #   maxUnavailable: 25%
+
 # Service configuration
 service:
   # -- Service type (ClusterIP/LoadBalancer/NodePort)
