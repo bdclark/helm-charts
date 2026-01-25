@@ -149,6 +149,10 @@
         }
       }
     },
+    "strategy": {
+      "type": "object",
+      "description": "Deployment update strategy"
+    },
     "database": {
       "type": "object",
       "properties": {

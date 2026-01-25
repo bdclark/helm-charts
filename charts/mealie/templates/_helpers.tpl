@@ -63,6 +63,18 @@ Validate replicaCount vs database engine
 {{- end }}
 
 {{/*
+Validate persistence access mode with multiple replicas
+*/}}
+{{- define "mealie.validate.persistence.replicas" -}}
+{{- $replicas := int (.Values.replicaCount | default 1) -}}
+{{- $accessModes := .Values.persistence.accessModes | default (list) -}}
+{{- $hasRWX := has "ReadWriteMany" $accessModes -}}
+{{- if and .Values.persistence.enabled (gt $replicas 1) (not $hasRWX) -}}
+{{- fail "Persistence with multiple replicas requires ReadWriteMany access mode (or set replicaCount to 1)." -}}
+{{- end -}}
+{{- end }}
+
+{{/*
 SQLite must have persistence enabled
 */}}
 {{- define "mealie.validate.sqlite.persistence" -}}

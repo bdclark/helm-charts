@@ -102,6 +102,19 @@ database:
         key: "password"
 ```
 
+## Update strategy
+
+- Persistence enabled with a single replica or non-RWX storage defaults to `Recreate`.
+- Otherwise, Kubernetes defaults apply unless you set `strategy`.
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+```
+
 ## Configuration
 
 {{ template "chart.valuesTable" . }}

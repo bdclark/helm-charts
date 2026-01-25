@@ -1,6 +1,6 @@
 # Mealie Helm Chart
 
-[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 3.9.2](https://img.shields.io/badge/AppVersion-3.9.2-informational?style=flat-square)](Chart.yaml)
 
 Mealie recipe manager and meal planner
@@ -98,6 +98,19 @@ database:
         key: "password"
 ```
 
+## Update strategy
+
+- Persistence enabled with a single replica or non-RWX storage defaults to `Recreate`.
+- Otherwise, Kubernetes defaults apply unless you set `strategy`.
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+```
+
 ## Configuration
 
 | Key | Type | Default | Description |
@@ -127,6 +140,7 @@ database:
 | persistence.size | string | `"1Gi"` | Requested PVC size |
 | persistence.existingClaim | string | `""` | Use an existing PVC instead of creating a new one If defined, PVC must be created manually before volume will be bound |
 | persistence.annotations | object | `{}` | Annotations for PVC |
+| strategy | object | `{}` | Deployment update strategy (default: Recreate when persistence enabled and non-RWX or single replica) |
 | database.engine | string | `"sqlite"` | Database engine to use (sqlite/postgres) |
 | database.postgres.urlOverride.value | string | `""` | PostgreSQL connection URL |
 | database.postgres.urlOverride.existingSecret.name | string | `""` | Secret reference for connection URL |

@@ -18,6 +18,18 @@ tests:
       - failedTemplate:
           errorMessage: "SQLite requires persistence to be enabled. Please enable persistence or use Postgres as the database engine."
 
+  - it: should not allow multiple replicas with non-RWX persistence
+    set:
+      replicaCount: 2
+      persistence.enabled: true
+      persistence.accessModes:
+        - ReadWriteOnce
+      database.engine: postgres
+      database.postgres.urlOverride.value: "postgres://user:password@host:5432/db"
+    asserts:
+      - failedTemplate:
+          errorMessage: "Persistence with multiple replicas requires ReadWriteMany access mode (or set replicaCount to 1)."
+
   - it: should not let postgres be used with incomplete config
     set:
       database.engine: postgres
@@ -43,6 +55,9 @@ tests:
       - matchRegex:
           path: spec.template.spec.containers[0].image
           pattern: "^ghcr.io/mealie-recipes/mealie:"
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
 
   - it: should use custom image
     set:
@@ -79,6 +94,35 @@ tests:
           path: spec.template.spec.containers[0].volumeMounts
       - isEmpty:
           path: spec.template.spec.volumes
+
+  - it: should not set strategy for multiple replicas with RWX persistence
+    set:
+      replicaCount: 2
+      persistence.enabled: true
+      persistence.accessModes:
+        - ReadWriteMany
+      database.engine: postgres
+      database.postgres.urlOverride.value: "postgres://user:password@host:5432/db"
+    asserts:
+      - isNull:
+          path: spec.strategy
+
+  - it: should use explicit strategy when set
+    set:
+      persistence.enabled: true
+      strategy.type: RollingUpdate
+      strategy.rollingUpdate.maxSurge: 0
+      strategy.rollingUpdate.maxUnavailable: 1
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 0
+      - equal:
+          path: spec.strategy.rollingUpdate.maxUnavailable
+          value: 1
 
   - it: should use existing claim when specified
     set:
