@@ -10,6 +10,34 @@ entries:
           url: https://mealie.io/
     apiVersion: v2
     appVersion: 3.9.2
+    created: "2026-01-25T20:10:32.887796725Z"
+    description: Mealie recipe manager and meal planner
+    digest: c10e2045fa0dff4b23cd16fc316eb0201c0e1057240af15e71d91898f07b0c79
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    maintainers:
+    - email: brian@clark.zone
+      name: Brian Clark
+      url: https://github.com/bdclark
+    - email: ashleyclarkindy@gmail.com
+      name: Ashley Clark
+      url: https://github.com/ashleylclark
+    name: mealie
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    - https://github.com/mealie-recipes/mealie
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mealie-0.1.1/mealie-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+        - name: Mealie
+          url: https://mealie.io/
+    apiVersion: v2
+    appVersion: 3.9.2
     created: "2026-01-21T20:54:11.090525992Z"
     description: Mealie recipe manager and meal planner
     digest: d8192f69a3334841bf4c44799a28094bb96877b8abb6585c1abd3f3faa9931bc
@@ -337,6 +365,45 @@ entries:
           url: https://github.com/music-assistant/server
     apiVersion: v2
     appVersion: 2.7.5
+    created: "2026-01-25T20:10:33.013332201Z"
+    description: Music Assistant - Universal media library manager for streaming services
+      and connected audio devices
+    digest: dd1c30b100ef940ad3ccdb4b72bebe7486d9fc7a2fec6a0e09853c33dbc049d8
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon.png
+    keywords:
+    - music
+    - audio
+    - streaming
+    - media
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: Brian Clark
+      url: https://github.com/bdclark
+    name: music-assistant
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - https://github.com/music-assistant/server
+    - https://music-assistant.io/
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.3.0/music-assistant-0.3.0.tgz
+    version: 0.3.0
+  - annotations:
+      artifacthub.io/images: |
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+        - name: Music Assistant
+          url: https://music-assistant.io/
+        - name: GitHub Repository
+          url: https://github.com/music-assistant/server
+    apiVersion: v2
+    appVersion: 2.7.5
     created: "2026-01-20T20:29:03.502536621Z"
     description: Music Assistant - Universal media library manager for streaming services
       and connected audio devices
@@ -493,4 +560,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-25T17:16:03.031367591Z"
+generated: "2026-01-25T20:10:33.013381804Z"
