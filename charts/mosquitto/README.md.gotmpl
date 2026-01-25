@@ -39,6 +39,25 @@ helm uninstall mosquitto
 - Optional persistence for DB and offline messages
 - Helm tests + unit tests (helm-unittest) for confidence
 
+## Persistence and update strategy
+
+When persistence is enabled, Mosquitto runs as a single replica with a single PVC.
+
+- Persistence disabled:
+  uses Kubernetes default update behavior (RollingUpdate unless otherwise set).
+- Persistence enabled:
+  defaults to Recreate to avoid ReadWriteOnce attach/mount conflicts.
+
+The deployment strategy may be overridden explicitly, for example:
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+```
+
 ## Common overrides
 
 ### Enable persistence + TLS port

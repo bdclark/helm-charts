@@ -1,6 +1,6 @@
 # Mosquitto Helm Chart
 
-[![Version: 0.5.2](https://img.shields.io/badge/Version-0.5.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.0.22](https://img.shields.io/badge/AppVersion-2.0.22-informational?style=flat-square)](Chart.yaml)
 
 Eclipse Mosquitto MQTT broker with authentication and persistence support
@@ -34,6 +34,25 @@ helm uninstall mosquitto
 - Configurable authentication (inline users or secrets) and ACLs (see [AUTH.md](AUTH.md))
 - Optional persistence for DB and offline messages
 - Helm tests + unit tests (helm-unittest) for confidence
+
+## Persistence and update strategy
+
+When persistence is enabled, Mosquitto runs as a single replica with a single PVC.
+
+- Persistence disabled:
+  uses Kubernetes default update behavior (RollingUpdate unless otherwise set).
+- Persistence enabled:
+  defaults to Recreate to avoid ReadWriteOnce attach/mount conflicts.
+
+The deployment strategy may be overridden explicitly, for example:
+
+```yaml
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+```
 
 ## Common overrides
 
@@ -79,6 +98,7 @@ config:
 | podSecurityContext | object | `{}` | Pod-level security context |
 | securityContext | object | `{}` | Container-level security context |
 | resources | object | `{}` | Resource requests and limits |
+| strategy | object | `{}` | Deployment update strategy. If not set, defaults to Recreate when persistence.enabled=true, otherwise uses Kubernetes default (RollingUpdate). |
 | service.type | string | `"ClusterIP"` | Service type (ClusterIP/LoadBalancer/NodePort) |
 | service.annotations | object | `{}` | Service annotations for load balancer configuration |
 | service.loadBalancerIP | string | `""` | Static IP for LoadBalancer services |
