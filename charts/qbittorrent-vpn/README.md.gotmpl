@@ -1,0 +1,36 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+### From repo
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install qbittorrent-vpn bdclark/qbittorrent-vpn
+```
+
+### From source
+
+```bash
+helm install qbittorrent-vpn ./charts/qbittorrent-vpn
+```
+
+### Uninstall
+
+```bash
+helm uninstall qbittorrent-vpn
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
