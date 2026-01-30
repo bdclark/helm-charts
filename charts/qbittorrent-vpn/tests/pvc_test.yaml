@@ -1,0 +1,144 @@
+suite: test pvc
+templates:
+  - pvc.yaml
+tests:
+  # Config PVC tests
+  - it: should create config pvc by default
+    asserts:
+      - containsDocument:
+          kind: PersistentVolumeClaim
+          apiVersion: v1
+          name: RELEASE-NAME-qbittorrent-vpn-config
+
+  - it: should not create config pvc when using existing claim
+    set:
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.existingClaim: my-existing-pvc
+    asserts:
+      - not: true
+        containsDocument:
+          kind: PersistentVolumeClaim
+          name: RELEASE-NAME-qbittorrent-vpn-config
+
+  - it: should not create config pvc when disabled
+    set:
+      qbittorrent.persistence.config.enabled: false
+    asserts:
+      - not: true
+        containsDocument:
+          kind: PersistentVolumeClaim
+          name: RELEASE-NAME-qbittorrent-vpn-config
+
+  - it: should use correct config pvc size
+    set:
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.size: 5Gi
+    asserts:
+      - equal:
+          path: spec.resources.requests.storage
+          value: "5Gi"
+        documentIndex: 0
+
+  - it: should use config storage class
+    set:
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.storageClass: fast-ssd
+    asserts:
+      - equal:
+          path: spec.storageClassName
+          value: "fast-ssd"
+        documentIndex: 0
+
+  - it: should disable config storage class when set to dash
+    set:
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.storageClass: "-"
+    asserts:
+      - equal:
+          path: spec.storageClassName
+          value: ""
+        documentIndex: 0
+
+  - it: should apply config pvc annotations
+    set:
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.annotations:
+        backup.velero.io/backup-volumes: config
+    asserts:
+      - equal:
+          path: metadata.annotations["backup.velero.io/backup-volumes"]
+          value: "config"
+        documentIndex: 0
+
+  # Downloads PVC tests
+  - it: should not create downloads pvc by default
+    asserts:
+      - not: true
+        containsDocument:
+          kind: PersistentVolumeClaim
+          name: RELEASE-NAME-qbittorrent-vpn-downloads
+
+  - it: should create downloads pvc when enabled
+    set:
+      qbittorrent.persistence.config.enabled: false
+      qbittorrent.persistence.downloads.enabled: true
+    asserts:
+      - containsDocument:
+          kind: PersistentVolumeClaim
+          apiVersion: v1
+          name: RELEASE-NAME-qbittorrent-vpn-downloads
+
+  - it: should not create downloads pvc when using existing claim
+    set:
+      qbittorrent.persistence.downloads.enabled: true
+      qbittorrent.persistence.downloads.existingClaim: my-downloads-pvc
+    asserts:
+      - not: true
+        containsDocument:
+          kind: PersistentVolumeClaim
+          name: RELEASE-NAME-qbittorrent-vpn-downloads
+
+  # Gluetun PVC tests
+  - it: should not create gluetun pvc by default
+    asserts:
+      - not: true
+        containsDocument:
+          kind: PersistentVolumeClaim
+          name: RELEASE-NAME-qbittorrent-vpn-gluetun
+
+  - it: should create gluetun pvc when enabled
+    set:
+      qbittorrent.persistence.config.enabled: false
+      gluetun.persistence.enabled: true
+    asserts:
+      - containsDocument:
+          kind: PersistentVolumeClaim
+          apiVersion: v1
+          name: RELEASE-NAME-qbittorrent-vpn-gluetun
+
+  - it: should not create gluetun pvc when using existing claim
+    set:
+      gluetun.persistence.enabled: true
+      gluetun.persistence.existingClaim: my-gluetun-pvc
+    asserts:
+      - not: true
+        containsDocument:
+          kind: PersistentVolumeClaim
+          name: RELEASE-NAME-qbittorrent-vpn-gluetun
+
+  # Access modes tests
+  - it: should use correct access modes
+    set:
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.accessModes:
+        - ReadWriteOnce
+        - ReadOnlyMany
+    asserts:
+      - contains:
+          path: spec.accessModes
+          content: "ReadWriteOnce"
+        documentIndex: 0
+      - contains:
+          path: spec.accessModes
+          content: "ReadOnlyMany"
+        documentIndex: 0

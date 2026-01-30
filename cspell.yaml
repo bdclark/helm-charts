@@ -10,8 +10,10 @@ words:
   - certfile
   - configmap
   - elif
+  - gluetun
   - kubeconform
   - kubectl
+  - lscr.io
   - metallb
   - mktemp
   - monitorpass
@@ -24,11 +26,15 @@ words:
   - nindent
   - nullglob
   - persistentvolumes
+  - PGID
   - pipefail
   - popd
+  - PUID
   - pushd
   - pvcs
   - pytest
+  - qbittorrent
+  - qmcgaw
   - readwrite
   - replicaset
   - secretpassword
@@ -40,6 +46,7 @@ words:
   - traefik
   - Traefik
   - virtualenv
+  - webui
   - worktree
   - wrongpass
 ignorePaths: []

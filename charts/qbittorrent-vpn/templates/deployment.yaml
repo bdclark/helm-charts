@@ -1,0 +1,157 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qbittorrent-vpn.fullname" . }}
+  labels:
+    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+    {{- with .Values.extraDeploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "qbittorrent-vpn.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "qbittorrent-vpn.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or
+        (and .Values.gluetun.enabled (eq .Values.gluetun.lifecycleMode "nativeSidecar"))
+        .Values.initContainers
+        .Values.qbittorrent.config.bootstrap.enabled }}
+      initContainers:
+      {{- if .Values.qbittorrent.config.bootstrap.enabled }}
+        {{- include "qbittorrent-vpn.qbittorrentInit" . | nindent 8 }}
+      {{- end }}
+        {{- if and .Values.gluetun.enabled (eq .Values.gluetun.lifecycleMode "nativeSidecar") }}
+          {{- include "qbittorrent-vpn.gluetunContainer" .Values.gluetun | nindent 8 }}
+        {{- end }}
+        {{- with .Values.initContainers }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        {{- if and .Values.gluetun.enabled (eq .Values.gluetun.lifecycleMode "standard") }}
+          {{- include "qbittorrent-vpn.gluetunContainer" .Values.gluetun | nindent 8 }}
+        {{- end }}
+        - name: qbittorrent
+          {{- with .Values.qbittorrent.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.qbittorrent.image.repository }}:{{ .Values.qbittorrent.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.qbittorrent.image.pullPolicy }}
+          {{- with .Values.qbittorrent.env }}
+          env:
+            {{- include "qbittorrent-vpn.envFromMap" . | trim | nindent 12 }}
+          {{- end }}
+          {{- with .Values.qbittorrent.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.qbittorrent.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.qbittorrent.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.qbittorrent.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.qbittorrent.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or .Values.qbittorrent.persistence.config.enabled .Values.qbittorrent.persistence.downloads.enabled .Values.qbittorrent.volumeMounts }}
+          volumeMounts:
+            {{- if .Values.qbittorrent.persistence.config.enabled }}
+            - name: config
+              mountPath: /config
+            {{- end }}
+            {{- if .Values.qbittorrent.persistence.downloads.enabled }}
+            - name: downloads
+              mountPath: /downloads
+            {{- end }}
+          {{- with .Values.qbittorrent.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+      {{- with .Values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or
+        .Values.qbittorrent.persistence.config.enabled
+        .Values.qbittorrent.persistence.downloads.enabled
+        .Values.gluetun.persistence.enabled
+        .Values.gluetun.needsTunDevice
+        .Values.qbittorrent.config.bootstrap.enabled
+        .Values.volumes }}
+      volumes:
+      {{- if .Values.gluetun.needsTunDevice }}
+        - name: tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
+      {{- end }}
+      {{- if .Values.qbittorrent.persistence.config.enabled }}
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ include "qbittorrent-vpn.pvcName" (dict "ctx" .Values.qbittorrent.persistence.config "root" . "suffix" "config") }}
+      {{- end }}
+      {{- if .Values.qbittorrent.persistence.downloads.enabled }}
+        - name: downloads
+          persistentVolumeClaim:
+            claimName: {{ include "qbittorrent-vpn.pvcName" (dict "ctx" .Values.qbittorrent.persistence.downloads "root" . "suffix" "downloads") }}
+      {{- end }}
+      {{- if .Values.gluetun.persistence.enabled }}
+        - name: gluetun
+          persistentVolumeClaim:
+            claimName: {{ include "qbittorrent-vpn.pvcName" (dict "ctx" .Values.gluetun.persistence "root" . "suffix" "gluetun") }}
+      {{- end }}
+      {{- if .Values.qbittorrent.config.bootstrap.enabled }}
+          {{- include "qbittorrent-vpn.getBootstrapVolume" . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

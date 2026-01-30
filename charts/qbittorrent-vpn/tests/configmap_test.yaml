@@ -1,0 +1,65 @@
+suite: test configmap
+templates:
+  - configmap.yaml
+tests:
+  - it: should create bootstrap configmap by default
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConfigMap
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-qbittorrent-vpn-bootstrap
+
+  - it: should not create configmap when bootstrap disabled
+    set:
+      qbittorrent.config.bootstrap.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create configmap when using existing configMap
+    set:
+      qbittorrent.config.bootstrap.enabled: true
+      qbittorrent.config.bootstrap.existingConfig.type: configMap
+      qbittorrent.config.bootstrap.existingConfig.name: my-config
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create configmap when using existing secret
+    set:
+      qbittorrent.config.bootstrap.enabled: true
+      qbittorrent.config.bootstrap.existingConfig.type: secret
+      qbittorrent.config.bootstrap.existingConfig.name: my-secret
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should include qBittorrent.conf key
+    asserts:
+      - isNotNull:
+          path: data["qBittorrent.conf"]
+
+  - it: should include default config content
+    asserts:
+      - matchRegex:
+          path: data["qBittorrent.conf"]
+          pattern: "\\[LegalNotice\\]"
+      - matchRegex:
+          path: data["qBittorrent.conf"]
+          pattern: "\\[Preferences\\]"
+
+  - it: should use custom config content
+    set:
+      qbittorrent.config.bootstrap.config: |
+        [CustomSection]
+        CustomKey=CustomValue
+    asserts:
+      - matchRegex:
+          path: data["qBittorrent.conf"]
+          pattern: "\\[CustomSection\\]"
+      - matchRegex:
+          path: data["qBittorrent.conf"]
+          pattern: "CustomKey=CustomValue"

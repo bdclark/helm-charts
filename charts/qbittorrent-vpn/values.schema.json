@@ -1,0 +1,471 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "nameOverride": {
+      "type": "string",
+      "description": "Override the release name"
+    },
+    "fullnameOverride": {
+      "type": "string",
+      "description": "Override the full release name"
+    },
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of replicas"
+    },
+    "strategy": {
+      "type": "object",
+      "description": "Deployment update strategy",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["Recreate", "RollingUpdate"]
+        }
+      }
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "description": "Image pull secrets",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        }
+      }
+    },
+    "deploymentAnnotations": {
+      "type": "object",
+      "description": "Annotations for the Deployment",
+      "additionalProperties": { "type": "string" }
+    },
+    "extraDeploymentLabels": {
+      "type": "object",
+      "description": "Additional labels for the Deployment",
+      "additionalProperties": { "type": "string" }
+    },
+    "podAnnotations": {
+      "type": "object",
+      "description": "Annotations for pods",
+      "additionalProperties": { "type": "string" }
+    },
+    "podLabels": {
+      "type": "object",
+      "description": "Additional labels for pods",
+      "additionalProperties": { "type": "string" }
+    },
+    "podSecurityContext": {
+      "type": "object",
+      "description": "Pod security context"
+    },
+    "qbittorrent": {
+      "type": "object",
+      "description": "qBittorrent configuration",
+      "properties": {
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "description": "Image repository"
+            },
+            "tag": {
+              "type": "string",
+              "description": "Image tag (defaults to chart appVersion)"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "description": "Image pull policy"
+            }
+          }
+        },
+        "securityContext": {
+          "type": "object",
+          "description": "Container security context"
+        },
+        "resources": {
+          "type": "object",
+          "description": "Resource requests and limits",
+          "properties": {
+            "limits": { "type": "object" },
+            "requests": { "type": "object" }
+          }
+        },
+        "ports": {
+          "type": "array",
+          "description": "Container ports",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "containerPort": { "type": "integer" },
+              "protocol": { "type": "string", "enum": ["TCP", "UDP", "SCTP"] }
+            }
+          }
+        },
+        "livenessProbe": {
+          "type": "object",
+          "description": "Liveness probe configuration"
+        },
+        "readinessProbe": {
+          "type": "object",
+          "description": "Readiness probe configuration"
+        },
+        "env": { "$ref": "#/$defs/env" },
+        "envFrom": {
+          "type": "array",
+          "description": "Environment variables from ConfigMaps or Secrets",
+          "items": { "type": "object" }
+        },
+        "config": {
+          "type": "object",
+          "description": "Configuration file settings",
+          "properties": {
+            "mountPath": {
+              "type": "string",
+              "description": "Directory containing the configuration file"
+            },
+            "fileName": {
+              "type": "string",
+              "description": "Configuration file name"
+            },
+            "bootstrap": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Create config file if missing"
+                },
+                "config": {
+                  "type": "string",
+                  "description": "Initial configuration content"
+                },
+                "existingConfig": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["", "configMap", "secret"],
+                      "description": "Source type for existing config"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the ConfigMap or Secret"
+                    },
+                    "key": {
+                      "type": "string",
+                      "description": "Key containing the configuration data"
+                    }
+                  }
+                },
+                "webuiPassword": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": ["disabled", "ifMissing", "overwrite"],
+                      "description": "Password injection mode"
+                    },
+                    "existingSecret": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Secret name containing the PBKDF2-hashed password"
+                        },
+                        "key": {
+                          "type": "string",
+                          "description": "Secret key for the password"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "persistence": {
+          "type": "object",
+          "properties": {
+            "config": { "$ref": "#/$defs/persistence" },
+            "downloads": { "$ref": "#/$defs/persistence" }
+          }
+        },
+        "volumeMounts": {
+          "type": "array",
+          "description": "Additional volume mounts",
+          "items": { "type": "object" }
+        }
+      }
+    },
+    "gluetun": {
+      "type": "object",
+      "description": "VPN sidecar configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable VPN sidecar"
+        },
+        "lifecycleMode": {
+          "type": "string",
+          "enum": ["nativeSidecar", "standard"],
+          "description": "Lifecycle mode"
+        },
+        "lifecycleHooks": {
+          "type": "object",
+          "description": "Container lifecycle hooks"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "description": "Image repository"
+            },
+            "tag": {
+              "type": "string",
+              "description": "Image tag"
+            },
+            "pullPolicy": {
+              "type": "string",
+              "enum": ["Always", "IfNotPresent", "Never"],
+              "description": "Image pull policy"
+            }
+          }
+        },
+        "needsTunDevice": {
+          "type": "boolean",
+          "description": "Mount /dev/net/tun device"
+        },
+        "securityContext": {
+          "type": "object",
+          "description": "Container security context"
+        },
+        "resources": {
+          "type": "object",
+          "description": "Resource requests and limits",
+          "properties": {
+            "limits": { "type": "object" },
+            "requests": { "type": "object" }
+          }
+        },
+        "ports": {
+          "type": "array",
+          "description": "Container ports",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "containerPort": { "type": "integer" },
+              "protocol": { "type": "string", "enum": ["TCP", "UDP", "SCTP"] }
+            }
+          }
+        },
+        "livenessProbe": {
+          "type": "object",
+          "description": "Liveness probe configuration"
+        },
+        "readinessProbe": {
+          "type": "object",
+          "description": "Readiness probe configuration"
+        },
+        "env": { "$ref": "#/$defs/env" },
+        "envFrom": {
+          "type": "array",
+          "description": "Environment variables from ConfigMaps or Secrets",
+          "items": { "type": "object" }
+        },
+        "persistence": { "$ref": "#/$defs/persistence" },
+        "volumeMounts": {
+          "type": "array",
+          "description": "Additional volume mounts",
+          "items": { "type": "object" }
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "description": "Service configuration",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Service type"
+        },
+        "port": {
+          "type": "integer",
+          "description": "Service port"
+        }
+      }
+    },
+    "ingress": {
+      "type": "object",
+      "description": "Ingress configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable Ingress"
+        },
+        "className": {
+          "type": "string",
+          "description": "Ingress class name"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Ingress annotations",
+          "additionalProperties": { "type": "string" }
+        },
+        "hosts": {
+          "type": "array",
+          "description": "Ingress hosts",
+          "items": {
+            "type": "object",
+            "properties": {
+              "host": { "type": "string" },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "path": { "type": "string" },
+                    "pathType": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tls": {
+          "type": "array",
+          "description": "Ingress TLS configuration",
+          "items": {
+            "type": "object",
+            "properties": {
+              "secretName": { "type": "string" },
+              "hosts": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "initContainers": {
+      "type": "array",
+      "description": "Additional init containers",
+      "items": { "type": "object" }
+    },
+    "extraContainers": {
+      "type": "array",
+      "description": "Additional containers",
+      "items": { "type": "object" }
+    },
+    "volumes": {
+      "type": "array",
+      "description": "Additional volumes",
+      "items": { "type": "object" }
+    },
+    "nodeSelector": {
+      "type": "object",
+      "description": "Node selector",
+      "additionalProperties": { "type": "string" }
+    },
+    "tolerations": {
+      "type": "array",
+      "description": "Tolerations",
+      "items": { "type": "object" }
+    },
+    "affinity": {
+      "type": "object",
+      "description": "Affinity rules"
+    }
+  },
+  "$defs": {
+    "env": {
+      "type": "object",
+      "description": "Environment variables",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Simple string value"
+          },
+          {
+            "type": "object",
+            "description": "Value from reference",
+            "properties": {
+              "valueFrom": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "properties": {
+                      "secretKeyRef": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "key": { "type": "string" }
+                        },
+                        "required": ["name", "key"]
+                      }
+                    },
+                    "required": ["secretKeyRef"]
+                  },
+                  {
+                    "properties": {
+                      "configMapKeyRef": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "key": { "type": "string" }
+                        },
+                        "required": ["name", "key"]
+                      }
+                    },
+                    "required": ["configMapKeyRef"]
+                  }
+                ]
+              }
+            },
+            "required": ["valueFrom"],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "persistence": {
+      "type": "object",
+      "description": "Persistence configuration",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable persistence"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Storage class"
+        },
+        "accessModes": {
+          "type": "array",
+          "description": "Access modes",
+          "items": { "type": "string" }
+        },
+        "size": {
+          "type": "string",
+          "description": "Volume size"
+        },
+        "existingClaim": {
+          "type": "string",
+          "description": "Use existing PVC"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "PVC annotations",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    }
+  }
+}
