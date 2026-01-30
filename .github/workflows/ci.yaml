@@ -56,7 +56,7 @@ jobs:
         run: |
           VERSION="${{ needs.load-versions.outputs.helm-docs }}"
           VERSION="${VERSION#v}"
-          curl -sSL "https://github.com/norwoodj/helm-docs/releases/download/v${VERSION}/helm-docs_${VERSION}_Linux_x86_64.tar.gz" | tar xz
+          curl -sSL "https://github.com/norwoodj/helm-docs/releases/download/v${VERSION}/helm-docs_${VERSION}_Linux_x86_64.tar.gz" | tar xz helm-docs
           sudo mv helm-docs /usr/local/bin/
 
       - name: Run helm-docs
