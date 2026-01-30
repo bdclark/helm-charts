@@ -60,7 +60,7 @@ jobs:
           sudo mv helm-docs /usr/local/bin/
 
       - name: Run helm-docs
-        run: helm-docs --sort-values-order file
+        run: helm-docs --chart-search-root charts --sort-values-order file
 
       - name: Check for changes
         run: |

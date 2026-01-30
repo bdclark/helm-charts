@@ -98,7 +98,7 @@ tasks:
   docs-all:
     desc: Generate READMEs for all charts
     cmds:
-      - helm-docs --sort-values-order file
+      - helm-docs --chart-search-root charts --sort-values-order file
 
   package:
     desc: "Package a chart (usage: task package CHART=mosquitto)"
