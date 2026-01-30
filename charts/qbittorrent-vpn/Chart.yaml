@@ -23,6 +23,6 @@ annotations:
     - name: Gluetun
       url: https://github.com/qdm12/gluetun
 maintainers:
-  - name: Brian Clark
+  - name: bdclark
     email: brian@clark.zone
     url: https://github.com/bdclark
