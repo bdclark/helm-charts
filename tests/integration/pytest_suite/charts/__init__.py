@@ -1,1 +1,0 @@
-"""Chart-specific pytest suites."""

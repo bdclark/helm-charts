@@ -1,38 +1,16 @@
 # Chart Testing (ct) configuration
-# https://github.com/helm/chart-testing/blob/main/doc/ct_install.md
+# https://github.com/helm/chart-testing
 
-# Directories
 chart-dirs:
   - charts
 
-# Repositories for dependency resolution
 chart-repos:
   - bitnami=https://charts.bitnami.com/bitnami
-  - stable=https://charts.helm.sh/stable
 
-# Helm configuration
-helm-extra-args: --timeout 600s
-helm-extra-set-args: --set=image.tag=latest-dev
-
-# Testing configuration
-check-version-increment: true
-validate-maintainers: false
-
-# Skip charts (if needed)
-excluded-charts: []
-
-# Target branch for change detection
 target-branch: main
 
-# Upgrade test configuration
-upgrade: false
-
-# Skip missing values
-skip-missing-values: false
-
-# Additional lint configuration
+# Linting
+check-version-increment: true
+validate-maintainers: false
 validate-chart-schema: true
 validate-yaml: true
-
-# Release labeling for install tests
-release-label: app.kubernetes.io/instance

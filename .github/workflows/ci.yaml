@@ -3,147 +3,145 @@ name: CI
 on:
   pull_request:
     paths:
-      - 'charts/**'
-      - 'tests/**'
-      - '.github/workflows/**'
-      - 'Taskfile.yml'
-      - 'ct.yaml'
-      - 'scripts/**'
+      - "charts/**"
+      - ".github/workflows/ci.yaml"
+      - ".github/versions.env"
+      - "ct.yaml"
   push:
     branches:
       - main
-      - develop
     paths:
-      - 'charts/**'
-      - 'tests/**'
-      - '.github/workflows/**'
-      - 'Taskfile.yml'
-      - 'ct.yaml'
-      - 'scripts/**'
+      - "charts/**"
+      - ".github/workflows/ci.yaml"
+      - ".github/versions.env"
+      - "ct.yaml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  detect-charts:
-    name: Detect Changed Charts
+  load-versions:
+    name: Load Versions
     runs-on: ubuntu-latest
     outputs:
-      changed: ${{ steps.collect.outputs.changed }}
-      charts_json: ${{ steps.collect.outputs.charts_json }}
+      helm: ${{ steps.versions.outputs.HELM_VERSION }}
+      helm-unittest: ${{ steps.versions.outputs.HELM_UNITTEST_VERSION }}
+      kubeconform: ${{ steps.versions.outputs.KUBECONFORM_VERSION }}
+      helm-docs: ${{ steps.versions.outputs.HELM_DOCS_VERSION }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/versions.env
+          sparse-checkout-cone-mode: false
+
+      - name: Parse versions.env
+        id: versions
+        run: |
+          while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" =~ ^# ]] && continue
+            echo "${key}=${value}" >> "$GITHUB_OUTPUT"
+          done < .github/versions.env
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    needs: load-versions
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install helm-docs
+        run: |
+          VERSION="${{ needs.load-versions.outputs.helm-docs }}"
+          VERSION="${VERSION#v}"
+          curl -sSL "https://github.com/norwoodj/helm-docs/releases/download/v${VERSION}/helm-docs_${VERSION}_Linux_x86_64.tar.gz" | tar xz
+          sudo mv helm-docs /usr/local/bin/
+
+      - name: Run helm-docs
+        run: helm-docs --sort-values-order file
+
+      - name: Check for changes
+        run: |
+          if ! git diff --exit-code; then
+            echo "::error::Documentation is out of date. Run 'helm-docs' locally and commit the changes."
+            exit 1
+          fi
+
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+      charts: ${{ steps.detect.outputs.charts }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.8.0
+        uses: helm/chart-testing-action@v2
 
-      - name: List changed charts
-        id: collect
+      - name: Detect changed charts
+        id: detect
         run: |
-          set -eo pipefail
-          target_branch="${{ github.event.repository.default_branch }}"
-          changed_charts=$(ct list-changed --target-branch "$target_branch" --print-config=false || true)
-
-          if [ -z "$changed_charts" ]; then
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -z "$changed" ]]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "charts_json=[]" >> "$GITHUB_OUTPUT"
-            : > changed-charts.txt
-            exit 0
+            echo "charts=[]" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            charts=$(echo "$changed" | sed 's|^charts/||' | jq -R -s -c 'split("\n") | map(select(length > 0))')
+            echo "charts=$charts" >> "$GITHUB_OUTPUT"
+            echo "Changed charts: $charts"
           fi
 
-          normalized_charts=$(echo "$changed_charts" | sed 's|^charts/||')
-          charts_json=$(echo "$normalized_charts" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "charts_json=$charts_json" >> "$GITHUB_OUTPUT"
-          printf "%s\n" "$normalized_charts" > changed-charts.txt
-
-      - name: Upload changed chart list
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: changed-charts
-          path: changed-charts.txt
-
-  static-checks:
-    name: Static Checks
+  chart-test:
+    name: Test ${{ matrix.chart }}
     runs-on: ubuntu-latest
-    needs: detect-charts
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-          check-latest: true
-
-      - name: Install yamllint
-        run: pip install yamllint
-
-      - name: Run yamllint
-        run: yamllint charts
-
-  chart-verification:
-    name: Chart Verification
-    runs-on: ubuntu-latest
-    needs: detect-charts
-    if: needs.detect-charts.outputs.changed == 'true'
+    needs: [load-versions, detect-changes]
+    if: needs.detect-changes.outputs.changed == 'true'
     strategy:
       fail-fast: false
       matrix:
-        chart: ${{ fromJson(needs.detect-charts.outputs.charts_json) }}
-
+        chart: ${{ fromJson(needs.detect-changes.outputs.charts) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up Helm
-        uses: azure/setup-helm@v4.3.1
+        uses: azure/setup-helm@v4
         with:
-          version: v3.14.0
+          version: ${{ needs.load-versions.outputs.helm }}
 
-      - name: Install helm-unittest plugin
-        run: |
-          if ! helm plugin list | grep -q "unittest"; then
-            helm plugin install https://github.com/helm-unittest/helm-unittest --version v1.0.3
-          fi
-
-      - name: Install kubeconform
-        run: |
-          set -euo pipefail
-          VERSION="0.6.7"
-          curl -L -o kubeconform.tar.gz "https://github.com/yannh/kubeconform/releases/download/v${VERSION}/kubeconform-linux-amd64.tar.gz"
-          tar -xzf kubeconform.tar.gz
-          mkdir -p "$HOME/bin"
-          mv kubeconform "$HOME/bin/kubeconform"
-          chmod +x "$HOME/bin/kubeconform"
-          echo "$HOME/bin" >> "$GITHUB_PATH"
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2
 
       - name: Add helm repositories
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo add stable https://charts.helm.sh/stable
           helm repo update
 
-      - name: Build chart dependencies
-        run: helm dependency build charts/${{ matrix.chart }}
+      - name: Run ct lint
+        run: ct lint --charts charts/${{ matrix.chart }}
 
-      - name: Helm lint
-        run: helm lint charts/${{ matrix.chart }}
+      - name: Install helm-unittest
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version ${{ needs.load-versions.outputs.helm-unittest }}
 
-      - name: Helm unittest
+      - name: Run helm unittest
         run: helm unittest charts/${{ matrix.chart }}
 
-      - name: Kubeconform validation
+      - name: Install kubeconform
         run: |
-          set -eo pipefail
-          helm template ci-${{ matrix.chart }} charts/${{ matrix.chart }} \
-            --namespace ci-${{ matrix.chart }} \
-            | kubeconform -strict -ignore-missing-schemas -summary
+          VERSION="${{ needs.load-versions.outputs.kubeconform }}"
+          VERSION="${VERSION#v}"
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/v${VERSION}/kubeconform-linux-amd64.tar.gz" | tar xz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: Run kubeconform
+        run: |
+          helm template test charts/${{ matrix.chart }} | kubeconform -strict -ignore-missing-schemas -summary

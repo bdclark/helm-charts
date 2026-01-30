@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 vars:
   CHARTS_DIR: charts
@@ -17,188 +17,97 @@ tasks:
     silent: true
 
   tools:
-    desc: Ensure Helm plugins and kubeconform are installed
+    desc: Ensure required tools are installed
+    vars:
+      HELM_UNITTEST_VERSION:
+        sh: grep '^HELM_UNITTEST_VERSION=' .github/versions.env | cut -d= -f2
     cmds:
-      - which helm || (echo "Please install Helm first" && exit 1)
-      - echo "Ensuring helm-unittest plugin..."
+      - |
+        which helm || (echo "Install Helm: https://helm.sh/docs/intro/install/" && exit 1)
+      - |
+        which ct || echo "Optional: Install chart-testing (ct) for ct lint"
+      - |
+        which kubeconform || (echo "Install kubeconform: https://github.com/yannh/kubeconform#installation" && exit 1)
+      - |
+        which helm-docs || echo "Optional: Install helm-docs for README generation"
       - |
         if ! helm plugin list 2>/dev/null | grep -q "unittest"; then
-          helm plugin install https://github.com/helm-unittest/helm-unittest --version v1.0.3
+          echo "Installing helm-unittest {{.HELM_UNITTEST_VERSION}}..."
+          helm plugin install https://github.com/helm-unittest/helm-unittest --version {{.HELM_UNITTEST_VERSION}}
         fi
-      - echo "Ensuring kubeconform..."
-      - |
-        if ! command -v kubeconform &> /dev/null; then
-          echo "Install kubeconform: https://github.com/yannh/kubeconform#installation"
-          exit 1
-        fi
-      - echo "Ensuring helm-docs..."
-      - |
-        if ! command -v helm-docs &> /dev/null; then
-          echo "Install helm-docs: https://github.com/norwoodj/helm-docs#installation"
-          exit 1
-        fi
-
-  pyenv:
-    desc: Create local Python virtual environment for pytest integration tests
-    cmds:
-      - |
-        if [ ! -d ".venv" ]; then
-          python3 -m venv .venv
-        fi
-      - . .venv/bin/activate && pip install --upgrade pip
-      - . .venv/bin/activate && pip install -r tests/integration/pytest_suite/requirements.txt
-
-  lint:
-    desc: Run YAML linting across all charts
-    deps: [pyenv]
-    cmds:
-      - |
-        . .venv/bin/activate
-        yamllint {{.CHARTS_DIR}}
 
   helm-lint:
-    desc: "Run helm lint for a chart (usage: task helm-lint CHART=mosquitto)"
+    desc: "Run helm lint (usage: task helm-lint CHART=mosquitto)"
     cmds:
       - helm lint {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
 
-  helm-unittest:
-    desc: "Run helm-unittest plugin for a chart (usage: task helm-unittest CHART=mosquitto)"
+  unittest:
+    desc: "Run helm unittest (usage: task unittest CHART=mosquitto)"
     deps: [tools]
     cmds:
       - helm unittest {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
 
   kubeconform:
-    desc: "Render a chart and validate with kubeconform (usage: task kubeconform CHART=mosquitto)"
-    deps: [tools]
+    desc: "Validate rendered templates (usage: task kubeconform CHART=mosquitto)"
     cmds:
       - |
-        helm template task-{{.CHART | default .DEFAULT_CHART}} {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} \
-          | kubeconform -strict -summary
+        helm template test {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} \
+          | kubeconform -strict -ignore-missing-schemas -summary
 
-  verify-chart:
-    desc: "Run helm lint, helm-unittest, and kubeconform for a chart (usage: task verify-chart CHART=mosquitto)"
+  verify:
+    desc: "Run all checks for a chart (usage: task verify CHART=mosquitto)"
     deps: [tools]
     cmds:
-      - task helm-lint CHART={{.CHART | default .DEFAULT_CHART}}
-      - task helm-unittest CHART={{.CHART | default .DEFAULT_CHART}}
-      - task kubeconform CHART={{.CHART | default .DEFAULT_CHART}}
+      - task: helm-lint
+        vars: { CHART: "{{.CHART | default .DEFAULT_CHART}}" }
+      - task: unittest
+        vars: { CHART: "{{.CHART | default .DEFAULT_CHART}}" }
+      - task: kubeconform
+        vars: { CHART: "{{.CHART | default .DEFAULT_CHART}}" }
 
   verify-all:
-    desc: Run helm lint, helm-unittest, and kubeconform for all charts
+    desc: Run all checks for all charts
     deps: [tools]
     cmds:
       - |
         for chart in $(task discover-charts --silent); do
-          echo "Verifying $chart..."
-          task verify-chart CHART=$chart
+          echo "=== Verifying $chart ==="
+          task verify CHART=$chart
         done
-
-  lint-all:
-    desc: Alias for verify-all (for backwards compatibility)
-    cmds:
-      - task verify-all
-
-  pytest:
-    desc: Run pytest-based integration tests (set PYTEST_ARGS for extra options)
-    deps: [pyenv]
-    cmds:
-      - |
-        . .venv/bin/activate
-        pytest {{if .PYTEST_ARGS}}{{.PYTEST_ARGS}} {{end}}tests/integration/pytest_suite
-
-  package:
-    desc: "Package specific chart (usage: task package CHART=mosquitto)"
-    deps: [tools, lint]
-    cmds:
-      - echo "Packaging {{.CHART | default .DEFAULT_CHART}}..."
-      - helm package {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --destination .
-
-  package-all:
-    desc: Package all charts
-    deps: [tools, lint]
-    cmds:
-      - |
-        for chart in $(task discover-charts --silent); do
-          echo "Packaging $chart..."
-          helm package {{.CHARTS_DIR}}/$chart --destination .
-        done
-
-  release-local:
-    desc: Create local release packages for testing
-    deps: [package-all]
-    cmds:
-      - echo "Creating local release packages..."
-      - mkdir -p .cr-release-packages
-      - mv *.tgz .cr-release-packages/ 2>/dev/null || true
-      - helm repo index .cr-release-packages --url file://.cr-release-packages
-      - echo "Local packages created in .cr-release-packages/"
-      - 'echo "To test: helm repo add local file://$(pwd)/.cr-release-packages"'
-
-  clean:
-    desc: Clean up gitignored artifacts
-    cmds:
-      - rm -rf .cr-release-packages
-      - rm -f *.tgz
-      - rm -rf .venv
-      - git clean -fdX
-      - echo "Workspace cleaned"
-
-  debug-template:
-    desc: "Debug template rendering for a chart (usage: task debug-template CHART=mosquitto)"
-    cmds:
-      - helm template test-release {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --debug
-
-  # Chart-releaser commands
-  cr-package:
-    desc: Package charts using chart-releaser
-    cmds:
-      - cr package
-
-  cr-upload:
-    desc: "Upload packages using chart-releaser (requires CR_TOKEN)"
-    cmds:
-      - cr upload --skip-existing
-
-  cr-index:
-    desc: Update repository index using chart-releaser
-    cmds:
-      - cr index
-
-  # Chart-testing utilities
-  ct-list:
-    desc: List charts that would be tested by chart-testing
-    cmds:
-      - ct list-changed
 
   ct-lint:
-    desc: Run chart-testing lint with full output
+    desc: "Run chart-testing lint (usage: task ct-lint CHART=mosquitto)"
     cmds:
-      - ct lint --debug
+      - ct lint --charts {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
 
-  ct-install:
-    desc: Run chart-testing install with full output
+  ct-lint-all:
+    desc: Run chart-testing lint on all changed charts
     cmds:
-      - ct install --debug
+      - ct lint
 
-  helm-docs:
-    desc: "Regenerate README files for a chart (usage: task helm-docs CHART=music-assistant)"
-    vars:
-      TARGET_CHART:
-        sh: |
-          if [ -n "{{.CHART}}" ]; then
-            echo "{{.CHARTS_DIR}}/{{.CHART}}"
-          else
-            echo ""
-          fi
+  template:
+    desc: "Render chart templates (usage: task template CHART=mosquitto)"
     cmds:
-      - |
-        if [ -z "{{.TARGET_CHART}}" ]; then
-          echo "Usage: task helm-docs CHART=<chart-name>"
-          exit 1
-        fi
-        helm-docs --chart-search-root {{.TARGET_CHART}} --sort-values-order file
+      - helm template test {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --debug
 
-  helm-docs-all:
-    desc: Regenerate README files for all charts
+  docs:
+    desc: "Generate README for a chart (usage: task docs CHART=mosquitto)"
+    cmds:
+      - helm-docs --chart-search-root {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --sort-values-order file
+
+  docs-all:
+    desc: Generate READMEs for all charts
     cmds:
       - helm-docs --sort-values-order file
+
+  package:
+    desc: "Package a chart (usage: task package CHART=mosquitto)"
+    cmds:
+      - helm dependency build {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}
+      - helm package {{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}} --destination .
+
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - rm -rf .cr-release-packages *.tgz
+      - echo "Cleaned"

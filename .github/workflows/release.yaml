@@ -2,184 +2,135 @@ name: Release Charts
 
 on:
   workflow_run:
-    workflows:
-      - Integration Tests
-    branches:
-      - main
-    types:
-      - completed
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
   contents: write
   packages: write
 
-env:
-  KIND_IMAGE: kindest/node:v1.30.0
-
 jobs:
   release:
+    name: Release
+    runs-on: ubuntu-latest
     if: >
       github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_branch == 'main')
-    runs-on: ubuntu-latest
+      github.event.workflow_run.conclusion == 'success'
     steps:
-      - name: Checkout target revision
-        uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Install Helm
-        uses: azure/setup-helm@v4.3.1
+      - name: Load versions
+        id: versions
+        run: |
+          while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" =~ ^# ]] && continue
+            echo "${key}=${value}" >> "$GITHUB_OUTPUT"
+          done < .github/versions.env
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
         with:
-          version: v3.14.0
-
-      - name: Determine charts requiring release
-        id: detect
-        run: |
-          set -euo pipefail
-          charts_file=$(mktemp)
-          for chart in $(find charts -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort); do
-            version=$(awk '/^version:/ {print $2; exit}' "charts/$chart/Chart.yaml")
-            tag="$chart-$version"
-            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
-              echo "Skipping $chart (version $version already released)"
-            else
-              echo "Will release $chart version $version"
-              echo "$chart" >> "$charts_file"
-            fi
-          done
-
-          if [ -s "$charts_file" ]; then
-            charts_json=$(cat "$charts_file" | jq -R -s -c 'split("\n") | map(select(length > 0))')
-            echo "release=true" >> "$GITHUB_OUTPUT"
-            echo "charts=$charts_json" >> "$GITHUB_OUTPUT"
-            cat "$charts_file"
-          else
-            echo "No charts require release."
-            echo "release=false" >> "$GITHUB_OUTPUT"
-            echo "charts=[]" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Install kubeconform
-        if: steps.detect.outputs.release == 'true'
-        run: |
-          set -euo pipefail
-          VERSION="0.6.7"
-          curl -L -o kubeconform.tar.gz "https://github.com/yannh/kubeconform/releases/download/v${VERSION}/kubeconform-linux-amd64.tar.gz"
-          tar -xzf kubeconform.tar.gz
-          sudo mv kubeconform /usr/local/bin/
-          rm kubeconform.tar.gz
-
-      - name: Ensure helm-unittest plugin
-        if: steps.detect.outputs.release == 'true'
-        run: |
-          if ! helm plugin list | grep -q "unittest"; then
-            helm plugin install https://github.com/helm-unittest/helm-unittest --version v0.3.5
-          fi
+          version: ${{ steps.versions.outputs.HELM_VERSION }}
 
       - name: Add helm repositories
-        if: steps.detect.outputs.release == 'true'
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add stable https://charts.helm.sh/stable
           helm repo update
 
-      - name: Verify charts (lint + unittest + kubeconform)
-        if: steps.detect.outputs.release == 'true'
+      - name: Detect charts to release
+        id: detect
         run: |
-          set -euo pipefail
-          for chart in $(echo '${{ steps.detect.outputs.charts }}' | jq -r '.[]'); do
-            echo "=== Verifying $chart ==="
-            helm dependency build charts/$chart
-            helm lint charts/$chart
-            helm unittest charts/$chart
-            helm template release-$chart charts/$chart | kubeconform -strict -ignore-missing-schemas -summary
+          charts_to_release=""
+          for chart_dir in charts/*/; do
+            chart=$(basename "$chart_dir")
+            version=$(awk '/^version:/ {print $2; exit}' "$chart_dir/Chart.yaml")
+            tag="${chart}-${version}"
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
+              echo "Skip: $chart v$version (already released)"
+            else
+              echo "Release: $chart v$version"
+              charts_to_release="${charts_to_release}${chart}"$'\n'
+            fi
           done
 
-      - name: Create gh-pages branch if it doesn't exist
+          if [[ -n "$charts_to_release" ]]; then
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "$charts_to_release" | grep -v '^$' > charts-to-release.txt
+          else
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            echo "No charts to release"
+          fi
+
+      - name: Build chart dependencies
+        if: steps.detect.outputs.release == 'true'
+        run: |
+          while read -r chart; do
+            helm dependency build "charts/$chart"
+          done < charts-to-release.txt
+
+      - name: Create gh-pages branch if needed
         if: steps.detect.outputs.release == 'true'
         run: |
           if ! git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
-            echo "Creating gh-pages branch..."
             git checkout --orphan gh-pages
             git rm -rf .
-            echo "# Helm Charts Repository" > README.md
+            echo "# Helm Charts" > README.md
             git add README.md
-            git commit -m "Initial gh-pages branch"
+            git commit -m "Initialize gh-pages"
             git push origin gh-pages
-            git checkout "${{ github.event.workflow_run.head_sha || github.ref }}"
-          else
-            echo "gh-pages branch already exists"
+            git checkout -
           fi
 
       - name: Run chart-releaser
         if: steps.detect.outputs.release == 'true'
-        uses: helm/chart-releaser-action@v1.7.0
+        uses: helm/chart-releaser-action@v1
         with:
           config: cr.yaml
-          mark_as_latest: true
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to GHCR (OCI)
-        if: steps.detect.outputs.release == 'true'
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io --username "${{ github.actor }}" --password-stdin
-
-      - name: Publish charts to OCI registry
+      - name: Push to OCI registry
         if: steps.detect.outputs.release == 'true'
         env:
-          OCI_REPOSITORY: ghcr.io/${{ github.repository_owner }}/helm-charts
+          OCI_REGISTRY: ghcr.io/${{ github.repository_owner }}/helm-charts
         run: |
-          set -euo pipefail
-          export HELM_EXPERIMENTAL_OCI=1
-          if [ ! -d ".cr-release-packages" ]; then
-            echo "No packaged charts found, skipping OCI publish."
-            exit 0
-          fi
-          shopt -s nullglob
-          shopt -s nullglob
-          for chart in $(echo '${{ steps.detect.outputs.charts }}' | jq -r '.[]'); do
-            pkg=$(ls .cr-release-packages/"$chart"-*.tgz 2>/dev/null | sort | tail -n1 || true)
-            if [ -z "$pkg" ]; then
-              echo "No package found for $chart, skipping OCI push."
-              continue
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+          while read -r chart; do
+            pkg=$(ls .cr-release-packages/${chart}-*.tgz 2>/dev/null | head -1)
+            if [[ -n "$pkg" ]]; then
+              echo "Pushing $pkg to oci://$OCI_REGISTRY"
+              helm push "$pkg" "oci://$OCI_REGISTRY"
             fi
-            echo "Pushing $pkg to $OCI_REPOSITORY"
-            helm push "$pkg" "oci://$OCI_REPOSITORY"
-          done
+          done < charts-to-release.txt
 
-      - name: Update gh-pages landing page and metadata
+      - name: Update gh-pages assets
         if: steps.detect.outputs.release == 'true'
         run: |
-          set -euo pipefail
           git fetch origin gh-pages
-          worktree_dir=$(mktemp -d)
-          git worktree add "$worktree_dir" gh-pages
-          cp index.html "$worktree_dir/index.html"
-          if [ -f artifacthub-repo.yml ]; then
-            cp artifacthub-repo.yml "$worktree_dir/artifacthub-repo.yml"
-          fi
-          pushd "$worktree_dir" >/dev/null
-          git add index.html artifacthub-repo.yml
-          if git diff --staged --quiet; then
-            echo "No changes to landing page or metadata"
-          else
-            git commit -m "Update landing page and metadata"
+          git worktree add gh-pages-branch gh-pages
+
+          [[ -f index.html ]] && cp index.html gh-pages-branch/
+          [[ -f artifacthub-repo.yml ]] && cp artifacthub-repo.yml gh-pages-branch/
+
+          cd gh-pages-branch
+          git add -A
+          if ! git diff --staged --quiet; then
+            git commit -m "Update gh-pages assets"
             git push origin gh-pages
           fi
-          popd >/dev/null
-          git worktree remove "$worktree_dir"
 
-      - name: Nothing to release
-        if: steps.detect.outputs.release != 'true'
-        run: |
-          echo "Release workflow ended: no chart versions changed."
+          cd ..
+          git worktree remove gh-pages-branch
