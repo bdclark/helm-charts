@@ -1,0 +1,136 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install qbittorrent-vpn bdclark/qbittorrent-vpn -f values.yaml
+```
+
+## Gluetun Sidecar
+
+[Gluetun](https://github.com/qdm12/gluetun) runs as a sidecar to route all traffic through a VPN tunnel.
+By default it runs as a native sidecar (requires Kubernetes 1.29+). Set `gluetun.lifecycleMode: standard`
+for older clusters.
+
+Gluetun requires provider-specific configuration via environment variables. See the
+[Gluetun wiki](https://github.com/qdm12/gluetun-wiki) for setup details.
+
+## Environment Variables
+
+Both containers support environment variables via `env` (inline values or refs) and `envFrom` (bulk refs).
+
+```yaml
+qbittorrent:
+  env:
+    TZ: America/New_York
+    PUID: "1000"
+    PGID: "1000"
+
+gluetun:
+  env:
+    VPN_SERVICE_PROVIDER: protonvpn
+    VPN_TYPE: wireguard
+    SERVER_COUNTRIES: Netherlands
+    WIREGUARD_PRIVATE_KEY:
+      valueFrom:
+        secretKeyRef:
+          name: gluetun-vpn
+          key: wireguard-private-key
+```
+
+For bulk environment variables from ConfigMaps or Secrets:
+
+```yaml
+gluetun:
+  envFrom:
+    - secretRef:
+        name: gluetun-credentials
+```
+
+## Config Bootstrapping
+
+The chart can seed a qBittorrent config file on first run when `qbittorrent.config.bootstrap.enabled`
+is true (the default). Inline config creates a ConfigMap automatically:
+
+```yaml
+qbittorrent:
+  config:
+    bootstrap:
+      enabled: true
+      config: |
+        [LegalNotice]
+        Accepted=true
+
+        [Preferences]
+        Downloads\SavePath=/downloads/
+        WebUI\Address=*
+```
+
+To use an existing ConfigMap or Secret:
+
+```yaml
+qbittorrent:
+  config:
+    bootstrap:
+      existingConfig:
+        type: secret  # or "configMap"
+        name: qbittorrent-config
+        key: qBittorrent.conf
+```
+
+## WebUI Password
+
+The WebUI password can be injected from a Secret containing a PBKDF2-hashed password.
+Generate one externally or extract from an existing qBittorrent config.
+
+```yaml
+qbittorrent:
+  config:
+    bootstrap:
+      webuiPassword:
+        mode: ifMissing  # or "overwrite"
+        existingSecret:
+          name: qbittorrent-webui
+          key: WebUI_Password_PBKDF2
+```
+
+Modes:
+- `disabled` - no password management (default)
+- `ifMissing` - set only if not already present in config
+- `overwrite` - replace password on every container start
+
+## Persistence
+
+Config persistence is enabled by default. Downloads persistence must be explicitly enabled.
+
+```yaml
+qbittorrent:
+  persistence:
+    config:
+      enabled: true
+      size: 2Gi
+    downloads:
+      enabled: true
+      size: 100Gi
+      storageClass: fast-storage
+      # existingClaim: my-downloads-pvc
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).

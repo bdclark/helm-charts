@@ -23,7 +23,7 @@ tasks:
       - echo "Ensuring helm-unittest plugin..."
       - |
         if ! helm plugin list 2>/dev/null | grep -q "unittest"; then
-          helm plugin install https://github.com/helm-unittest/helm-unittest --version v0.3.5
+          helm plugin install https://github.com/helm-unittest/helm-unittest --version v1.0.3
         fi
       - echo "Ensuring kubeconform..."
       - |

@@ -1,0 +1,11 @@
+{{- if and .Values.qbittorrent.config.bootstrap.enabled (not .Values.qbittorrent.config.bootstrap.existingConfig.type) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qbittorrent-vpn.fullname" . }}-bootstrap
+  labels:
+    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+data:
+  qBittorrent.conf: |
+{{ .Values.qbittorrent.config.bootstrap.config | indent 4 }}
+{{- end }}

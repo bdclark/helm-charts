@@ -1,0 +1,356 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should create deployment with default values
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-qbittorrent-vpn
+      - equal:
+          path: spec.replicas
+          value: 1
+
+  - it: should use default strategy
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+
+  - it: should use custom strategy
+    set:
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+
+  - it: should use qbittorrent image with chart appVersion by default
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].image
+          pattern: "^lscr.io/linuxserver/qbittorrent:"
+
+  - it: should use custom qbittorrent image
+    set:
+      qbittorrent.image.repository: my-qbittorrent
+      qbittorrent.image.tag: "custom"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].image
+          value: "my-qbittorrent:custom"
+
+  - it: should apply deployment annotations
+    set:
+      deploymentAnnotations:
+        custom.annotation: "value"
+    asserts:
+      - equal:
+          path: metadata.annotations["custom.annotation"]
+          value: "value"
+
+  - it: should apply extra deployment labels
+    set:
+      extraDeploymentLabels:
+        custom-label: "value"
+    asserts:
+      - equal:
+          path: metadata.labels["custom-label"]
+          value: "value"
+
+  - it: should apply pod annotations
+    set:
+      podAnnotations:
+        pod.annotation: "value"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["pod.annotation"]
+          value: "value"
+
+  - it: should apply pod labels
+    set:
+      podLabels:
+        pod-label: "value"
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["pod-label"]
+          value: "value"
+
+  - it: should apply pod security context
+    set:
+      podSecurityContext:
+        fsGroup: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+
+  - it: should apply container security context
+    set:
+      qbittorrent.securityContext:
+        runAsUser: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].securityContext.runAsUser
+          value: 1000
+
+  - it: should apply resource limits
+    set:
+      qbittorrent.resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].resources.limits.cpu
+          value: 100m
+
+  - it: should expose qbittorrent ports
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].ports
+          content:
+            name: http
+            containerPort: 8080
+            protocol: TCP
+
+  - it: should set environment variables
+    set:
+      qbittorrent.env:
+        TZ: "Etc/UTC"
+        PUID: "1000"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].env
+          content:
+            name: TZ
+            value: "Etc/UTC"
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].env
+          content:
+            name: PUID
+            value: "1000"
+
+  - it: should set envFrom
+    set:
+      qbittorrent.envFrom:
+        - configMapRef:
+            name: my-config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].envFrom
+          content:
+            configMapRef:
+              name: my-config
+
+  # Gluetun sidecar tests
+  - it: should include gluetun as native sidecar by default
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: gluetun
+          any: true
+
+  - it: should include gluetun as standard container when lifecycleMode is standard
+    set:
+      gluetun.lifecycleMode: standard
+    asserts:
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: gluetun
+          any: true
+
+  - it: should not include gluetun when disabled
+    set:
+      gluetun.enabled: false
+    asserts:
+      - notContains:
+          path: spec.template.spec.initContainers
+          content:
+            name: gluetun
+          any: true
+      - notContains:
+          path: spec.template.spec.containers
+          content:
+            name: gluetun
+          any: true
+
+  - it: should mount tun device when gluetun needs it
+    set:
+      gluetun.needsTunDevice: true
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tun
+            hostPath:
+              path: /dev/net/tun
+              type: CharDevice
+
+  - it: should not mount tun device when gluetun does not need it
+    set:
+      gluetun.needsTunDevice: false
+    asserts:
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: tun
+          any: true
+
+  # Persistence tests
+  - it: should mount config volume when persistence enabled
+    set:
+      qbittorrent.persistence.config.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].volumeMounts
+          content:
+            name: config
+            mountPath: /config
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-qbittorrent-vpn-config
+
+  - it: should use existing claim for config
+    set:
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.existingClaim: my-existing-config
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            persistentVolumeClaim:
+              claimName: my-existing-config
+
+  - it: should mount downloads volume when persistence enabled
+    set:
+      qbittorrent.persistence.downloads.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].volumeMounts
+          content:
+            name: downloads
+            mountPath: /downloads
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: downloads
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-qbittorrent-vpn-downloads
+
+  # Bootstrap tests
+  - it: should include bootstrap init container when enabled
+    set:
+      qbittorrent.config.bootstrap.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: qbittorrent-bootstrap
+          any: true
+
+  - it: should not include bootstrap init container when disabled
+    set:
+      qbittorrent.config.bootstrap.enabled: false
+    asserts:
+      - notContains:
+          path: spec.template.spec.initContainers
+          content:
+            name: qbittorrent-bootstrap
+          any: true
+
+  - it: should include bootstrap volume when enabled
+    set:
+      qbittorrent.config.bootstrap.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: qbittorrent-bootstrap
+          any: true
+
+  # Node scheduling tests
+  - it: should apply node selector
+    set:
+      nodeSelector:
+        kubernetes.io/os: linux
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector["kubernetes.io/os"]
+          value: linux
+
+  - it: should apply tolerations
+    set:
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          effect: "NoSchedule"
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "node-role.kubernetes.io/master"
+            effect: "NoSchedule"
+
+  - it: should apply affinity
+    set:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                      - us-east-1a
+    asserts:
+      - isNotNull:
+          path: spec.template.spec.affinity.nodeAffinity
+
+  # Additional containers/volumes
+  - it: should include extra containers
+    set:
+      extraContainers:
+        - name: sidecar
+          image: busybox
+    asserts:
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: sidecar
+            image: busybox
+
+  - it: should include additional volumes
+    set:
+      volumes:
+        - name: extra-volume
+          emptyDir: {}
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: extra-volume
+            emptyDir: {}
+
+  - it: should include additional volume mounts
+    set:
+      qbittorrent.volumeMounts:
+        - name: extra-volume
+          mountPath: /extra
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "qbittorrent")].volumeMounts
+          content:
+            name: extra-volume
+            mountPath: /extra

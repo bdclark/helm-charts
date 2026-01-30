@@ -1,0 +1,83 @@
+{{- if and .Values.qbittorrent.persistence.config.enabled (not .Values.qbittorrent.persistence.config.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qbittorrent-vpn.fullname" . }}-config
+  labels:
+    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+  {{- with .Values.qbittorrent.persistence.config.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- range .Values.qbittorrent.persistence.config.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.qbittorrent.persistence.config.size | quote }}
+  {{- if .Values.qbittorrent.persistence.config.storageClass }}
+  {{- if (eq "-" .Values.qbittorrent.persistence.config.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: {{ .Values.qbittorrent.persistence.config.storageClass | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- if and .Values.qbittorrent.persistence.downloads.enabled (not .Values.qbittorrent.persistence.downloads.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qbittorrent-vpn.fullname" . }}-downloads
+  labels:
+    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+  {{- with .Values.qbittorrent.persistence.downloads.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- range .Values.qbittorrent.persistence.downloads.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.qbittorrent.persistence.downloads.size | quote }}
+  {{- if .Values.qbittorrent.persistence.downloads.storageClass }}
+  {{- if (eq "-" .Values.qbittorrent.persistence.downloads.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: {{ .Values.qbittorrent.persistence.downloads.storageClass | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- if and .Values.gluetun.persistence.enabled (not .Values.gluetun.persistence.existingClaim) }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "qbittorrent-vpn.fullname" . }}-gluetun
+  labels:
+    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+  {{- with .Values.gluetun.persistence.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- range .Values.gluetun.persistence.accessModes }}
+    - {{ . | quote }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.gluetun.persistence.size | quote }}
+  {{- if .Values.gluetun.persistence.storageClass }}
+  {{- if (eq "-" .Values.gluetun.persistence.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: {{ .Values.gluetun.persistence.storageClass | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
