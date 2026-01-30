@@ -39,7 +39,7 @@ Gluetun container
   resources:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if or $ctx.needsTunDevice $ctx.persistence.enabled $ctx.volumeMounts }}
+  {{- if or $ctx.needsTunDevice $ctx.persistence.enabled $ctx.controlServer.enabled $ctx.volumeMounts }}
   volumeMounts:
   {{- if $ctx.needsTunDevice }}
     - name: tun
@@ -48,6 +48,12 @@ Gluetun container
   {{- if $ctx.persistence.enabled }}
     - name: gluetun
       mountPath: /gluetun
+  {{- end }}
+  {{- if $ctx.controlServer.enabled }}
+    - name: gluetun-control-auth
+      mountPath: {{ $ctx.controlServer.mountPath }}/{{ $ctx.controlServer.fileName }}
+      subPath: {{ $ctx.controlServer.fileName }}
+      readOnly: true
   {{- end }}
   {{- with $ctx.volumeMounts }}
     {{- toYaml . | nindent 4 }}

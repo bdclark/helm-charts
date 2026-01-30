@@ -205,6 +205,118 @@ tests:
             name: tun
           any: true
 
+  # Gluetun control server tests
+  - it: should not include control server volume when disabled
+    asserts:
+      - notContains:
+          path: spec.template.spec.volumes
+          content:
+            name: gluetun-control-auth
+          any: true
+
+  - it: should include control server volume with inline config
+    set:
+      gluetun.controlServer.enabled: true
+      gluetun.controlServer.config: |
+        [[roles]]
+        name = "test"
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: gluetun-control-auth
+            secret:
+              secretName: RELEASE-NAME-qbittorrent-vpn-gluetun-control-auth
+              items:
+                - key: config.toml
+                  path: config.toml
+
+  - it: should include control server volume with existingSecret
+    set:
+      gluetun.controlServer.enabled: true
+      gluetun.controlServer.existingSecret.name: my-auth-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: gluetun-control-auth
+            secret:
+              secretName: my-auth-secret
+              items:
+                - key: config.toml
+                  path: config.toml
+
+  - it: should use custom existingSecret key
+    set:
+      gluetun.controlServer.enabled: true
+      gluetun.controlServer.existingSecret.name: my-auth-secret
+      gluetun.controlServer.existingSecret.key: auth.toml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: gluetun-control-auth
+            secret:
+              secretName: my-auth-secret
+              items:
+                - key: auth.toml
+                  path: config.toml
+
+  - it: should mount control server config in gluetun container (native sidecar)
+    set:
+      gluetun.controlServer.enabled: true
+      gluetun.controlServer.existingSecret.name: my-auth-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[?(@.name == "gluetun")].volumeMounts
+          content:
+            name: gluetun-control-auth
+            mountPath: /gluetun/auth/config.toml
+            subPath: config.toml
+            readOnly: true
+
+  - it: should mount control server config in gluetun container (standard mode)
+    set:
+      gluetun.lifecycleMode: standard
+      gluetun.controlServer.enabled: true
+      gluetun.controlServer.existingSecret.name: my-auth-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[?(@.name == "gluetun")].volumeMounts
+          content:
+            name: gluetun-control-auth
+            mountPath: /gluetun/auth/config.toml
+            subPath: config.toml
+            readOnly: true
+
+  - it: should use custom mountPath for control server config
+    set:
+      gluetun.controlServer.enabled: true
+      gluetun.controlServer.mountPath: /custom/auth
+      gluetun.controlServer.existingSecret.name: my-auth-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[?(@.name == "gluetun")].volumeMounts
+          content:
+            name: gluetun-control-auth
+            mountPath: /custom/auth/config.toml
+            subPath: config.toml
+            readOnly: true
+
+  - it: should use custom fileName for control server config
+    set:
+      gluetun.controlServer.enabled: true
+      gluetun.controlServer.fileName: auth.toml
+      gluetun.controlServer.existingSecret.name: my-auth-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[?(@.name == "gluetun")].volumeMounts
+          content:
+            name: gluetun-control-auth
+            mountPath: /gluetun/auth/auth.toml
+            subPath: auth.toml
+            readOnly: true
+
   # Persistence tests
   - it: should mount config volume when persistence enabled
     set:

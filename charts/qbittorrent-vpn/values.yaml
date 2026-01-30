@@ -276,6 +276,36 @@ gluetun:
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
+  # Control server authentication configuration
+  # See: https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md
+  controlServer:
+    # -- Enable control server authentication config file.
+    enabled: false
+    # -- Mount path for the auth config directory.
+    mountPath: /gluetun/auth
+    # -- Config file name.
+    fileName: config.toml
+
+    existingSecret:
+      # -- Name of an existing Secret containing the TOML config.
+      # If empty and config is set, a Secret will be created from the inline config.
+      name: ""
+      # -- Key within the Secret.
+      key: config.toml
+
+    # -- Inline TOML config. Creates a chart-managed Secret when
+    # existingSecret.name is empty. Visible in Helm values/history,
+    # so not recommended for production.
+    # @default -- "" (disabled)
+    config: ""
+    # Example:
+    # config: |
+    #   [[roles]]
+    #   name = "qbittorrent"
+    #   routes = ["GET /v1/portforward"]
+    #   auth = "apikey"
+    #   apikey = "your-api-key"
+
 service:
   # -- Service type.
   type: ClusterIP

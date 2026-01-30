@@ -1,6 +1,6 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
@@ -21,6 +21,36 @@ for older clusters.
 
 Gluetun requires provider-specific configuration via environment variables. See the
 [Gluetun wiki](https://github.com/qdm12/gluetun-wiki) for setup details.
+
+### Control Server Authentication
+
+Gluetun's [control server](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md)
+can be protected with role-based authentication. Enable `gluetun.controlServer` to mount a TOML config file:
+
+```yaml
+gluetun:
+  env:
+    HTTP_CONTROL_SERVER_AUTH_CONFIG: /gluetun/auth/config.toml
+  controlServer:
+    enabled: true
+    config: |
+      [[roles]]
+      name = "readonly"
+      routes = ["GET /v1/publicip/ip"]
+      auth = "apikey"
+      apikey = "my-secret-key"
+```
+
+For production, use an existing Secret instead of inline config:
+
+```yaml
+gluetun:
+  controlServer:
+    enabled: true
+    existingSecret:
+      name: gluetun-control-auth
+      key: config.toml
+```
 
 ## Environment Variables
 
@@ -54,7 +84,7 @@ gluetun:
         name: gluetun-credentials
 ```
 
-## Config Bootstrapping
+## qBittorrent Config Bootstrapping
 
 The chart can seed a qBittorrent config file on first run when `qbittorrent.config.bootstrap.enabled`
 is true (the default). Inline config creates a ConfigMap automatically:
@@ -102,6 +132,7 @@ qbittorrent:
 ```
 
 Modes:
+
 - `disabled` - no password management (default)
 - `ifMissing` - set only if not already present in config
 - `overwrite` - replace password on every container start
@@ -191,6 +222,12 @@ qbittorrent:
 | gluetun.persistence.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
 | gluetun.persistence.annotations | object | `{}` | PVC annotations. |
 | gluetun.volumeMounts | list | `[]` | Additional volume mounts. |
+| gluetun.controlServer.enabled | bool | `false` | Enable control server authentication config file. |
+| gluetun.controlServer.mountPath | string | `"/gluetun/auth"` | Mount path for the auth config directory. |
+| gluetun.controlServer.fileName | string | `"config.toml"` | Config file name. |
+| gluetun.controlServer.existingSecret.name | string | `""` | Name of an existing Secret containing the TOML config. If empty and config is set, a Secret will be created from the inline config. |
+| gluetun.controlServer.existingSecret.key | string | `"config.toml"` | Key within the Secret. |
+| gluetun.controlServer.config | string | "" (disabled) | Inline TOML config. Creates a chart-managed Secret when existingSecret.name is empty. Visible in Helm values/history, so not recommended for production. |
 | service.type | string | `"ClusterIP"` | Service type. |
 | service.port | int | `8080` | Service port. |
 | ingress.enabled | bool | `false` | Enable Ingress. |

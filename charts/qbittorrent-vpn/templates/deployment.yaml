@@ -112,6 +112,7 @@ spec:
         .Values.qbittorrent.persistence.downloads.enabled
         .Values.gluetun.persistence.enabled
         .Values.gluetun.needsTunDevice
+        .Values.gluetun.controlServer.enabled
         .Values.qbittorrent.config.bootstrap.enabled
         .Values.volumes }}
       volumes:
@@ -135,6 +136,14 @@ spec:
         - name: gluetun
           persistentVolumeClaim:
             claimName: {{ include "qbittorrent-vpn.pvcName" (dict "ctx" .Values.gluetun.persistence "root" . "suffix" "gluetun") }}
+      {{- end }}
+      {{- if .Values.gluetun.controlServer.enabled }}
+        - name: gluetun-control-auth
+          secret:
+            secretName: {{ .Values.gluetun.controlServer.existingSecret.name | default (printf "%s-gluetun-control-auth" (include "qbittorrent-vpn.fullname" .)) }}
+            items:
+              - key: {{ .Values.gluetun.controlServer.existingSecret.key | default .Values.gluetun.controlServer.fileName }}
+                path: {{ .Values.gluetun.controlServer.fileName }}
       {{- end }}
       {{- if .Values.qbittorrent.config.bootstrap.enabled }}
           {{- include "qbittorrent-vpn.getBootstrapVolume" . | nindent 8 }}
