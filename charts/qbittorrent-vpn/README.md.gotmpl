@@ -56,6 +56,21 @@ gluetun:
       key: config.toml
 ```
 
+### Control Server Service
+
+To expose the Gluetun control server within the cluster, enable the dedicated service:
+
+```yaml
+gluetun:
+  service:
+    enabled: true
+    port: 8000
+```
+
+This creates a separate Service for the control server API (default port 8000), allowing other
+applications to query VPN status or trigger actions via the
+[control server endpoints](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md).
+
 ## Environment Variables
 
 Both containers support environment variables via `env` (inline values or refs) and `envFrom` (bulk refs).

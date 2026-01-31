@@ -205,6 +205,29 @@ tests:
             name: tun
           any: true
 
+  - it: should expose control port when gluetun service enabled
+    set:
+      gluetun.service.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[?(@.name == "gluetun")].ports
+          content:
+            name: control
+            containerPort: 8000
+            protocol: TCP
+
+  - it: should use custom control port when configured
+    set:
+      gluetun.service.enabled: true
+      gluetun.service.port: 9000
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[?(@.name == "gluetun")].ports
+          content:
+            name: control
+            containerPort: 9000
+            protocol: TCP
+
   # Gluetun control server tests
   - it: should not include control server volume when disabled
     asserts:

@@ -1,0 +1,79 @@
+suite: test gluetun service
+templates:
+  - service-gluetun.yaml
+tests:
+  - it: should not create gluetun service by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create gluetun service when gluetun disabled
+    set:
+      gluetun.enabled: false
+      gluetun.service.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create gluetun service when enabled
+    set:
+      gluetun.service.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-qbittorrent-vpn-gluetun
+
+  - it: should use default service type
+    set:
+      gluetun.service.enabled: true
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+
+  - it: should use custom service type
+    set:
+      gluetun.service.enabled: true
+      gluetun.service.type: NodePort
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+
+  - it: should expose control port with default value
+    set:
+      gluetun.service.enabled: true
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: control
+            port: 8000
+            targetPort: control
+            protocol: TCP
+
+  - it: should use custom port
+    set:
+      gluetun.service.enabled: true
+      gluetun.service.port: 9000
+    asserts:
+      - contains:
+          path: spec.ports
+          content:
+            name: control
+            port: 9000
+            targetPort: control
+            protocol: TCP
+
+  - it: should have correct selector labels
+    set:
+      gluetun.service.enabled: true
+    asserts:
+      - isNotNull:
+          path: spec.selector["app.kubernetes.io/name"]
+      - isNotNull:
+          path: spec.selector["app.kubernetes.io/instance"]
