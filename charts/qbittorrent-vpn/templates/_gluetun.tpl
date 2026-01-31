@@ -23,9 +23,16 @@ Gluetun container
   envFrom:
     {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- with $ctx.ports }}
+  {{- if or $ctx.ports $ctx.service.enabled }}
   ports:
+    {{- with $ctx.ports }}
     {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- if $ctx.service.enabled }}
+    - name: control
+      containerPort: {{ $ctx.service.port }}
+      protocol: TCP
+    {{- end }}
   {{- end }}
   {{- with $ctx.livenessProbe }}
   livenessProbe:

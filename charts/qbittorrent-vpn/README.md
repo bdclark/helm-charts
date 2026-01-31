@@ -1,6 +1,6 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
@@ -51,6 +51,21 @@ gluetun:
       name: gluetun-control-auth
       key: config.toml
 ```
+
+### Control Server Service
+
+To expose the Gluetun control server within the cluster, enable the dedicated service:
+
+```yaml
+gluetun:
+  service:
+    enabled: true
+    port: 8000
+```
+
+This creates a separate Service for the control server API (default port 8000), allowing other
+applications to query VPN status or trigger actions via the
+[control server endpoints](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md).
 
 ## Environment Variables
 
@@ -201,6 +216,13 @@ qbittorrent:
 | qbittorrent.persistence.downloads.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
 | qbittorrent.persistence.downloads.annotations | object | `{}` | PVC annotations. |
 | qbittorrent.volumeMounts | list | `[]` | Additional volume mounts. |
+| qbittorrent.service.type | string | `"ClusterIP"` | Service type. |
+| qbittorrent.service.port | int | `8080` | Service port. |
+| qbittorrent.ingress.enabled | bool | `false` | Enable Ingress. |
+| qbittorrent.ingress.className | string | `""` | Ingress class name. |
+| qbittorrent.ingress.annotations | object | `{}` | Ingress annotations. |
+| qbittorrent.ingress.hosts | list | `[{"host":"qbittorrent.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts. |
+| qbittorrent.ingress.tls | list | `[]` | Ingress TLS configuration. |
 | gluetun.enabled | bool | `true` | Enable VPN sidecar. |
 | gluetun.lifecycleMode | string | `"nativeSidecar"` | Lifecycle mode: "nativeSidecar" or "standard". Native sidecars (initContainer with restartPolicy Always) require Kubernetes 1.29+. |
 | gluetun.lifecycleHooks | object | `{}` | Container lifecycle hooks. |
@@ -228,13 +250,9 @@ qbittorrent:
 | gluetun.controlServer.existingSecret.name | string | `""` | Name of an existing Secret containing the TOML config. If empty and config is set, a Secret will be created from the inline config. |
 | gluetun.controlServer.existingSecret.key | string | `"config.toml"` | Key within the Secret. |
 | gluetun.controlServer.config | string | "" (disabled) | Inline TOML config. Creates a chart-managed Secret when existingSecret.name is empty. Visible in Helm values/history, so not recommended for production. |
-| service.type | string | `"ClusterIP"` | Service type. |
-| service.port | int | `8080` | Service port. |
-| ingress.enabled | bool | `false` | Enable Ingress. |
-| ingress.className | string | `""` | Ingress class name. |
-| ingress.annotations | object | `{}` | Ingress annotations. |
-| ingress.hosts | list | `[{"host":"qbittorrent.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts. |
-| ingress.tls | list | `[]` | Ingress TLS configuration. |
+| gluetun.service.enabled | bool | `false` | Enable gluetun control server service. |
+| gluetun.service.type | string | `"ClusterIP"` | Service type. |
+| gluetun.service.port | int | `8000` | Service port. |
 | initContainers | list | `[]` | Additional init containers (run before gluetun if native sidecar mode). |
 | extraContainers | list | `[]` | Additional containers. |
 | volumes | list | `[]` | Additional volumes. |

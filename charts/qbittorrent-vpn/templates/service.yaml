@@ -5,9 +5,9 @@ metadata:
   labels:
     {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.qbittorrent.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.qbittorrent.service.port }}
       targetPort: http
       protocol: TCP
       name: http

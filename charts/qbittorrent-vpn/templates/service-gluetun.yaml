@@ -1,0 +1,17 @@
+{{- if and .Values.gluetun.enabled .Values.gluetun.service.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "qbittorrent-vpn.fullname" . }}-gluetun
+  labels:
+    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.gluetun.service.type }}
+  ports:
+    - port: {{ .Values.gluetun.service.port }}
+      targetPort: control
+      protocol: TCP
+      name: control
+  selector:
+    {{- include "qbittorrent-vpn.selectorLabels" . | nindent 4 }}
+{{- end }}
