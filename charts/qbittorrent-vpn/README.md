@@ -1,6 +1,6 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
@@ -189,6 +189,7 @@ qbittorrent:
 | qbittorrent.securityContext | object | `{}` | Container security context. |
 | qbittorrent.resources | object | `{}` | Resource requests and limits. |
 | qbittorrent.ports | list | `[{"containerPort":8080,"name":"http","protocol":"TCP"}]` | Container ports. |
+| qbittorrent.startupProbe | object | `{}` | Startup probe configuration. |
 | qbittorrent.livenessProbe | object | `{}` | Liveness probe configuration. |
 | qbittorrent.readinessProbe | object | `{}` | Readiness probe configuration. |
 | qbittorrent.env | object | `{}` (see values.yaml comments for examples) | Environment variables. |
@@ -233,6 +234,7 @@ qbittorrent:
 | gluetun.securityContext | object | `{"capabilities":{"add":["NET_ADMIN"]}}` | Container security context. |
 | gluetun.resources | object | `{}` | Resource requests and limits. |
 | gluetun.ports | list | `[]` | Container ports. |
+| gluetun.startupProbe | object | `{}` | Startup probe configuration. |
 | gluetun.livenessProbe | object | `{}` | Liveness probe configuration. |
 | gluetun.readinessProbe | object | `{}` | Readiness probe configuration. |
 | gluetun.env | object | `{}` (see values.yaml comments for examples) | Environment variables. |

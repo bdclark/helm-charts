@@ -34,6 +34,10 @@ Gluetun container
       protocol: TCP
     {{- end }}
   {{- end }}
+  {{- with $ctx.startupProbe }}
+  startupProbe:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with $ctx.livenessProbe }}
   livenessProbe:
     {{- toYaml . | nindent 4 }}
