@@ -78,6 +78,10 @@ spec:
           ports:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+         {{- with .Values.qbittorrent.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- with .Values.qbittorrent.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

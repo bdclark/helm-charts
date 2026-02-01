@@ -63,6 +63,8 @@ qbittorrent:
       containerPort: 8080
       protocol: TCP
 
+  # -- Startup probe configuration.
+  startupProbe: {}
   # -- Liveness probe configuration.
   livenessProbe: {}
     # httpGet:
@@ -252,6 +254,8 @@ gluetun:
     #   containerPort: 1194
     #   protocol: UDP
 
+  # -- Startup probe configuration.
+  startupProbe: {}
   # -- Liveness probe configuration.
   livenessProbe: {}
   # -- Readiness probe configuration.
