@@ -1,0 +1,169 @@
+# -- Override the release name.
+nameOverride: ""
+# -- Override the full release name.
+fullnameOverride: ""
+
+# -- Number of replicas.
+replicaCount: 1
+
+# -- Deployment update strategy.
+strategy:
+  type: Recreate
+
+# -- Image pull secrets.
+imagePullSecrets: []
+
+# -- Annotations for the Deployment.
+deploymentAnnotations: {}
+
+# -- Additional labels for the Deployment.
+extraDeploymentLabels: {}
+
+# -- Annotations for pods.
+podAnnotations: {}
+
+# -- Additional labels for pods.
+podLabels: {}
+
+# -- Pod security context.
+podSecurityContext: {}
+  # fsGroup: 2000
+
+image:
+  # -- Image repository.
+  repository: lscr.io/linuxserver/prowlarr
+  # -- Image tag (defaults to chart appVersion).
+  tag: ""
+  # -- Image pull policy.
+  pullPolicy: IfNotPresent
+
+# -- Container security context.
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# -- Resource requests and limits.
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Container ports.
+ports:
+  - name: http
+    containerPort: 9696
+    protocol: TCP
+
+# -- Startup probe configuration.
+startupProbe: {}
+# -- Liveness probe configuration.
+livenessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: http
+# -- Readiness probe configuration.
+readinessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: http
+
+# -- Environment variables.
+# @default -- `{}` (see values.yaml comments for examples)
+env: {}
+  # TZ: Etc/UTC
+  # PUID: "1000"
+  # PGID: "1000"
+  # MY_PASSWORD:
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: mysecret
+  #       key: password
+
+# -- Environment variables from ConfigMaps or Secrets.
+envFrom: []
+  # - configMapRef:
+  #     name: prowlarr-env
+  # - secretRef:
+  #     name: prowlarr-secret-env
+
+# Persistent storage for config
+persistence:
+  # -- Enable persistence for config.
+  enabled: true
+  # -- Mount path.
+  mountPath: /config
+  # -- Storage class ("-" for default, "" for cluster default).
+  storageClass: ""
+  # -- Access modes.
+  accessModes:
+    - ReadWriteOnce
+  # -- Volume size.
+  size: 1Gi
+  # -- Use existing PVC (disables provisioning).
+  existingClaim: ""
+  # -- PVC annotations.
+  annotations: {}
+    # k8up.io/backup: "true"
+
+# -- Additional volume mounts.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+service:
+  # -- Service type.
+  type: ClusterIP
+  # -- Service port.
+  port: 9696
+
+# Ingress configuration
+ingress:
+  # -- Enable Ingress.
+  enabled: false
+  # -- Ingress class name.
+  className: ""
+  # -- Ingress annotations.
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  # -- Ingress hosts.
+  hosts:
+    - host: prowlarr.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- Ingress TLS configuration.
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# -- Additional init containers.
+initContainers: []
+
+# -- Additional containers.
+extraContainers: []
+
+# -- Additional volumes.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# -- Node selector.
+nodeSelector: {}
+
+# -- Tolerations.
+tolerations: []
+
+# -- Affinity rules.
+affinity: {}

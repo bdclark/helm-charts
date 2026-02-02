@@ -1,0 +1,48 @@
+suite: test service
+templates:
+  - service.yaml
+tests:
+  - it: should create service with default values
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-prowlarr
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].port
+          value: 9696
+      - equal:
+          path: spec.ports[0].targetPort
+          value: http
+      - equal:
+          path: spec.ports[0].name
+          value: http
+
+  - it: should use custom service type
+    set:
+      service.type: NodePort
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+
+  - it: should use custom service port
+    set:
+      service.port: 8080
+    asserts:
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+
+  - it: should have correct selector labels
+    asserts:
+      - equal:
+          path: spec.selector["app.kubernetes.io/name"]
+          value: prowlarr
+      - equal:
+          path: spec.selector["app.kubernetes.io/instance"]
+          value: RELEASE-NAME

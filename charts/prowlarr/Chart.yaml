@@ -1,0 +1,28 @@
+apiVersion: v2
+name: prowlarr
+description: Indexer manager for usenet and torrent users
+type: application
+version: "0.1.0"
+appVersion: "2.3.0"
+icon: https://raw.githubusercontent.com/Prowlarr/Prowlarr/develop/Logo/Prowlarr.svg
+keywords:
+  - indexer
+  - usenet
+  - torrent
+  - servarr
+home: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+    - name: Prowlarr
+      url: https://prowlarr.com
+    - name: Prowlarr GitHub
+      url: https://github.com/Prowlarr/Prowlarr
+maintainers:
+  - name: bdclark
+    email: brian@clark.zone
+    url: https://github.com/bdclark
