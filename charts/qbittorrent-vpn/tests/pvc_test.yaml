@@ -70,33 +70,33 @@ tests:
           value: "config"
         documentIndex: 0
 
-  # Downloads PVC tests
-  - it: should not create downloads pvc by default
+  # Data PVC tests
+  - it: should not create data pvc by default
     asserts:
       - not: true
         containsDocument:
           kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-downloads
+          name: RELEASE-NAME-qbittorrent-vpn-data
 
-  - it: should create downloads pvc when enabled
+  - it: should create data pvc when enabled
     set:
       qbittorrent.persistence.config.enabled: false
-      qbittorrent.persistence.downloads.enabled: true
+      qbittorrent.persistence.data.enabled: true
     asserts:
       - containsDocument:
           kind: PersistentVolumeClaim
           apiVersion: v1
-          name: RELEASE-NAME-qbittorrent-vpn-downloads
+          name: RELEASE-NAME-qbittorrent-vpn-data
 
-  - it: should not create downloads pvc when using existing claim
+  - it: should not create data pvc when using existing claim
     set:
-      qbittorrent.persistence.downloads.enabled: true
-      qbittorrent.persistence.downloads.existingClaim: my-downloads-pvc
+      qbittorrent.persistence.data.enabled: true
+      qbittorrent.persistence.data.existingClaim: my-data-pvc
     asserts:
       - not: true
         containsDocument:
           kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-downloads
+          name: RELEASE-NAME-qbittorrent-vpn-data
 
   # Gluetun PVC tests
   - it: should not create gluetun pvc by default

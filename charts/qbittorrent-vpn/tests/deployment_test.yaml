@@ -369,21 +369,21 @@ tests:
             persistentVolumeClaim:
               claimName: my-existing-config
 
-  - it: should mount downloads volume when persistence enabled
+  - it: should mount data volume when persistence enabled
     set:
-      qbittorrent.persistence.downloads.enabled: true
+      qbittorrent.persistence.data.enabled: true
     asserts:
       - contains:
           path: spec.template.spec.containers[?(@.name == "qbittorrent")].volumeMounts
           content:
-            name: downloads
-            mountPath: /downloads
+            name: data
+            mountPath: /data
       - contains:
           path: spec.template.spec.volumes
           content:
-            name: downloads
+            name: data
             persistentVolumeClaim:
-              claimName: RELEASE-NAME-qbittorrent-vpn-downloads
+              claimName: RELEASE-NAME-qbittorrent-vpn-data
 
   # Bootstrap tests
   - it: should include bootstrap init container when enabled

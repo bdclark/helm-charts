@@ -205,7 +205,7 @@
           "additionalProperties": false,
           "properties": {
             "config": { "$ref": "#/$defs/persistence" },
-            "downloads": { "$ref": "#/$defs/persistence" }
+            "data": { "$ref": "#/$defs/persistence" }
           }
         },
         "volumeMounts": {
@@ -523,6 +523,10 @@
         "enabled": {
           "type": "boolean",
           "description": "Enable persistence"
+        },
+        "mountPath": {
+          "type": "string",
+          "description": "Mount path"
         },
         "storageClass": {
           "type": "string",

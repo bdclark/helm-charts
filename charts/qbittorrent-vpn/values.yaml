@@ -119,8 +119,8 @@ qbittorrent:
         [Preferences]
         Connection\UPnP=false
         Connection\PortRangeMin=6881
-        Downloads\SavePath=/downloads/
-        Downloads\TempPath=/downloads/incomplete/
+        Downloads\SavePath=/data/
+        Downloads\TempPath=/data/incomplete/
         WebUI\Address=*
         WebUI\ServerDomains=*
 
@@ -147,6 +147,8 @@ qbittorrent:
     config:
       # -- Enable config persistence.
       enabled: true
+      # -- Mount path.
+      mountPath: /config
       # -- Storage class ("-" for default, "" for cluster default).
       storageClass: ""
       # -- Access modes.
@@ -160,9 +162,11 @@ qbittorrent:
       annotations: {}
         # k8up.io/backup: "true"
 
-    downloads:
-      # -- Enable downloads persistence.
+    data:
+      # -- Enable data persistence.
       enabled: false
+      # -- Mount path.
+      mountPath: /data
       # -- Storage class ("-" for default, "" for cluster default).
       storageClass: ""
       # -- Access modes.

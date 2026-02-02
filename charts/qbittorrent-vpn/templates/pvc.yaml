@@ -25,31 +25,31 @@ spec:
   {{- end }}
   {{- end }}
 {{- end }}
-{{- if and .Values.qbittorrent.persistence.downloads.enabled (not .Values.qbittorrent.persistence.downloads.existingClaim) }}
+{{- if and .Values.qbittorrent.persistence.data.enabled (not .Values.qbittorrent.persistence.data.existingClaim) }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "qbittorrent-vpn.fullname" . }}-downloads
+  name: {{ include "qbittorrent-vpn.fullname" . }}-data
   labels:
     {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
-  {{- with .Values.qbittorrent.persistence.downloads.annotations }}
+  {{- with .Values.qbittorrent.persistence.data.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   accessModes:
-    {{- range .Values.qbittorrent.persistence.downloads.accessModes }}
+    {{- range .Values.qbittorrent.persistence.data.accessModes }}
     - {{ . | quote }}
     {{- end }}
   resources:
     requests:
-      storage: {{ .Values.qbittorrent.persistence.downloads.size | quote }}
-  {{- if .Values.qbittorrent.persistence.downloads.storageClass }}
-  {{- if (eq "-" .Values.qbittorrent.persistence.downloads.storageClass) }}
+      storage: {{ .Values.qbittorrent.persistence.data.size | quote }}
+  {{- if .Values.qbittorrent.persistence.data.storageClass }}
+  {{- if (eq "-" .Values.qbittorrent.persistence.data.storageClass) }}
   storageClassName: ""
   {{- else }}
-  storageClassName: {{ .Values.qbittorrent.persistence.downloads.storageClass | quote }}
+  storageClassName: {{ .Values.qbittorrent.persistence.data.storageClass | quote }}
   {{- end }}
   {{- end }}
 {{- end }}

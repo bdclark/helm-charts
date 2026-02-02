@@ -94,15 +94,15 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if or .Values.qbittorrent.persistence.config.enabled .Values.qbittorrent.persistence.downloads.enabled .Values.qbittorrent.volumeMounts }}
+          {{- if or .Values.qbittorrent.persistence.config.enabled .Values.qbittorrent.persistence.data.enabled .Values.qbittorrent.volumeMounts }}
           volumeMounts:
             {{- if .Values.qbittorrent.persistence.config.enabled }}
             - name: config
-              mountPath: /config
+              mountPath: {{ .Values.qbittorrent.persistence.config.mountPath | default "/config" }}
             {{- end }}
-            {{- if .Values.qbittorrent.persistence.downloads.enabled }}
-            - name: downloads
-              mountPath: /downloads
+            {{- if .Values.qbittorrent.persistence.data.enabled }}
+            - name: data
+              mountPath: {{ .Values.qbittorrent.persistence.data.mountPath | default "/data" }}
             {{- end }}
           {{- with .Values.qbittorrent.volumeMounts }}
             {{- toYaml . | nindent 12 }}
@@ -113,7 +113,7 @@ spec:
       {{- end }}
       {{- if or
         .Values.qbittorrent.persistence.config.enabled
-        .Values.qbittorrent.persistence.downloads.enabled
+        .Values.qbittorrent.persistence.data.enabled
         .Values.gluetun.persistence.enabled
         .Values.gluetun.needsTunDevice
         .Values.gluetun.controlServer.enabled
@@ -131,10 +131,10 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "qbittorrent-vpn.pvcName" (dict "ctx" .Values.qbittorrent.persistence.config "root" . "suffix" "config") }}
       {{- end }}
-      {{- if .Values.qbittorrent.persistence.downloads.enabled }}
-        - name: downloads
+      {{- if .Values.qbittorrent.persistence.data.enabled }}
+        - name: data
           persistentVolumeClaim:
-            claimName: {{ include "qbittorrent-vpn.pvcName" (dict "ctx" .Values.qbittorrent.persistence.downloads "root" . "suffix" "downloads") }}
+            claimName: {{ include "qbittorrent-vpn.pvcName" (dict "ctx" .Values.qbittorrent.persistence.data "root" . "suffix" "data") }}
       {{- end }}
       {{- if .Values.gluetun.persistence.enabled }}
         - name: gluetun

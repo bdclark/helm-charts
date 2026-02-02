@@ -1,6 +1,6 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
@@ -114,7 +114,7 @@ qbittorrent:
         Accepted=true
 
         [Preferences]
-        Downloads\SavePath=/downloads/
+        Downloads\SavePath=/data/
         WebUI\Address=*
 ```
 
@@ -154,7 +154,7 @@ Modes:
 
 ## Persistence
 
-Config persistence is enabled by default. Downloads persistence must be explicitly enabled.
+Config persistence is enabled by default. Data persistence must be explicitly enabled.
 
 ```yaml
 qbittorrent:
@@ -162,11 +162,13 @@ qbittorrent:
     config:
       enabled: true
       size: 2Gi
-    downloads:
+      mountPath: /config
+    data:
       enabled: true
       size: 100Gi
+      mountPath: /data
       storageClass: fast-storage
-      # existingClaim: my-downloads-pvc
+      # existingClaim: my-data-pvc
 ```
 
 ## Configuration
@@ -205,17 +207,19 @@ qbittorrent:
 | qbittorrent.config.bootstrap.webuiPassword.existingSecret.name | string | `"qbittorrent-webui"` | Secret name containing the PBKDF2-hashed password. |
 | qbittorrent.config.bootstrap.webuiPassword.existingSecret.key | string | `"WebUI_Password_PBKDF2"` | Secret key for the password. |
 | qbittorrent.persistence.config.enabled | bool | `true` | Enable config persistence. |
+| qbittorrent.persistence.config.mountPath | string | `"/config"` | Mount path. |
 | qbittorrent.persistence.config.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |
 | qbittorrent.persistence.config.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | qbittorrent.persistence.config.size | string | `"2Gi"` | Volume size. |
 | qbittorrent.persistence.config.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
 | qbittorrent.persistence.config.annotations | object | `{}` | PVC annotations. |
-| qbittorrent.persistence.downloads.enabled | bool | `false` | Enable downloads persistence. |
-| qbittorrent.persistence.downloads.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |
-| qbittorrent.persistence.downloads.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
-| qbittorrent.persistence.downloads.size | string | `"2Gi"` | Volume size. |
-| qbittorrent.persistence.downloads.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
-| qbittorrent.persistence.downloads.annotations | object | `{}` | PVC annotations. |
+| qbittorrent.persistence.data.enabled | bool | `false` | Enable data persistence. |
+| qbittorrent.persistence.data.mountPath | string | `"/data"` | Mount path. |
+| qbittorrent.persistence.data.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |
+| qbittorrent.persistence.data.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
+| qbittorrent.persistence.data.size | string | `"2Gi"` | Volume size. |
+| qbittorrent.persistence.data.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| qbittorrent.persistence.data.annotations | object | `{}` | PVC annotations. |
 | qbittorrent.volumeMounts | list | `[]` | Additional volume mounts. |
 | qbittorrent.service.type | string | `"ClusterIP"` | Service type. |
 | qbittorrent.service.port | int | `8080` | Service port. |

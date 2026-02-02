@@ -118,7 +118,7 @@ qbittorrent:
         Accepted=true
 
         [Preferences]
-        Downloads\SavePath=/downloads/
+        Downloads\SavePath=/data/
         WebUI\Address=*
 ```
 
@@ -158,7 +158,7 @@ Modes:
 
 ## Persistence
 
-Config persistence is enabled by default. Downloads persistence must be explicitly enabled.
+Config persistence is enabled by default. Data persistence must be explicitly enabled.
 
 ```yaml
 qbittorrent:
@@ -166,11 +166,13 @@ qbittorrent:
     config:
       enabled: true
       size: 2Gi
-    downloads:
+      mountPath: /config
+    data:
       enabled: true
       size: 100Gi
+      mountPath: /data
       storageClass: fast-storage
-      # existingClaim: my-downloads-pvc
+      # existingClaim: my-data-pvc
 ```
 
 ## Configuration
