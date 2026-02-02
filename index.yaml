@@ -605,6 +605,38 @@ entries:
           url: https://github.com/qdm12/gluetun
     apiVersion: v2
     appVersion: 5.1.4
+    created: "2026-02-02T03:39:38.84629498Z"
+    description: qBittorrent with Gluetun VPN sidecar
+    digest: 1c2b577e42ba1fbed2ed90cea9ffba24be22a79b5087b4e66d3a03ab892595e6
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
+    keywords:
+    - torrent
+    - bittorrent
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: qbittorrent-vpn
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    - https://github.com/qbittorrent/qBittorrent
+    - https://github.com/qdm12/gluetun
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/qbittorrent-vpn-0.4.0/qbittorrent-vpn-0.4.0.tgz
+    version: 0.4.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+        - name: qBittorrent
+          url: https://www.qbittorrent.org/
+        - name: Gluetun
+          url: https://github.com/qdm12/gluetun
+    apiVersion: v2
+    appVersion: 5.1.4
     created: "2026-02-01T04:00:27.052083081Z"
     description: qBittorrent with Gluetun VPN sidecar
     digest: 991ab3c214ff4e32f8a236472ff7da3250b4fd598f6a1b21a6e7871a8e73bb39
@@ -787,4 +819,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-02T03:16:41.162592703Z"
+generated: "2026-02-02T03:39:38.846338701Z"
