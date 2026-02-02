@@ -560,6 +560,39 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.1.0/music-assistant-0.1.0.tgz
     version: 0.1.0
+  prowlarr:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+        - name: Prowlarr
+          url: https://prowlarr.com
+        - name: Prowlarr GitHub
+          url: https://github.com/Prowlarr/Prowlarr
+    apiVersion: v2
+    appVersion: 2.3.0
+    created: "2026-02-02T03:16:40.834269592Z"
+    description: Indexer manager for usenet and torrent users
+    digest: 98fe825be10f79658b04bae33c5e8d9546e11c3b69a9f8d8927d4af2fd0c14ba
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+    icon: https://raw.githubusercontent.com/Prowlarr/Prowlarr/develop/Logo/Prowlarr.svg
+    keywords:
+    - indexer
+    - usenet
+    - torrent
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: prowlarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/prowlarr-0.1.0/prowlarr-0.1.0.tgz
+    version: 0.1.0
   qbittorrent-vpn:
   - annotations:
       artifacthub.io/license: MIT
@@ -689,4 +722,69 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/qbittorrent-vpn-0.1.0/qbittorrent-vpn-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-01T04:00:27.052156188Z"
+  radarr:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+        - name: Radarr
+          url: https://radarr.video
+        - name: Radarr GitHub
+          url: https://github.com/Radarr/Radarr
+    apiVersion: v2
+    appVersion: 6.0.4
+    created: "2026-02-02T03:16:40.998912428Z"
+    description: Movie organizer/manager for usenet and torrent users
+    digest: 84dfd666992a5b9f125d1ea825d7fdd941b487e44446f26f29c7398800861e46
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    icon: https://raw.githubusercontent.com/Radarr/Radarr/master/Logo/Radarr.svg
+    keywords:
+    - movie
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: radarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/radarr-0.1.0/radarr-0.1.0.tgz
+    version: 0.1.0
+  sonarr:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+        - name: Sonarr
+          url: https://sonarr.tv
+        - name: Sonarr GitHub
+          url: https://github.com/Sonarr/Sonarr
+    apiVersion: v2
+    appVersion: 4.0.16
+    created: "2026-02-02T03:16:41.162542194Z"
+    description: TV show organizer/manager for usenet and torrent users
+    digest: d5565cd15a8f03d5bba56ab7c454d28927d749474e16e368e31079afa30589d0
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    icon: https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/Sonarr.svg
+    keywords:
+    - tv
+    - television
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: sonarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-02-02T03:16:41.162592703Z"
