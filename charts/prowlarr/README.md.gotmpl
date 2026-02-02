@@ -1,0 +1,139 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install prowlarr bdclark/prowlarr -f values.yaml
+```
+
+## Environment Variables
+
+Environment variables can be set via `env` (inline values or refs) and `envFrom` (bulk refs).
+
+### LinuxServer Variables
+
+This chart uses the [LinuxServer.io](https://docs.linuxserver.io/images/docker-prowlarr/) Prowlarr image,
+which supports common environment variables:
+
+```yaml
+env:
+  TZ: America/New_York
+  PUID: "1000"
+  PGID: "1000"
+```
+
+### Prowlarr Configuration Overrides
+
+Prowlarr supports environment variables to override entries in `config.xml`. Variables follow the pattern
+`PROWLARR__<NAMESPACE>__<SETTING>`. See the [Servarr Wiki](https://wiki.servarr.com/prowlarr/environment-variables)
+for details.
+
+```yaml
+env:
+  # Server settings
+  PROWLARR__SERVER__PORT: "9696"
+  PROWLARR__SERVER__URLBASE: /prowlarr
+  # Logging
+  PROWLARR__LOG__LEVEL: info
+  # Authentication
+  PROWLARR__AUTH__METHOD: Forms
+  PROWLARR__AUTH__REQUIRED: Enabled
+  # PostgreSQL (optional - replaces SQLite)
+  PROWLARR__POSTGRES__HOST: postgres
+  PROWLARR__POSTGRES__PORT: "5432"
+  PROWLARR__POSTGRES__USER: prowlarr
+  PROWLARR__POSTGRES__MAINDB: prowlarr-main
+  PROWLARR__POSTGRES__LOGDB: prowlarr-log
+  PROWLARR__POSTGRES__PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: prowlarr-postgres
+        key: password
+```
+
+### Bulk Environment Variables
+
+For bulk environment variables from ConfigMaps or Secrets:
+
+```yaml
+envFrom:
+  - secretRef:
+      name: prowlarr-credentials
+  - configMapRef:
+      name: prowlarr-config
+```
+
+## Persistence
+
+Persistence is enabled by default for Prowlarr's database and settings.
+
+```yaml
+persistence:
+  enabled: true
+  size: 1Gi
+  # storageClass: ""
+  # existingClaim: prowlarr-config
+```
+
+### Using an Existing Claim
+
+```yaml
+persistence:
+  enabled: true
+  existingClaim: prowlarr-config
+```
+
+### Additional Volumes
+
+For additional storage needs, use `volumes` and `volumeMounts`:
+
+```yaml
+volumes:
+  - name: backups
+    persistentVolumeClaim:
+      claimName: backups-pvc
+
+volumeMounts:
+  - name: backups
+    mountPath: /backups
+```
+
+## Ingress
+
+Enable ingress to expose Prowlarr externally:
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: prowlarr.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: prowlarr-tls
+      hosts:
+        - prowlarr.example.com
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).

@@ -1,0 +1,27 @@
+apiVersion: v2
+name: radarr
+description: Movie organizer/manager for usenet and torrent users
+type: application
+version: "0.1.0"
+appVersion: "6.0.4"
+icon: https://raw.githubusercontent.com/Radarr/Radarr/master/Logo/Radarr.svg
+keywords:
+  - movie
+  - organizer
+  - servarr
+home: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    - name: Radarr
+      url: https://radarr.video
+    - name: Radarr GitHub
+      url: https://github.com/Radarr/Radarr
+maintainers:
+  - name: bdclark
+    email: brian@clark.zone
+    url: https://github.com/bdclark

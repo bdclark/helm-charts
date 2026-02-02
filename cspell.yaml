@@ -13,7 +13,10 @@ words:
   - gluetun
   - kubeconform
   - kubectl
+  - letsencrypt
+  - LOGDB
   - lscr.io
+  - MAINDB
   - metallb
   - mktemp
   - monitorpass
@@ -29,22 +32,29 @@ words:
   - PGID
   - pipefail
   - popd
+  - Prowlarr
+  - prowlarr
   - PUID
   - pushd
   - pvcs
   - pytest
   - qbittorrent
   - qmcgaw
+  - Radarr
   - readwrite
   - replicaset
   - secretpassword
+  - servarr
   - Shellcheck
+  - Sonarr
+  - sonarr
   - shopt
   - statefulset
   - Taskfile
   - tolerations
   - traefik
   - Traefik
+  - URLBASE
   - virtualenv
   - webui
   - worktree

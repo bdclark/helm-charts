@@ -1,0 +1,159 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install sonarr bdclark/sonarr -f values.yaml
+```
+
+## Environment Variables
+
+Environment variables can be set via `env` (inline values or refs) and `envFrom` (bulk refs).
+
+### LinuxServer Variables
+
+This chart uses the [LinuxServer.io](https://docs.linuxserver.io/images/docker-sonarr/) Sonarr image,
+which supports common environment variables:
+
+```yaml
+env:
+  TZ: America/New_York
+  PUID: "1000"
+  PGID: "1000"
+```
+
+### Sonarr Configuration Overrides
+
+Sonarr supports environment variables to override entries in `config.xml`. Variables follow the pattern
+`SONARR__<NAMESPACE>__<SETTING>`. See the [Servarr Wiki](https://wiki.servarr.com/sonarr/environment-variables)
+for details.
+
+```yaml
+env:
+  # Server settings
+  SONARR__SERVER__PORT: "8989"
+  SONARR__SERVER__URLBASE: /sonarr
+  # Logging
+  SONARR__LOG__LEVEL: info
+  # Authentication
+  SONARR__AUTH__METHOD: Forms
+  SONARR__AUTH__REQUIRED: Enabled
+  # PostgreSQL (optional - replaces SQLite)
+  SONARR__POSTGRES__HOST: postgres
+  SONARR__POSTGRES__PORT: "5432"
+  SONARR__POSTGRES__USER: sonarr
+  SONARR__POSTGRES__MAINDB: sonarr-main
+  SONARR__POSTGRES__LOGDB: sonarr-log
+  SONARR__POSTGRES__PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: sonarr-postgres
+        key: password
+```
+
+### Bulk Environment Variables
+
+For bulk environment variables from ConfigMaps or Secrets:
+
+```yaml
+envFrom:
+  - secretRef:
+      name: sonarr-credentials
+  - configMapRef:
+      name: sonarr-config
+```
+
+## Persistence
+
+Two persistent volumes are available: `config` for Sonarr's database and settings, and `data` for media files.
+Both are enabled by default.
+
+```yaml
+persistence:
+  config:
+    enabled: true
+    size: 1Gi
+    # storageClass: ""
+    # existingClaim: sonarr-config
+  data:
+    enabled: true
+    size: 100Gi
+    mountPath: /data
+    # storageClass: ""
+    # existingClaim: media-library
+```
+
+### Using Existing Claims
+
+To use pre-existing PVCs (useful for shared media libraries):
+
+```yaml
+persistence:
+  config:
+    enabled: true
+    existingClaim: sonarr-config
+  data:
+    enabled: true
+    existingClaim: shared-media
+```
+
+### Additional Volumes
+
+For more complex storage setups, use `volumes` and `volumeMounts`:
+
+```yaml
+volumes:
+  - name: tv
+    nfs:
+      server: nas.local
+      path: /volume1/tv
+  - name: downloads
+    persistentVolumeClaim:
+      claimName: downloads-pvc
+
+volumeMounts:
+  - name: tv
+    mountPath: /tv
+  - name: downloads
+    mountPath: /downloads
+```
+
+## Ingress
+
+Enable ingress to expose Sonarr externally:
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: sonarr.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: sonarr-tls
+      hosts:
+        - sonarr.example.com
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).

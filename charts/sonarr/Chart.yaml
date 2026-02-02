@@ -1,0 +1,28 @@
+apiVersion: v2
+name: sonarr
+description: TV show organizer/manager for usenet and torrent users
+type: application
+version: "0.1.0"
+appVersion: "4.0.16"
+icon: https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/Sonarr.svg
+keywords:
+  - tv
+  - television
+  - organizer
+  - servarr
+home: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    - name: Sonarr
+      url: https://sonarr.tv
+    - name: Sonarr GitHub
+      url: https://github.com/Sonarr/Sonarr
+maintainers:
+  - name: bdclark
+    email: brian@clark.zone
+    url: https://github.com/bdclark
