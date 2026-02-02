@@ -1,0 +1,424 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should create deployment with default values
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-radarr
+      - equal:
+          path: spec.replicas
+          value: 1
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^lscr.io/linuxserver/radarr:"
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+
+  - it: should use custom image
+    set:
+      image.repository: my-radarr
+      image.tag: "custom"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "my-radarr:custom"
+
+  - it: should use appVersion when tag not specified
+    set:
+      image.tag: ""
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^lscr.io/linuxserver/radarr:.+"
+
+  - it: should mount config volume when enabled
+    set:
+      persistence.config.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /config
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-radarr-config
+
+  - it: should mount data volume when enabled
+    set:
+      persistence.data.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-radarr-data
+
+  - it: should use custom mount paths
+    set:
+      persistence.config.enabled: true
+      persistence.config.mountPath: /custom/config
+      persistence.data.enabled: true
+      persistence.data.mountPath: /custom/data
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /custom/config
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /custom/data
+
+  - it: should use existing claims when specified
+    set:
+      persistence.config.enabled: true
+      persistence.config.existingClaim: my-config-pvc
+      persistence.data.enabled: true
+      persistence.data.existingClaim: my-data-pvc
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            persistentVolumeClaim:
+              claimName: my-config-pvc
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: my-data-pvc
+
+  - it: should not mount volumes when persistence disabled
+    set:
+      persistence.config.enabled: false
+      persistence.data.enabled: false
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].volumeMounts
+      - isNull:
+          path: spec.template.spec.volumes
+
+  - it: should apply deployment annotations
+    set:
+      deploymentAnnotations:
+        deploy-annotation: deploy-value
+    asserts:
+      - equal:
+          path: metadata.annotations["deploy-annotation"]
+          value: deploy-value
+
+  - it: should apply extra deployment labels
+    set:
+      extraDeploymentLabels:
+        custom-label: custom-value
+    asserts:
+      - equal:
+          path: metadata.labels["custom-label"]
+          value: custom-value
+
+  - it: should apply pod annotations
+    set:
+      podAnnotations:
+        pod-annotation: pod-value
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations["pod-annotation"]
+          value: pod-value
+
+  - it: should apply pod labels
+    set:
+      podLabels:
+        pod-label: pod-value
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["pod-label"]
+          value: pod-value
+
+  - it: should apply pod security context
+    set:
+      podSecurityContext:
+        fsGroup: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+
+  - it: should apply container security context
+    set:
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 1000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+
+  - it: should apply resource limits
+    set:
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+          value: 500m
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 512Mi
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 100m
+
+  - it: should set environment variables
+    set:
+      env:
+        TZ: America/New_York
+        PUID: "1000"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TZ
+            value: America/New_York
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PUID
+            value: "1000"
+
+  - it: should set environment variables from secrets
+    set:
+      env:
+        SECRET_VAR:
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: secret-key
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SECRET_VAR
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: secret-key
+
+  - it: should apply envFrom
+    set:
+      envFrom:
+        - secretRef:
+            name: my-secret
+        - configMapRef:
+            name: my-config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-secret
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: my-config
+
+  - it: should configure container ports
+    set:
+      ports:
+        - name: http
+          containerPort: 7878
+          protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: http
+            containerPort: 7878
+            protocol: TCP
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: metrics
+            containerPort: 9090
+            protocol: TCP
+
+  - it: should configure startup probe
+    set:
+      startupProbe:
+        httpGet:
+          path: /ping
+          port: http
+        failureThreshold: 30
+        periodSeconds: 10
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.httpGet.path
+          value: /ping
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.failureThreshold
+          value: 30
+
+  - it: should configure liveness probe
+    set:
+      livenessProbe:
+        httpGet:
+          path: /ping
+          port: http
+        initialDelaySeconds: 30
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /ping
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.initialDelaySeconds
+          value: 30
+
+  - it: should configure readiness probe
+    set:
+      readinessProbe:
+        httpGet:
+          path: /ping
+          port: http
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /ping
+
+  - it: should apply custom strategy
+    set:
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+    asserts:
+      - equal:
+          path: spec.strategy.type
+          value: RollingUpdate
+      - equal:
+          path: spec.strategy.rollingUpdate.maxSurge
+          value: 1
+
+  - it: should add init containers
+    set:
+      initContainers:
+        - name: init-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 1000:1000 /config"]
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: init-permissions
+            image: busybox
+            command: ["sh", "-c", "chown -R 1000:1000 /config"]
+
+  - it: should add extra containers
+    set:
+      extraContainers:
+        - name: sidecar
+          image: sidecar:latest
+    asserts:
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: sidecar
+            image: sidecar:latest
+
+  - it: should add extra volumes and volume mounts
+    set:
+      volumes:
+        - name: extra-vol
+          emptyDir: {}
+      volumeMounts:
+        - name: extra-vol
+          mountPath: /extra
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: extra-vol
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: extra-vol
+            mountPath: /extra
+
+  - it: should apply image pull secrets
+    set:
+      imagePullSecrets:
+        - name: registry-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.imagePullSecrets
+          content:
+            name: registry-secret
+
+  - it: should apply node selector
+    set:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector["kubernetes.io/arch"]
+          value: amd64
+
+  - it: should apply tolerations
+    set:
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+
+  - it: should apply affinity
+    set:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+    asserts:
+      - equal:
+          path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key
+          value: kubernetes.io/arch

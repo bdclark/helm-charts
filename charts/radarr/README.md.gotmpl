@@ -1,0 +1,159 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install radarr bdclark/radarr -f values.yaml
+```
+
+## Environment Variables
+
+Environment variables can be set via `env` (inline values or refs) and `envFrom` (bulk refs).
+
+### LinuxServer Variables
+
+This chart uses the [LinuxServer.io](https://docs.linuxserver.io/images/docker-radarr/) Radarr image,
+which supports common environment variables:
+
+```yaml
+env:
+  TZ: America/New_York
+  PUID: "1000"
+  PGID: "1000"
+```
+
+### Radarr Configuration Overrides
+
+Radarr supports environment variables to override entries in `config.xml`. Variables follow the pattern
+`RADARR__<NAMESPACE>__<SETTING>`. See the [Servarr Wiki](https://wiki.servarr.com/radarr/environment-variables)
+for details.
+
+```yaml
+env:
+  # Server settings
+  RADARR__SERVER__PORT: "7878"
+  RADARR__SERVER__URLBASE: /radarr
+  # Logging
+  RADARR__LOG__LEVEL: info
+  # Authentication
+  RADARR__AUTH__METHOD: Forms
+  RADARR__AUTH__REQUIRED: Enabled
+  # PostgreSQL (optional - replaces SQLite)
+  RADARR__POSTGRES__HOST: postgres
+  RADARR__POSTGRES__PORT: "5432"
+  RADARR__POSTGRES__USER: radarr
+  RADARR__POSTGRES__MAINDB: radarr-main
+  RADARR__POSTGRES__LOGDB: radarr-log
+  RADARR__POSTGRES__PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: radarr-postgres
+        key: password
+```
+
+### Bulk Environment Variables
+
+For bulk environment variables from ConfigMaps or Secrets:
+
+```yaml
+envFrom:
+  - secretRef:
+      name: radarr-credentials
+  - configMapRef:
+      name: radarr-config
+```
+
+## Persistence
+
+Two persistent volumes are available: `config` for Radarr's database and settings, and `data` for media files.
+Both are enabled by default.
+
+```yaml
+persistence:
+  config:
+    enabled: true
+    size: 1Gi
+    # storageClass: ""
+    # existingClaim: radarr-config
+  data:
+    enabled: true
+    size: 100Gi
+    mountPath: /data
+    # storageClass: ""
+    # existingClaim: media-library
+```
+
+### Using Existing Claims
+
+To use pre-existing PVCs (useful for shared media libraries):
+
+```yaml
+persistence:
+  config:
+    enabled: true
+    existingClaim: radarr-config
+  data:
+    enabled: true
+    existingClaim: shared-media
+```
+
+### Additional Volumes
+
+For more complex storage setups, use `volumes` and `volumeMounts`:
+
+```yaml
+volumes:
+  - name: movies
+    nfs:
+      server: nas.local
+      path: /volume1/movies
+  - name: downloads
+    persistentVolumeClaim:
+      claimName: downloads-pvc
+
+volumeMounts:
+  - name: movies
+    mountPath: /movies
+  - name: downloads
+    mountPath: /downloads
+```
+
+## Ingress
+
+Enable ingress to expose Radarr externally:
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: radarr.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: radarr-tls
+      hosts:
+        - radarr.example.com
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).

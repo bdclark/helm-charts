@@ -1,0 +1,133 @@
+suite: test ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: should NOT create ingress by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create ingress when enabled
+    set:
+      ingress.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Ingress
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-radarr
+
+  - it: should apply ingress class name
+    set:
+      ingress.enabled: true
+      ingress.className: nginx
+    asserts:
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+
+  - it: should apply annotations
+    set:
+      ingress.enabled: true
+      ingress.annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: letsencrypt
+    asserts:
+      - equal:
+          path: metadata.annotations["kubernetes.io/ingress.class"]
+          value: nginx
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: letsencrypt
+
+  - it: should configure hosts and paths
+    set:
+      ingress.enabled: true
+      ingress.hosts:
+        - host: radarr.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+    asserts:
+      - equal:
+          path: spec.rules[0].host
+          value: radarr.example.com
+      - equal:
+          path: spec.rules[0].http.paths[0].path
+          value: /
+      - equal:
+          path: spec.rules[0].http.paths[0].pathType
+          value: Prefix
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: RELEASE-NAME-radarr
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 7878
+
+  - it: should configure multiple hosts
+    set:
+      ingress.enabled: true
+      ingress.hosts:
+        - host: radarr.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+        - host: movies.example.com
+          paths:
+            - path: /radarr
+              pathType: Prefix
+    asserts:
+      - equal:
+          path: spec.rules[0].host
+          value: radarr.example.com
+      - equal:
+          path: spec.rules[1].host
+          value: movies.example.com
+      - equal:
+          path: spec.rules[1].http.paths[0].path
+          value: /radarr
+
+  - it: should configure TLS
+    set:
+      ingress.enabled: true
+      ingress.tls:
+        - secretName: radarr-tls
+          hosts:
+            - radarr.example.com
+    asserts:
+      - equal:
+          path: spec.tls[0].secretName
+          value: radarr-tls
+      - contains:
+          path: spec.tls[0].hosts
+          content: radarr.example.com
+
+  - it: should configure multiple TLS entries
+    set:
+      ingress.enabled: true
+      ingress.tls:
+        - secretName: radarr-tls
+          hosts:
+            - radarr.example.com
+        - secretName: movies-tls
+          hosts:
+            - movies.example.com
+    asserts:
+      - equal:
+          path: spec.tls[0].secretName
+          value: radarr-tls
+      - equal:
+          path: spec.tls[1].secretName
+          value: movies-tls
+
+  - it: should use custom service port in backend
+    set:
+      ingress.enabled: true
+      service.port: 8080
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8080
