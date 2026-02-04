@@ -386,6 +386,14 @@ tests:
               claimName: RELEASE-NAME-qbittorrent-vpn-data
 
   # Bootstrap tests
+  - it: should fail when bootstrap enabled without config persistence
+    set:
+      qbittorrent.config.bootstrap.enabled: true
+      qbittorrent.persistence.config.enabled: false
+    asserts:
+      - failedTemplate:
+          errorMessage: "qbittorrent.config.bootstrap.enabled requires qbittorrent.persistence.config.enabled to be true"
+
   - it: should include bootstrap init container when enabled
     set:
       qbittorrent.config.bootstrap.enabled: true

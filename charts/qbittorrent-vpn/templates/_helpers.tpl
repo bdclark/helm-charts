@@ -78,6 +78,15 @@ Render env entries from a map
 {{- end -}}
 
 {{/*
+Validate configuration
+*/}}
+{{- define "qbittorrent-vpn.validateConfig" -}}
+{{- if and .Values.qbittorrent.config.bootstrap.enabled (not .Values.qbittorrent.persistence.config.enabled) -}}
+{{- fail "qbittorrent.config.bootstrap.enabled requires qbittorrent.persistence.config.enabled to be true" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create PVC name
 */}}
 {{- define "qbittorrent-vpn.pvcName" -}}
