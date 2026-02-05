@@ -381,3 +381,116 @@ tests:
       - equal:
           path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key
           value: kubernetes.io/arch
+
+  # Bootstrap tests
+  - it: should fail when bootstrap enabled without persistence
+    set:
+      bootstrap.enabled: true
+      persistence.enabled: false
+    asserts:
+      - failedTemplate:
+          errorMessage: "bootstrap.enabled requires persistence.enabled to be true"
+
+  - it: should not include bootstrap init container when disabled
+    asserts:
+      - isNull:
+          path: spec.template.spec.initContainers
+
+  - it: should include bootstrap init container when enabled
+    set:
+      bootstrap.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: bootstrap
+          any: true
+
+  - it: should include bootstrap volume with inline config
+    set:
+      bootstrap.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: bootstrap
+            configMap:
+              name: RELEASE-NAME-prowlarr-bootstrap
+
+  - it: should include bootstrap volume with existing configMap
+    set:
+      bootstrap.enabled: true
+      bootstrap.existingConfig.type: configMap
+      bootstrap.existingConfig.name: my-config
+      bootstrap.existingConfig.key: prowlarr.xml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: bootstrap
+            configMap:
+              name: my-config
+              items:
+                - key: prowlarr.xml
+                  path: config.xml
+
+  - it: should include bootstrap volume with existing secret
+    set:
+      bootstrap.enabled: true
+      bootstrap.existingConfig.type: secret
+      bootstrap.existingConfig.name: my-secret
+      bootstrap.existingConfig.key: config.xml
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: bootstrap
+            secret:
+              secretName: my-secret
+              items:
+                - key: config.xml
+                  path: config.xml
+
+  - it: should mount both config and bootstrap volumes in init container
+    set:
+      bootstrap.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /config
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            name: bootstrap
+            mountPath: /bootstrap
+
+  - it: should use custom bootstrap mountPath
+    set:
+      bootstrap.enabled: true
+      bootstrap.mountPath: /custom/config
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /custom/config
+
+  - it: should include user initContainers alongside bootstrap
+    set:
+      bootstrap.enabled: true
+      initContainers:
+        - name: custom-init
+          image: busybox
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: bootstrap
+          any: true
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: custom-init
+            image: busybox

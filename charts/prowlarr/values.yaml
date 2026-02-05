@@ -93,6 +93,27 @@ envFrom: []
   # - secretRef:
   #     name: prowlarr-secret-env
 
+bootstrap:
+  # -- Create a config.xml file if missing.
+  enabled: false
+
+  # -- Directory containing the configuration file.
+  mountPath: /config
+
+  # -- Initial configuration content (used when existingConfig.type is empty).
+  # @default -- Sane defaults for containerized deployment.
+  config: |-
+    <Config>
+    </Config>
+
+  existingConfig:
+    # -- Source type for existing config: "configMap", "secret", or "" (use bootstrap.config).
+    type: ""
+    # -- Name of the ConfigMap or Secret.
+    name: ""
+    # -- Key containing the configuration data.
+    key: config.xml
+
 # Persistent storage for config
 persistence:
   # -- Enable persistence for config.

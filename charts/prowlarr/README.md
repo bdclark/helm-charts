@@ -1,9 +1,12 @@
 # Prowlarr Helm Chart
 
-[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.3.0](https://img.shields.io/badge/AppVersion-2.3.0-informational?style=flat-square)](Chart.yaml)
 
 Indexer manager for usenet and torrent users
+
+> [!NOTE]
+> This chart is under active development. Breaking changes may occur between minor versions.
 
 ## Installing
 
@@ -105,6 +108,38 @@ volumeMounts:
     mountPath: /backups
 ```
 
+## Config Bootstrapping
+
+The chart can seed Prowlarr's `config.xml` on first run when `bootstrap.enabled` is true.
+This is useful for pre-configuring settings before Prowlarr starts. The config file is only
+created if it doesn't already exist, so existing configurations are preserved.
+
+> [!NOTE]
+> Bootstrap requires `persistence.enabled` to be true.
+
+Inline config creates a ConfigMap automatically:
+
+```yaml
+bootstrap:
+  enabled: true
+  config: |
+    <Config>
+      <UrlBase>/prowlarr</UrlBase>
+      <AuthenticationMethod>Forms</AuthenticationMethod>
+    </Config>
+```
+
+To use an existing ConfigMap or Secret:
+
+```yaml
+bootstrap:
+  enabled: true
+  existingConfig:
+    type: secret  # or "configMap"
+    name: prowlarr-config
+    key: config.xml
+```
+
 ## Ingress
 
 Enable ingress to expose Prowlarr externally:
@@ -151,6 +186,12 @@ ingress:
 | readinessProbe | object | `{}` | Readiness probe configuration. |
 | env | object | `{}` (see values.yaml comments for examples) | Environment variables. |
 | envFrom | list | `[]` | Environment variables from ConfigMaps or Secrets. |
+| bootstrap.enabled | bool | `false` | Create a config.xml file if missing. |
+| bootstrap.mountPath | string | `"/config"` | Directory containing the configuration file. |
+| bootstrap.config | string | Sane defaults for containerized deployment. | Initial configuration content (used when existingConfig.type is empty). |
+| bootstrap.existingConfig.type | string | `""` | Source type for existing config: "configMap", "secret", or "" (use bootstrap.config). |
+| bootstrap.existingConfig.name | string | `""` | Name of the ConfigMap or Secret. |
+| bootstrap.existingConfig.key | string | `"config.xml"` | Key containing the configuration data. |
 | persistence.enabled | bool | `true` | Enable persistence for config. |
 | persistence.mountPath | string | `"/config"` | Mount path. |
 | persistence.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |

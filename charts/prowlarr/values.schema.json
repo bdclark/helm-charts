@@ -123,6 +123,45 @@
       "description": "Environment variables from ConfigMaps or Secrets",
       "items": { "type": "object" }
     },
+    "bootstrap": {
+      "type": "object",
+      "description": "Bootstrap configuration for seeding initial config.xml",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Create a config.xml file if missing"
+        },
+        "mountPath": {
+          "type": "string",
+          "description": "Directory containing the configuration file"
+        },
+        "config": {
+          "type": "string",
+          "description": "Initial configuration content"
+        },
+        "existingConfig": {
+          "type": "object",
+          "description": "Use existing ConfigMap or Secret for bootstrap config",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["", "configMap", "secret"],
+              "description": "Source type: configMap, secret, or empty for inline config"
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the ConfigMap or Secret"
+            },
+            "key": {
+              "type": "string",
+              "description": "Key containing the configuration data"
+            }
+          }
+        }
+      }
+    },
     "persistence": {
       "type": "object",
       "description": "Persistent storage configuration",
