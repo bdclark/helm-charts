@@ -637,6 +637,38 @@ entries:
           url: https://github.com/qdm12/gluetun
     apiVersion: v2
     appVersion: 5.1.4
+    created: "2026-02-05T11:56:05.947407441Z"
+    description: qBittorrent with Gluetun VPN sidecar
+    digest: 78f8e4304895f9d3c66701f818ac8bb990de250131f01a7b73564f1d5826f870
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
+    keywords:
+    - torrent
+    - bittorrent
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: qbittorrent-vpn
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    - https://github.com/qbittorrent/qBittorrent
+    - https://github.com/qdm12/gluetun
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/qbittorrent-vpn-0.6.0/qbittorrent-vpn-0.6.0.tgz
+    version: 0.6.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+        - name: qBittorrent
+          url: https://www.qbittorrent.org/
+        - name: Gluetun
+          url: https://github.com/qdm12/gluetun
+    apiVersion: v2
+    appVersion: 5.1.4
     created: "2026-02-05T01:21:44.245059528Z"
     description: qBittorrent with Gluetun VPN sidecar
     digest: c876bbec3270a73547fc69a15e39fcb79b5306ce1740dff53f9dda8d60f187b5
@@ -830,6 +862,37 @@ entries:
           url: https://github.com/Radarr/Radarr
     apiVersion: v2
     appVersion: 6.0.4
+    created: "2026-02-05T11:56:06.105753392Z"
+    description: Movie organizer/manager for usenet and torrent users
+    digest: c423d20b7a8e4313b99e31e3fc2f82596d41bd8634af1c5bbcada9b348f0340d
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    icon: https://raw.githubusercontent.com/Radarr/Radarr/master/Logo/Radarr.svg
+    keywords:
+    - movie
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: radarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/radarr-0.3.0/radarr-0.3.0.tgz
+    version: 0.3.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+        - name: Radarr
+          url: https://radarr.video
+        - name: Radarr GitHub
+          url: https://github.com/Radarr/Radarr
+    apiVersion: v2
+    appVersion: 6.0.4
     created: "2026-02-05T01:21:44.412210287Z"
     description: Movie organizer/manager for usenet and torrent users
     digest: 83f15b2487d6f7031c9d0b991938511f47e0767703146e210b7ff88345241d92
@@ -882,6 +945,38 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/radarr-0.1.0/radarr-0.1.0.tgz
     version: 0.1.0
   sonarr:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+        - name: Sonarr
+          url: https://sonarr.tv
+        - name: Sonarr GitHub
+          url: https://github.com/Sonarr/Sonarr
+    apiVersion: v2
+    appVersion: 4.0.16
+    created: "2026-02-05T11:56:06.249002535Z"
+    description: TV show organizer/manager for usenet and torrent users
+    digest: 8dbc9ac8916e71aa239ee9f97937b672403b2ed17162b3c87662ee48a562860a
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    icon: https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/Sonarr.svg
+    keywords:
+    - tv
+    - television
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: sonarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.3.0/sonarr-0.3.0.tgz
+    version: 0.3.0
   - annotations:
       artifacthub.io/license: MIT
       artifacthub.io/links: |
@@ -946,4 +1041,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-05T01:21:44.57517398Z"
+generated: "2026-02-05T11:56:06.249078386Z"
