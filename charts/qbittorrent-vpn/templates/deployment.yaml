@@ -100,10 +100,16 @@ spec:
             {{- if .Values.qbittorrent.persistence.config.enabled }}
             - name: config
               mountPath: {{ .Values.qbittorrent.persistence.config.mountPath | default "/config" }}
+              {{- with .Values.qbittorrent.persistence.config.subPath }}
+              subPath: {{ . }}
+              {{- end }}
             {{- end }}
             {{- if .Values.qbittorrent.persistence.data.enabled }}
             - name: data
               mountPath: {{ .Values.qbittorrent.persistence.data.mountPath | default "/data" }}
+              {{- with .Values.qbittorrent.persistence.data.subPath }}
+              subPath: {{ . }}
+              {{- end }}
             {{- end }}
           {{- with .Values.qbittorrent.volumeMounts }}
             {{- toYaml . | nindent 12 }}

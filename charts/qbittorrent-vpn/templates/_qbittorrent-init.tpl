@@ -185,6 +185,9 @@ Gluetun container
   volumeMounts:
     - name: config
       mountPath: {{ $config.mountPath | quote }}
+      {{- with $.Values.qbittorrent.persistence.config.subPath }}
+      subPath: {{ . }}
+      {{- end }}
     - name: qbittorrent-bootstrap
       mountPath: /bootstrap
 {{- end }}

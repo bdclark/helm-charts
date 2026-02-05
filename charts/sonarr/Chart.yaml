@@ -2,7 +2,7 @@ apiVersion: v2
 name: sonarr
 description: TV show organizer/manager for usenet and torrent users
 type: application
-version: "0.2.0"
+version: "0.3.0"
 appVersion: "4.0.16"
 icon: https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/Sonarr.svg
 keywords:

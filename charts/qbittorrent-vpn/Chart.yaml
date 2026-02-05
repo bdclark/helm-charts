@@ -2,7 +2,7 @@ apiVersion: v2
 name: qbittorrent-vpn
 description: qBittorrent with Gluetun VPN sidecar
 type: application
-version: "0.5.0"
+version: "0.6.0"
 appVersion: "5.1.4"
 icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
 keywords:

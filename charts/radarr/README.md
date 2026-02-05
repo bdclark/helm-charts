@@ -1,6 +1,6 @@
 # Radarr Helm Chart
 
-[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 6.0.4](https://img.shields.io/badge/AppVersion-6.0.4-informational?style=flat-square)](Chart.yaml)
 
 Movie organizer/manager for usenet and torrent users
@@ -214,6 +214,7 @@ ingress:
 | bootstrap.existingConfig.key | string | `"config.xml"` | Key containing the configuration data. |
 | persistence.config.enabled | bool | `true` | Enable persistence for config. |
 | persistence.config.mountPath | string | `"/config"` | Mount path. |
+| persistence.config.subPath | string | `""` | Subdirectory of the volume to mount (optional). |
 | persistence.config.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |
 | persistence.config.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.config.size | string | `"1Gi"` | Volume size. |
@@ -221,6 +222,7 @@ ingress:
 | persistence.config.annotations | object | `{}` | PVC annotations. |
 | persistence.data.enabled | bool | `true` | Enable persistence for data. |
 | persistence.data.mountPath | string | `"/data"` | Mount path. |
+| persistence.data.subPath | string | `""` | Subdirectory of the volume to mount (optional). |
 | persistence.data.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |
 | persistence.data.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.data.size | string | `"100Gi"` | Volume size. |

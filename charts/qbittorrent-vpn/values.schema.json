@@ -528,6 +528,10 @@
           "type": "string",
           "description": "Mount path"
         },
+        "subPath": {
+          "type": "string",
+          "description": "Subdirectory of the volume to mount"
+        },
         "storageClass": {
           "type": "string",
           "description": "Storage class"

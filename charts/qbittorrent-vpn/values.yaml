@@ -150,6 +150,8 @@ qbittorrent:
       enabled: true
       # -- Mount path.
       mountPath: /config
+      # -- Subdirectory of the volume to mount (optional).
+      subPath: ""
       # -- Storage class ("-" for default, "" for cluster default).
       storageClass: ""
       # -- Access modes.
@@ -168,6 +170,8 @@ qbittorrent:
       enabled: false
       # -- Mount path.
       mountPath: /data
+      # -- Subdirectory of the volume to mount (optional).
+      subPath: ""
       # -- Storage class ("-" for default, "" for cluster default).
       storageClass: ""
       # -- Access modes.

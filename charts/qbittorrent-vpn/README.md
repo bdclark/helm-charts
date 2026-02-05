@@ -1,6 +1,6 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
@@ -211,6 +211,7 @@ qbittorrent:
 | qbittorrent.config.bootstrap.webuiPassword.existingSecret.key | string | `"WebUI_Password_PBKDF2"` | Secret key for the password. |
 | qbittorrent.persistence.config.enabled | bool | `true` | Enable config persistence. |
 | qbittorrent.persistence.config.mountPath | string | `"/config"` | Mount path. |
+| qbittorrent.persistence.config.subPath | string | `""` | Subdirectory of the volume to mount (optional). |
 | qbittorrent.persistence.config.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |
 | qbittorrent.persistence.config.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | qbittorrent.persistence.config.size | string | `"2Gi"` | Volume size. |
@@ -218,6 +219,7 @@ qbittorrent:
 | qbittorrent.persistence.config.annotations | object | `{}` | PVC annotations. |
 | qbittorrent.persistence.data.enabled | bool | `false` | Enable data persistence. |
 | qbittorrent.persistence.data.mountPath | string | `"/data"` | Mount path. |
+| qbittorrent.persistence.data.subPath | string | `""` | Subdirectory of the volume to mount (optional). |
 | qbittorrent.persistence.data.storageClass | string | `""` | Storage class ("-" for default, "" for cluster default). |
 | qbittorrent.persistence.data.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | qbittorrent.persistence.data.size | string | `"2Gi"` | Volume size. |
