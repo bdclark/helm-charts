@@ -1,0 +1,65 @@
+suite: test configmap
+templates:
+  - configmap.yaml
+tests:
+  - it: should not create configmap when bootstrap disabled
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create bootstrap configmap when enabled
+    set:
+      bootstrap.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: ConfigMap
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-sonarr-bootstrap
+
+  - it: should not create configmap when using existing configMap
+    set:
+      bootstrap.enabled: true
+      bootstrap.existingConfig.type: configMap
+      bootstrap.existingConfig.name: my-config
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should not create configmap when using existing secret
+    set:
+      bootstrap.enabled: true
+      bootstrap.existingConfig.type: secret
+      bootstrap.existingConfig.name: my-secret
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should include config.xml key
+    set:
+      bootstrap.enabled: true
+    asserts:
+      - isNotNull:
+          path: data["config.xml"]
+
+  - it: should include default config content
+    set:
+      bootstrap.enabled: true
+    asserts:
+      - matchRegex:
+          path: data["config.xml"]
+          pattern: "<Config>"
+
+  - it: should use custom config content
+    set:
+      bootstrap.enabled: true
+      bootstrap.config: |
+        <Config>
+          <UrlBase>/sonarr</UrlBase>
+        </Config>
+    asserts:
+      - matchRegex:
+          path: data["config.xml"]
+          pattern: "<UrlBase>/sonarr</UrlBase>"
