@@ -95,6 +95,7 @@ envFrom: []
 
 bootstrap:
   # -- Create a config.xml file if missing.
+  # Requires persistence.enabled=true.
   enabled: false
 
   # -- Directory containing the configuration file.

@@ -186,7 +186,7 @@ ingress:
 | readinessProbe | object | `{}` | Readiness probe configuration. |
 | env | object | `{}` (see values.yaml comments for examples) | Environment variables. |
 | envFrom | list | `[]` | Environment variables from ConfigMaps or Secrets. |
-| bootstrap.enabled | bool | `false` | Create a config.xml file if missing. |
+| bootstrap.enabled | bool | `false` | Create a config.xml file if missing. Requires persistence.enabled=true. |
 | bootstrap.mountPath | string | `"/config"` | Directory containing the configuration file. |
 | bootstrap.config | string | Sane defaults for containerized deployment. | Initial configuration content (used when existingConfig.type is empty). |
 | bootstrap.existingConfig.type | string | `""` | Source type for existing config: "configMap", "secret", or "" (use bootstrap.config). |
