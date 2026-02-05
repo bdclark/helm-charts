@@ -51,6 +51,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Validate configuration
+*/}}
+{{- define "prowlarr.validateConfig" -}}
+{{- if and .Values.bootstrap.enabled (not .Values.persistence.enabled) -}}
+{{- fail "bootstrap.enabled requires persistence.enabled to be true" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Render env entries from a map
 */}}
 {{- define "prowlarr.envFromMap" -}}

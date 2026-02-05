@@ -1,0 +1,11 @@
+{{- if and .Values.bootstrap.enabled (not .Values.bootstrap.existingConfig.type) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "prowlarr.fullname" . }}-bootstrap
+  labels:
+    {{- include "prowlarr.labels" . | nindent 4 }}
+data:
+  config.xml: |
+{{ .Values.bootstrap.config | indent 4 }}
+{{- end }}

@@ -1,9 +1,12 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
+
+> [!NOTE]
+> This chart is under active development. Breaking changes may occur between minor versions.
 
 ## Installing
 
@@ -198,7 +201,7 @@ qbittorrent:
 | qbittorrent.envFrom | list | `[]` | Environment variables from ConfigMaps or Secrets. |
 | qbittorrent.config.mountPath | string | `"/config/qBittorrent"` | Directory containing the configuration file. |
 | qbittorrent.config.fileName | string | `"qBittorrent.conf"` | Configuration file name. |
-| qbittorrent.config.bootstrap.enabled | bool | `true` | Create config file if missing. |
+| qbittorrent.config.bootstrap.enabled | bool | `false` | Create config file if missing. Requires persistence.config.enabled=true. |
 | qbittorrent.config.bootstrap.config | string | Sane defaults for containerized deployment. | Initial configuration content (used when existingConfig.type is empty). |
 | qbittorrent.config.bootstrap.existingConfig.type | string | `""` | Source type for existing config: "configMap", "secret", or "" (use bootstrap.config). |
 | qbittorrent.config.bootstrap.existingConfig.name | string | `""` | Name of the ConfigMap or Secret. |

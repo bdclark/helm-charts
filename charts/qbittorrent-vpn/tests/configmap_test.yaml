@@ -2,7 +2,14 @@ suite: test configmap
 templates:
   - configmap.yaml
 tests:
-  - it: should create bootstrap configmap by default
+  - it: should not create configmap when bootstrap disabled
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create bootstrap configmap when enabled
+    set:
+      qbittorrent.config.bootstrap.enabled: true
     asserts:
       - hasDocuments:
           count: 1
@@ -11,13 +18,6 @@ tests:
       - equal:
           path: metadata.name
           value: RELEASE-NAME-qbittorrent-vpn-bootstrap
-
-  - it: should not create configmap when bootstrap disabled
-    set:
-      qbittorrent.config.bootstrap.enabled: false
-    asserts:
-      - hasDocuments:
-          count: 0
 
   - it: should not create configmap when using existing configMap
     set:
@@ -38,11 +38,15 @@ tests:
           count: 0
 
   - it: should include qBittorrent.conf key
+    set:
+      qbittorrent.config.bootstrap.enabled: true
     asserts:
       - isNotNull:
           path: data["qBittorrent.conf"]
 
   - it: should include default config content
+    set:
+      qbittorrent.config.bootstrap.enabled: true
     asserts:
       - matchRegex:
           path: data["qBittorrent.conf"]
@@ -53,6 +57,7 @@ tests:
 
   - it: should use custom config content
     set:
+      qbittorrent.config.bootstrap.enabled: true
       qbittorrent.config.bootstrap.config: |
         [CustomSection]
         CustomKey=CustomValue

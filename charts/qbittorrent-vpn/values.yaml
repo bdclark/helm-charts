@@ -108,7 +108,8 @@ qbittorrent:
 
     bootstrap:
       # -- Create config file if missing.
-      enabled: true
+      # Requires persistence.config.enabled=true.
+      enabled: false
 
       # -- Initial configuration content (used when existingConfig.type is empty).
       # @default -- Sane defaults for containerized deployment.
