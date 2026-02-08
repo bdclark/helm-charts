@@ -10,8 +10,8 @@ replicaCount: 1
 image:
   # -- Image repository
   repository: ghcr.io/mealie-recipes/mealie
-  # -- Image tag
-  tag: "v3.10.2"
+  # -- Image tag (defaults to appVersion)
+  tag: ""
   # -- Image pull policy
   pullPolicy: IfNotPresent
 
