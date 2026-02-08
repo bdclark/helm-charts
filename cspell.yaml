@@ -28,11 +28,11 @@ words:
   - mysecret
   - nindent
   - nullglob
+  - nzbget
   - persistentvolumes
   - PGID
   - pipefail
   - popd
-  - Prowlarr
   - prowlarr
   - PUID
   - pushd
@@ -40,15 +40,14 @@ words:
   - pytest
   - qbittorrent
   - qmcgaw
-  - Radarr
+  - radarr
   - readwrite
   - replicaset
   - secretpassword
   - servarr
   - Shellcheck
-  - Sonarr
-  - sonarr
   - shopt
+  - sonarr
   - statefulset
   - Taskfile
   - tolerations
