@@ -1,7 +1,7 @@
 # Music-Assistant Helm Chart
 
-[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 2.7.5](https://img.shields.io/badge/AppVersion-2.7.5-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.7.6](https://img.shields.io/badge/AppVersion-2.7.6-informational?style=flat-square)](Chart.yaml)
 
 Music Assistant - Universal media library manager for streaming services and connected audio devices
 
@@ -103,7 +103,7 @@ additionalMounts:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | image.repository | string | `"ghcr.io/music-assistant/server"` | Image repository |
-| image.tag | string | `"2.7.5"` | Image tag |
+| image.tag | string | `""` | Image tag (defaults to appVersion) |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | imagePullSecrets | list | `[]` | Secrets for pulling images from private repositories |
 | nameOverride | string | `""` | Override the chart name |
