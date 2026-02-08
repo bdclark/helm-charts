@@ -4,7 +4,7 @@ description: qBittorrent with Gluetun VPN sidecar
 type: application
 version: "0.7.0"
 # renovate: image=lscr.io/linuxserver/qbittorrent
-appVersion: "5.1.4"
+appVersion: "20.04.1"
 icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
 keywords:
   - torrent
