@@ -64,6 +64,19 @@ tests:
           path: metadata.labels["custom-label"]
           value: "value"
 
+  - it: should apply common labels to deployment
+    set:
+      commonLabels:
+        app.kubernetes.io/part-of: media-stack
+        app.kubernetes.io/component: downloader
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/part-of"]
+          value: media-stack
+      - equal:
+          path: metadata.labels["app.kubernetes.io/component"]
+          value: downloader
+
   - it: should apply pod annotations
     set:
       podAnnotations:

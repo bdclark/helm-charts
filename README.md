@@ -7,12 +7,16 @@ Personal Helm charts. Each chart has its own README under `charts/<name>/`.
 
 ## Charts
 
-| Chart                                       | Description                    |
-| ------------------------------------------- | ------------------------------ |
-| [mealie](charts/mealie/)                    | Mealie recipe manager          |
-| [mosquitto](charts/mosquitto/)              | Eclipse Mosquitto MQTT broker  |
-| [music-assistant](charts/music-assistant/)  | Music Assistant media server   |
-| [qbittorrent-vpn](charts/qbittorrent-vpn/)  | qBittorrent with VPN sidecar   |
+| Chart                                       | Description                              |
+| ------------------------------------------- | ---------------------------------------- |
+| [mealie](charts/mealie/)                    | Mealie recipe manager                    |
+| [mosquitto](charts/mosquitto/)              | Eclipse Mosquitto MQTT broker            |
+| [music-assistant](charts/music-assistant/)  | Music Assistant media server             |
+| [nzbget](charts/nzbget/)                    | Usenet downloader                        |
+| [prowlarr](charts/prowlarr/)                | Indexer manager for usenet and torrent   |
+| [qbittorrent-vpn](charts/qbittorrent-vpn/)  | qBittorrent with VPN sidecar             |
+| [radarr](charts/radarr/)                    | Movie organizer/manager                  |
+| [sonarr](charts/sonarr/)                    | TV show organizer/manager                |
 
 ## Usage
 

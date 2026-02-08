@@ -46,3 +46,12 @@ tests:
       - equal:
           path: spec.selector["app.kubernetes.io/instance"]
           value: RELEASE-NAME
+
+  - it: should apply common labels to service
+    set:
+      commonLabels:
+        app.kubernetes.io/part-of: media-stack
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/part-of"]
+          value: media-stack

@@ -1,6 +1,6 @@
 # Radarr Helm Chart
 
-[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 6.0.4](https://img.shields.io/badge/AppVersion-6.0.4-informational?style=flat-square)](Chart.yaml)
 
 Movie organizer/manager for usenet and torrent users
@@ -194,6 +194,7 @@ ingress:
 | extraDeploymentLabels | object | `{}` | Additional labels for the Deployment. |
 | podAnnotations | object | `{}` | Annotations for pods. |
 | podLabels | object | `{}` | Additional labels for pods. |
+| commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod security context. |
 | image.repository | string | `"lscr.io/linuxserver/radarr"` | Image repository. |
 | image.tag | string | `""` | Image tag (defaults to chart appVersion). |

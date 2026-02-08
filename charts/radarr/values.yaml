@@ -25,6 +25,11 @@ podAnnotations: {}
 # -- Additional labels for pods.
 podLabels: {}
 
+# -- Labels to add to all resources.
+commonLabels: {}
+  # app.kubernetes.io/part-of: media-stack
+  # app.kubernetes.io/component: movies
+
 # -- Pod security context.
 podSecurityContext: {}
   # fsGroup: 2000
