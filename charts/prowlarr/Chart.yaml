@@ -3,7 +3,7 @@ name: prowlarr
 description: Indexer manager for usenet and torrent users
 type: application
 version: "0.3.0"
-# renovate: datasource=docker depName=lscr.io/linuxserver/prowlarr
+# renovate: image=lscr.io/linuxserver/prowlarr
 appVersion: "2.3.0"
 icon: https://raw.githubusercontent.com/Prowlarr/Prowlarr/develop/Logo/Prowlarr.svg
 keywords:

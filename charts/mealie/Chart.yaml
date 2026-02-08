@@ -3,6 +3,7 @@ name: mealie
 description: Mealie recipe manager and meal planner
 type: application
 version: 0.1.1
+# renovate: image=ghcr.io/mealie-recipes/mealie
 appVersion: 3.9.2
 home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
 sources:

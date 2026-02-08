@@ -3,7 +3,7 @@ name: qbittorrent-vpn
 description: qBittorrent with Gluetun VPN sidecar
 type: application
 version: "0.7.0"
-# renovate: datasource=docker depName=lscr.io/linuxserver/qbittorrent
+# renovate: image=lscr.io/linuxserver/qbittorrent
 appVersion: "5.1.4"
 icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
 keywords:
