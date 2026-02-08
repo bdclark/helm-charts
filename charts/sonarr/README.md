@@ -131,8 +131,8 @@ volumeMounts:
 ## Config Bootstrapping
 
 The chart can seed Sonarr's `config.xml` on first run when `bootstrap.enabled` is true.
-This is useful for pre-configuring settings before Sonarr starts. The config file is only
-created if it doesn't already exist, so existing configurations are preserved.
+This is useful for pre-configuring settings before Sonarr starts. By default, the config
+file is only created if it doesn't already exist, preserving existing configurations.
 
 > [!NOTE]
 > Bootstrap requires `persistence.config.enabled` to be true.
@@ -159,6 +159,24 @@ bootstrap:
     name: sonarr-config
     key: config.xml
 ```
+
+### Enforcing Configuration (GitOps)
+
+For GitOps workflows where the configuration should always match the source of truth,
+set `bootstrap.overwrite` to true. This overwrites `config.xml` on every pod startup:
+
+```yaml
+bootstrap:
+  enabled: true
+  overwrite: true
+  existingConfig:
+    type: secret
+    name: sonarr-config
+    key: config.xml
+```
+
+> [!WARNING]
+> With `overwrite: true`, any changes made through the Sonarr UI will be lost on pod restart.
 
 ## Ingress
 
@@ -208,6 +226,7 @@ ingress:
 | env | object | `{}` (see values.yaml comments for examples) | Environment variables. |
 | envFrom | list | `[]` | Environment variables from ConfigMaps or Secrets. |
 | bootstrap.enabled | bool | `false` | Create a config.xml file if missing. Requires persistence.config.enabled=true. |
+| bootstrap.overwrite | bool | `false` | If true, overwrite config on every startup (useful for GitOps). |
 | bootstrap.mountPath | string | `"/config"` | Directory containing the configuration file. |
 | bootstrap.config | string | Sane defaults for containerized deployment. | Initial configuration content (used when existingConfig.type is empty). |
 | bootstrap.existingConfig.type | string | `""` | Source type for existing config: "configMap", "secret", or "" (use bootstrap.config). |

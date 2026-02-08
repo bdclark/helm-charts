@@ -103,6 +103,9 @@ bootstrap:
   # Requires persistence.enabled=true.
   enabled: false
 
+  # -- If true, overwrite config on every startup (useful for GitOps).
+  overwrite: false
+
   # -- Directory containing the configuration file.
   mountPath: /config
 

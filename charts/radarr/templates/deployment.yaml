@@ -50,12 +50,17 @@ spec:
           args:
             - |
               CONFIG_FILE="{{ .Values.bootstrap.mountPath }}/config.xml"
+              {{- if .Values.bootstrap.overwrite }}
+              echo "Overwriting configuration..."
+              cp /bootstrap/config.xml "$CONFIG_FILE"
+              {{- else }}
               if [ ! -f "$CONFIG_FILE" ]; then
                 echo "Seeding initial configuration..."
                 cp /bootstrap/config.xml "$CONFIG_FILE"
               else
                 echo "Configuration file already exists; not overwriting."
               fi
+              {{- end }}
           volumeMounts:
             - name: config
               mountPath: {{ .Values.bootstrap.mountPath }}
