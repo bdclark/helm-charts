@@ -4,7 +4,7 @@ description: Music Assistant - Universal media library manager for streaming ser
 type: application
 version: 0.3.0
 # renovate: image=ghcr.io/music-assistant/server
-appVersion: 2.7.5
+appVersion: 2.7.6
 home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
 sources:
   - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
