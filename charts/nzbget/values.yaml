@@ -28,7 +28,7 @@ podLabels: {}
 # -- Labels to add to all resources.
 commonLabels: {}
   # app.kubernetes.io/part-of: media-stack
-  # app.kubernetes.io/component: tv-shows
+  # app.kubernetes.io/component: downloader
 
 # -- Pod security context.
 podSecurityContext: {}
@@ -36,7 +36,7 @@ podSecurityContext: {}
 
 image:
   # -- Image repository.
-  repository: lscr.io/linuxserver/sonarr
+  repository: lscr.io/linuxserver/nzbget
   # -- Image tag (defaults to chart appVersion).
   tag: ""
   # -- Image pull policy.
@@ -63,7 +63,7 @@ resources: {}
 # -- Container ports.
 ports:
   - name: http
-    containerPort: 8989
+    containerPort: 6789
     protocol: TCP
 
 # -- Startup probe configuration.
@@ -99,26 +99,24 @@ env: {}
 # -- Environment variables from ConfigMaps or Secrets.
 envFrom: []
   # - configMapRef:
-  #     name: sonarr-env
+  #     name: nzbget-env
   # - secretRef:
-  #     name: sonarr-secret-env
+  #     name: nzbget-secret-env
 
 bootstrap:
-  # -- Create a config.xml file if missing.
+  # -- Create a nzbget.conf file if missing.
   # Requires persistence.config.enabled=true.
   enabled: false
 
-  # -- If true, overwrite config on every startup (useful for GitOps).
+  # -- Overwrite config on every startup (useful for GitOps-managed configs).
   overwrite: false
 
   # -- Directory containing the configuration file.
   mountPath: /config
 
   # -- Initial configuration content (used when existingConfig.type is empty).
-  # @default -- Sane defaults for containerized deployment.
-  config: |-
-    <Config>
-    </Config>
+  # @default -- Empty (nzbget creates default config on first run).
+  config: ""
 
   existingConfig:
     # -- Source type for existing config: "configMap", "secret", or "" (use bootstrap.config).
@@ -126,7 +124,7 @@ bootstrap:
     # -- Name of the ConfigMap or Secret.
     name: ""
     # -- Key containing the configuration data.
-    key: config.xml
+    key: nzbget.conf
 
 # Persistent storage
 persistence:
@@ -180,7 +178,7 @@ service:
   # -- Service type.
   type: ClusterIP
   # -- Service port.
-  port: 8989
+  port: 6789
 
 # Ingress configuration
 ingress:
@@ -194,7 +192,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   # -- Ingress hosts.
   hosts:
-    - host: sonarr.local
+    - host: nzbget.local
       paths:
         - path: /
           pathType: ImplementationSpecific

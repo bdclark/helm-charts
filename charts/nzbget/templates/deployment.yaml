@@ -1,10 +1,10 @@
-{{- include "radarr.validateConfig" . -}}
+{{- include "nzbget.validateConfig" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "radarr.fullname" . }}
+  name: {{ include "nzbget.fullname" . }}
   labels:
-    {{- include "radarr.labels" . | nindent 4 }}
+    {{- include "nzbget.labels" . | nindent 4 }}
     {{- with .Values.extraDeploymentLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -20,7 +20,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "radarr.selectorLabels" . | nindent 6 }}
+      {{- include "nzbget.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -28,7 +28,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "radarr.labels" . | nindent 8 }}
+        {{- include "nzbget.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -49,14 +49,14 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              CONFIG_FILE="{{ .Values.bootstrap.mountPath }}/config.xml"
+              CONFIG_FILE="{{ .Values.bootstrap.mountPath }}/nzbget.conf"
               {{- if .Values.bootstrap.overwrite }}
               echo "Overwriting configuration..."
-              cp /bootstrap/config.xml "$CONFIG_FILE"
+              cp /bootstrap/nzbget.conf "$CONFIG_FILE"
               {{- else }}
               if [ ! -f "$CONFIG_FILE" ]; then
                 echo "Seeding initial configuration..."
-                cp /bootstrap/config.xml "$CONFIG_FILE"
+                cp /bootstrap/nzbget.conf "$CONFIG_FILE"
               else
                 echo "Configuration file already exists; not overwriting."
               fi
@@ -75,7 +75,7 @@ spec:
       {{- end }}
       {{- end }}
       containers:
-        - name: radarr
+        - name: nzbget
           {{- with .Values.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
@@ -84,7 +84,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.env }}
           env:
-            {{- include "radarr.envFromMap" . | trim | nindent 12 }}
+            {{- include "nzbget.envFromMap" . | trim | nindent 12 }}
           {{- end }}
           {{- with .Values.envFrom }}
           envFrom:
@@ -138,12 +138,12 @@ spec:
       {{- if .Values.persistence.config.enabled }}
         - name: config
           persistentVolumeClaim:
-            claimName: {{ if .Values.persistence.config.existingClaim }}{{ .Values.persistence.config.existingClaim }}{{- else }}{{ include "radarr.fullname" . }}-config{{- end }}
+            claimName: {{ if .Values.persistence.config.existingClaim }}{{ .Values.persistence.config.existingClaim }}{{- else }}{{ include "nzbget.fullname" . }}-config{{- end }}
       {{- end }}
       {{- if .Values.persistence.data.enabled }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ if .Values.persistence.data.existingClaim }}{{ .Values.persistence.data.existingClaim }}{{- else }}{{ include "radarr.fullname" . }}-data{{- end }}
+            claimName: {{ if .Values.persistence.data.existingClaim }}{{ .Values.persistence.data.existingClaim }}{{- else }}{{ include "nzbget.fullname" . }}-data{{- end }}
       {{- end }}
       {{- if .Values.bootstrap.enabled }}
         - name: bootstrap
@@ -152,16 +152,16 @@ spec:
             name: {{ .Values.bootstrap.existingConfig.name }}
             items:
               - key: {{ .Values.bootstrap.existingConfig.key }}
-                path: config.xml
+                path: nzbget.conf
           {{- else if eq .Values.bootstrap.existingConfig.type "secret" }}
           secret:
             secretName: {{ .Values.bootstrap.existingConfig.name }}
             items:
               - key: {{ .Values.bootstrap.existingConfig.key }}
-                path: config.xml
+                path: nzbget.conf
           {{- else }}
           configMap:
-            name: {{ include "radarr.fullname" . }}-bootstrap
+            name: {{ include "nzbget.fullname" . }}-bootstrap
           {{- end }}
       {{- end }}
       {{- with .Values.volumes }}

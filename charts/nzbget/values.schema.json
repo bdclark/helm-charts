@@ -130,16 +130,16 @@
     },
     "bootstrap": {
       "type": "object",
-      "description": "Bootstrap configuration for seeding initial config.xml",
+      "description": "Bootstrap configuration for seeding initial nzbget.conf",
       "additionalProperties": false,
       "properties": {
         "enabled": {
           "type": "boolean",
-          "description": "Create a config.xml file if missing"
+          "description": "Create a nzbget.conf file if missing"
         },
         "overwrite": {
           "type": "boolean",
-          "description": "If true, overwrite config on every startup (useful for GitOps)"
+          "description": "Overwrite config on every startup"
         },
         "mountPath": {
           "type": "string",
@@ -176,36 +176,8 @@
       "description": "Persistent storage configuration",
       "additionalProperties": false,
       "properties": {
-        "enabled": {
-          "type": "boolean",
-          "description": "Enable persistence"
-        },
-        "mountPath": {
-          "type": "string",
-          "description": "Mount path"
-        },
-        "storageClass": {
-          "type": "string",
-          "description": "Storage class"
-        },
-        "accessModes": {
-          "type": "array",
-          "description": "Access modes",
-          "items": { "type": "string" }
-        },
-        "size": {
-          "type": "string",
-          "description": "Volume size"
-        },
-        "existingClaim": {
-          "type": "string",
-          "description": "Use existing PVC"
-        },
-        "annotations": {
-          "type": "object",
-          "description": "PVC annotations",
-          "additionalProperties": { "type": "string" }
-        }
+        "config": { "$ref": "#/$defs/persistence" },
+        "data": { "$ref": "#/$defs/persistence" }
       }
     },
     "volumeMounts": {
@@ -362,6 +334,47 @@
             "additionalProperties": false
           }
         ]
+      }
+    },
+    "persistence": {
+      "type": "object",
+      "description": "Persistence configuration",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable persistence"
+        },
+        "mountPath": {
+          "type": "string",
+          "description": "Mount path"
+        },
+        "subPath": {
+          "type": "string",
+          "description": "Subdirectory of the volume to mount"
+        },
+        "storageClass": {
+          "type": "string",
+          "description": "Storage class"
+        },
+        "accessModes": {
+          "type": "array",
+          "description": "Access modes",
+          "items": { "type": "string" }
+        },
+        "size": {
+          "type": "string",
+          "description": "Volume size"
+        },
+        "existingClaim": {
+          "type": "string",
+          "description": "Use existing PVC"
+        },
+        "annotations": {
+          "type": "object",
+          "description": "PVC annotations",
+          "additionalProperties": { "type": "string" }
+        }
       }
     }
   }

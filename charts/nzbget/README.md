@@ -1,9 +1,9 @@
-# Sonarr Helm Chart
+# Nzbget Helm Chart
 
-[![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 4.0.16](https://img.shields.io/badge/AppVersion-4.0.16-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: v26.0-ls230](https://img.shields.io/badge/AppVersion-v26.0-ls230-informational?style=flat-square)](Chart.yaml)
 
-TV show organizer/manager for usenet and torrent users
+Usenet downloader
 
 > [!NOTE]
 > This chart is under active development. Breaking changes may occur between minor versions.
@@ -13,7 +13,7 @@ TV show organizer/manager for usenet and torrent users
 ```bash
 helm repo add bdclark https://bdclark.github.io/helm-charts
 helm repo update
-helm install sonarr bdclark/sonarr -f values.yaml
+helm install nzbget bdclark/nzbget -f values.yaml
 ```
 
 ## Environment Variables
@@ -22,7 +22,7 @@ Environment variables can be set via `env` (inline values or refs) and `envFrom`
 
 ### LinuxServer Variables
 
-This chart uses the [LinuxServer.io](https://docs.linuxserver.io/images/docker-sonarr/) Sonarr image,
+This chart uses the [LinuxServer.io](https://docs.linuxserver.io/images/docker-nzbget/) NZBGet image,
 which supports common environment variables:
 
 ```yaml
@@ -32,34 +32,11 @@ env:
   PGID: "1000"
 ```
 
-### Sonarr Configuration Overrides
+### NZBGet Configuration
 
-Sonarr supports environment variables to override entries in `config.xml`. Variables follow the pattern
-`SONARR__<NAMESPACE>__<SETTING>`. See the [Servarr Wiki](https://wiki.servarr.com/sonarr/environment-variables)
-for details.
-
-```yaml
-env:
-  # Server settings
-  SONARR__SERVER__PORT: "8989"
-  SONARR__SERVER__URLBASE: /sonarr
-  # Logging
-  SONARR__LOG__LEVEL: info
-  # Authentication
-  SONARR__AUTH__METHOD: Forms
-  SONARR__AUTH__REQUIRED: Enabled
-  # PostgreSQL (optional - replaces SQLite)
-  SONARR__POSTGRES__HOST: postgres
-  SONARR__POSTGRES__PORT: "5432"
-  SONARR__POSTGRES__USER: sonarr
-  SONARR__POSTGRES__MAINDB: sonarr-main
-  SONARR__POSTGRES__LOGDB: sonarr-log
-  SONARR__POSTGRES__PASSWORD:
-    valueFrom:
-      secretKeyRef:
-        name: sonarr-postgres
-        key: password
-```
+NZBGet stores its configuration in `/config/nzbget.conf`. Unlike some applications, NZBGet does not
+support environment variable overrides for its config file. Configuration changes should be made
+through the web UI or by bootstrapping an initial config file.
 
 ### Bulk Environment Variables
 
@@ -68,15 +45,15 @@ For bulk environment variables from ConfigMaps or Secrets:
 ```yaml
 envFrom:
   - secretRef:
-      name: sonarr-credentials
+      name: nzbget-credentials
   - configMapRef:
-      name: sonarr-config
+      name: nzbget-config
 ```
 
 ## Persistence
 
-Two persistent volumes are available: `config` for Sonarr's database and settings, and `data` for media files.
-Both are enabled by default.
+Two persistent volumes are available: `config` for NZBGet's configuration and queue data, and `data`
+for downloads. Both are enabled by default.
 
 ```yaml
 persistence:
@@ -84,27 +61,27 @@ persistence:
     enabled: true
     size: 1Gi
     # storageClass: ""
-    # existingClaim: sonarr-config
+    # existingClaim: nzbget-config
   data:
     enabled: true
     size: 100Gi
     mountPath: /data
     # storageClass: ""
-    # existingClaim: media-library
+    # existingClaim: downloads
 ```
 
 ### Using Existing Claims
 
-To use pre-existing PVCs (useful for shared media libraries):
+To use pre-existing PVCs (useful for shared download directories):
 
 ```yaml
 persistence:
   config:
     enabled: true
-    existingClaim: sonarr-config
+    existingClaim: nzbget-config
   data:
     enabled: true
-    existingClaim: shared-media
+    existingClaim: shared-downloads
 ```
 
 ### Additional Volumes
@@ -113,29 +90,46 @@ For more complex storage setups, use `volumes` and `volumeMounts`:
 
 ```yaml
 volumes:
-  - name: tv
+  - name: completed
     nfs:
       server: nas.local
-      path: /volume1/tv
-  - name: downloads
+      path: /volume1/downloads/completed
+  - name: intermediate
     persistentVolumeClaim:
-      claimName: downloads-pvc
+      claimName: intermediate-pvc
 
 volumeMounts:
-  - name: tv
-    mountPath: /tv
-  - name: downloads
-    mountPath: /downloads
+  - name: completed
+    mountPath: /completed
+  - name: intermediate
+    mountPath: /intermediate
 ```
 
 ## Config Bootstrapping
 
-The chart can seed Sonarr's `config.xml` on first run when `bootstrap.enabled` is true.
-This is useful for pre-configuring settings before Sonarr starts. By default, the config
+The chart can seed NZBGet's `nzbget.conf` on first run when `bootstrap.enabled` is true.
+This is useful for pre-configuring settings before NZBGet starts. By default, the config
 file is only created if it doesn't already exist, preserving existing configurations.
 
 > [!NOTE]
 > Bootstrap requires `persistence.config.enabled` to be true.
+
+> [!TIP]
+> If `bootstrap.config` is empty (the default), NZBGet will create its own default
+> configuration on first startup. This is typically sufficient for most deployments.
+
+Set `bootstrap.overwrite: true` to enforce the config on every startup. This is useful
+for GitOps workflows where the config is managed externally:
+
+```yaml
+bootstrap:
+  enabled: true
+  overwrite: true  # Always apply config, even if file exists
+  existingConfig:
+    type: configMap
+    name: nzbget-managed-config
+    key: nzbget.conf
+```
 
 Inline config creates a ConfigMap automatically:
 
@@ -143,10 +137,18 @@ Inline config creates a ConfigMap automatically:
 bootstrap:
   enabled: true
   config: |
-    <Config>
-      <UrlBase>/sonarr</UrlBase>
-      <AuthenticationMethod>Forms</AuthenticationMethod>
-    </Config>
+    MainDir=/data
+    DestDir=${MainDir}/completed
+    InterDir=${MainDir}/intermediate
+    NzbDir=${MainDir}/nzb
+    QueueDir=${MainDir}/queue
+    TempDir=${MainDir}/tmp
+    WebDir=${AppDir}/webui
+    ConfigTemplate=${AppDir}/webui/nzbget.conf.template
+    ControlIP=0.0.0.0
+    ControlPort=6789
+    ControlUsername=nzbget
+    ControlPassword=tegbzn6789
 ```
 
 To use an existing ConfigMap or Secret:
@@ -156,31 +158,13 @@ bootstrap:
   enabled: true
   existingConfig:
     type: secret  # or "configMap"
-    name: sonarr-config
-    key: config.xml
+    name: nzbget-config
+    key: nzbget.conf
 ```
-
-### Enforcing Configuration (GitOps)
-
-For GitOps workflows where the configuration should always match the source of truth,
-set `bootstrap.overwrite` to true. This overwrites `config.xml` on every pod startup:
-
-```yaml
-bootstrap:
-  enabled: true
-  overwrite: true
-  existingConfig:
-    type: secret
-    name: sonarr-config
-    key: config.xml
-```
-
-> [!WARNING]
-> With `overwrite: true`, any changes made through the Sonarr UI will be lost on pod restart.
 
 ## Ingress
 
-Enable ingress to expose Sonarr externally:
+Enable ingress to expose NZBGet externally:
 
 ```yaml
 ingress:
@@ -189,15 +173,25 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
   hosts:
-    - host: sonarr.example.com
+    - host: nzbget.example.com
       paths:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: sonarr-tls
+    - secretName: nzbget-tls
       hosts:
-        - sonarr.example.com
+        - nzbget.example.com
 ```
+
+## Default Credentials
+
+The default NZBGet credentials are:
+- **Username:** `nzbget`
+- **Password:** `tegbzn6789`
+
+> [!WARNING]
+> Change the default credentials immediately after installation, especially if exposing
+> NZBGet via ingress.
 
 ## Configuration
 
@@ -214,24 +208,24 @@ ingress:
 | podLabels | object | `{}` | Additional labels for pods. |
 | commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod security context. |
-| image.repository | string | `"lscr.io/linuxserver/sonarr"` | Image repository. |
+| image.repository | string | `"lscr.io/linuxserver/nzbget"` | Image repository. |
 | image.tag | string | `""` | Image tag (defaults to chart appVersion). |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | securityContext | object | `{}` | Container security context. |
 | resources | object | `{}` | Resource requests and limits. |
-| ports | list | `[{"containerPort":8989,"name":"http","protocol":"TCP"}]` | Container ports. |
+| ports | list | `[{"containerPort":6789,"name":"http","protocol":"TCP"}]` | Container ports. |
 | startupProbe | object | `{}` | Startup probe configuration. |
 | livenessProbe | object | `{}` | Liveness probe configuration. |
 | readinessProbe | object | `{}` | Readiness probe configuration. |
 | env | object | `{}` (see values.yaml comments for examples) | Environment variables. |
 | envFrom | list | `[]` | Environment variables from ConfigMaps or Secrets. |
-| bootstrap.enabled | bool | `false` | Create a config.xml file if missing. Requires persistence.config.enabled=true. |
-| bootstrap.overwrite | bool | `false` | If true, overwrite config on every startup (useful for GitOps). |
+| bootstrap.enabled | bool | `false` | Create a nzbget.conf file if missing. Requires persistence.config.enabled=true. |
+| bootstrap.overwrite | bool | `false` | Overwrite config on every startup (useful for GitOps-managed configs). |
 | bootstrap.mountPath | string | `"/config"` | Directory containing the configuration file. |
-| bootstrap.config | string | Sane defaults for containerized deployment. | Initial configuration content (used when existingConfig.type is empty). |
+| bootstrap.config | string | Empty (nzbget creates default config on first run). | Initial configuration content (used when existingConfig.type is empty). |
 | bootstrap.existingConfig.type | string | `""` | Source type for existing config: "configMap", "secret", or "" (use bootstrap.config). |
 | bootstrap.existingConfig.name | string | `""` | Name of the ConfigMap or Secret. |
-| bootstrap.existingConfig.key | string | `"config.xml"` | Key containing the configuration data. |
+| bootstrap.existingConfig.key | string | `"nzbget.conf"` | Key containing the configuration data. |
 | persistence.config.enabled | bool | `true` | Enable persistence for config. |
 | persistence.config.mountPath | string | `"/config"` | Mount path. |
 | persistence.config.subPath | string | `""` | Subdirectory of the volume to mount (optional). |
@@ -250,11 +244,11 @@ ingress:
 | persistence.data.annotations | object | `{}` | PVC annotations. |
 | volumeMounts | list | `[]` | Additional volume mounts. |
 | service.type | string | `"ClusterIP"` | Service type. |
-| service.port | int | `8989` | Service port. |
+| service.port | int | `6789` | Service port. |
 | ingress.enabled | bool | `false` | Enable Ingress. |
 | ingress.className | string | `""` | Ingress class name. |
 | ingress.annotations | object | `{}` | Ingress annotations. |
-| ingress.hosts | list | `[{"host":"sonarr.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts. |
+| ingress.hosts | list | `[{"host":"nzbget.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | Ingress hosts. |
 | ingress.tls | list | `[]` | Ingress TLS configuration. |
 | initContainers | list | `[]` | Additional init containers. |
 | extraContainers | list | `[]` | Additional containers. |

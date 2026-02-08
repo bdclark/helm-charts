@@ -56,6 +56,11 @@
       "description": "Additional labels for pods",
       "additionalProperties": { "type": "string" }
     },
+    "commonLabels": {
+      "type": "object",
+      "description": "Labels to add to all resources",
+      "additionalProperties": { "type": "string" }
+    },
     "podSecurityContext": {
       "type": "object",
       "description": "Pod security context"
@@ -131,6 +136,10 @@
         "enabled": {
           "type": "boolean",
           "description": "Create a config.xml file if missing"
+        },
+        "overwrite": {
+          "type": "boolean",
+          "description": "If true, overwrite config on every startup (useful for GitOps)"
         },
         "mountPath": {
           "type": "string",

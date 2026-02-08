@@ -1,6 +1,6 @@
 # Radarr Helm Chart
 
-[![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 6.0.4](https://img.shields.io/badge/AppVersion-6.0.4-informational?style=flat-square)](Chart.yaml)
 
 Movie organizer/manager for usenet and torrent users
@@ -131,8 +131,8 @@ volumeMounts:
 ## Config Bootstrapping
 
 The chart can seed Radarr's `config.xml` on first run when `bootstrap.enabled` is true.
-This is useful for pre-configuring settings before Radarr starts. The config file is only
-created if it doesn't already exist, so existing configurations are preserved.
+This is useful for pre-configuring settings before Radarr starts. By default, the config
+file is only created if it doesn't already exist, preserving existing configurations.
 
 > [!NOTE]
 > Bootstrap requires `persistence.config.enabled` to be true.
@@ -159,6 +159,24 @@ bootstrap:
     name: radarr-config
     key: config.xml
 ```
+
+### Enforcing Configuration (GitOps)
+
+For GitOps workflows where the configuration should always match the source of truth,
+set `bootstrap.overwrite` to true. This overwrites `config.xml` on every pod startup:
+
+```yaml
+bootstrap:
+  enabled: true
+  overwrite: true
+  existingConfig:
+    type: secret
+    name: radarr-config
+    key: config.xml
+```
+
+> [!WARNING]
+> With `overwrite: true`, any changes made through the Radarr UI will be lost on pod restart.
 
 ## Ingress
 
@@ -194,6 +212,7 @@ ingress:
 | extraDeploymentLabels | object | `{}` | Additional labels for the Deployment. |
 | podAnnotations | object | `{}` | Annotations for pods. |
 | podLabels | object | `{}` | Additional labels for pods. |
+| commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod security context. |
 | image.repository | string | `"lscr.io/linuxserver/radarr"` | Image repository. |
 | image.tag | string | `""` | Image tag (defaults to chart appVersion). |
@@ -207,6 +226,7 @@ ingress:
 | env | object | `{}` (see values.yaml comments for examples) | Environment variables. |
 | envFrom | list | `[]` | Environment variables from ConfigMaps or Secrets. |
 | bootstrap.enabled | bool | `false` | Create a config.xml file if missing. Requires persistence.config.enabled=true. |
+| bootstrap.overwrite | bool | `false` | If true, overwrite config on every startup (useful for GitOps). |
 | bootstrap.mountPath | string | `"/config"` | Directory containing the configuration file. |
 | bootstrap.config | string | Sane defaults for containerized deployment. | Initial configuration content (used when existingConfig.type is empty). |
 | bootstrap.existingConfig.type | string | `""` | Source type for existing config: "configMap", "secret", or "" (use bootstrap.config). |

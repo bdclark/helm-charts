@@ -1,0 +1,28 @@
+apiVersion: v2
+name: nzbget
+description: Usenet downloader
+type: application
+version: "0.1.0"
+# renovate: datasource=docker depName=lscr.io/linuxserver/nzbget
+appVersion: "v26.0-ls230"
+icon: https://nzbget.com/img/logo.svg
+keywords:
+  - usenet
+  - downloader
+  - nzb
+home: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    - name: NZBGet
+      url: https://nzbget.com
+    - name: NZBGet GitHub
+      url: https://github.com/nzbgetcom/nzbget
+maintainers:
+  - name: bdclark
+    email: brian@clark.zone
+    url: https://github.com/bdclark

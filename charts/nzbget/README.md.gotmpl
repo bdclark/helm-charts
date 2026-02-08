@@ -1,0 +1,206 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+> [!NOTE]
+> This chart is under active development. Breaking changes may occur between minor versions.
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install nzbget bdclark/nzbget -f values.yaml
+```
+
+## Environment Variables
+
+Environment variables can be set via `env` (inline values or refs) and `envFrom` (bulk refs).
+
+### LinuxServer Variables
+
+This chart uses the [LinuxServer.io](https://docs.linuxserver.io/images/docker-nzbget/) NZBGet image,
+which supports common environment variables:
+
+```yaml
+env:
+  TZ: America/New_York
+  PUID: "1000"
+  PGID: "1000"
+```
+
+### NZBGet Configuration
+
+NZBGet stores its configuration in `/config/nzbget.conf`. Unlike some applications, NZBGet does not
+support environment variable overrides for its config file. Configuration changes should be made
+through the web UI or by bootstrapping an initial config file.
+
+### Bulk Environment Variables
+
+For bulk environment variables from ConfigMaps or Secrets:
+
+```yaml
+envFrom:
+  - secretRef:
+      name: nzbget-credentials
+  - configMapRef:
+      name: nzbget-config
+```
+
+## Persistence
+
+Two persistent volumes are available: `config` for NZBGet's configuration and queue data, and `data`
+for downloads. Both are enabled by default.
+
+```yaml
+persistence:
+  config:
+    enabled: true
+    size: 1Gi
+    # storageClass: ""
+    # existingClaim: nzbget-config
+  data:
+    enabled: true
+    size: 100Gi
+    mountPath: /data
+    # storageClass: ""
+    # existingClaim: downloads
+```
+
+### Using Existing Claims
+
+To use pre-existing PVCs (useful for shared download directories):
+
+```yaml
+persistence:
+  config:
+    enabled: true
+    existingClaim: nzbget-config
+  data:
+    enabled: true
+    existingClaim: shared-downloads
+```
+
+### Additional Volumes
+
+For more complex storage setups, use `volumes` and `volumeMounts`:
+
+```yaml
+volumes:
+  - name: completed
+    nfs:
+      server: nas.local
+      path: /volume1/downloads/completed
+  - name: intermediate
+    persistentVolumeClaim:
+      claimName: intermediate-pvc
+
+volumeMounts:
+  - name: completed
+    mountPath: /completed
+  - name: intermediate
+    mountPath: /intermediate
+```
+
+## Config Bootstrapping
+
+The chart can seed NZBGet's `nzbget.conf` on first run when `bootstrap.enabled` is true.
+This is useful for pre-configuring settings before NZBGet starts. By default, the config
+file is only created if it doesn't already exist, preserving existing configurations.
+
+> [!NOTE]
+> Bootstrap requires `persistence.config.enabled` to be true.
+
+> [!TIP]
+> If `bootstrap.config` is empty (the default), NZBGet will create its own default
+> configuration on first startup. This is typically sufficient for most deployments.
+
+Set `bootstrap.overwrite: true` to enforce the config on every startup. This is useful
+for GitOps workflows where the config is managed externally:
+
+```yaml
+bootstrap:
+  enabled: true
+  overwrite: true  # Always apply config, even if file exists
+  existingConfig:
+    type: configMap
+    name: nzbget-managed-config
+    key: nzbget.conf
+```
+
+Inline config creates a ConfigMap automatically:
+
+```yaml
+bootstrap:
+  enabled: true
+  config: |
+    MainDir=/data
+    DestDir=${MainDir}/completed
+    InterDir=${MainDir}/intermediate
+    NzbDir=${MainDir}/nzb
+    QueueDir=${MainDir}/queue
+    TempDir=${MainDir}/tmp
+    WebDir=${AppDir}/webui
+    ConfigTemplate=${AppDir}/webui/nzbget.conf.template
+    ControlIP=0.0.0.0
+    ControlPort=6789
+    ControlUsername=nzbget
+    ControlPassword=tegbzn6789
+```
+
+To use an existing ConfigMap or Secret:
+
+```yaml
+bootstrap:
+  enabled: true
+  existingConfig:
+    type: secret  # or "configMap"
+    name: nzbget-config
+    key: nzbget.conf
+```
+
+## Ingress
+
+Enable ingress to expose NZBGet externally:
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: nzbget.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: nzbget-tls
+      hosts:
+        - nzbget.example.com
+```
+
+## Default Credentials
+
+The default NZBGet credentials are:
+- **Username:** `nzbget`
+- **Password:** `tegbzn6789`
+
+> [!WARNING]
+> Change the default credentials immediately after installation, especially if exposing
+> NZBGet via ingress.
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).
