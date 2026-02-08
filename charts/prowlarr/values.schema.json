@@ -137,6 +137,10 @@
           "type": "boolean",
           "description": "Create a config.xml file if missing"
         },
+        "overwrite": {
+          "type": "boolean",
+          "description": "If true, overwrite config on every startup (useful for GitOps)"
+        },
         "mountPath": {
           "type": "string",
           "description": "Directory containing the configuration file"
