@@ -38,7 +38,7 @@ podSecurityContext: {}
 qbittorrent:
   image:
     # -- Image repository.
-    repository: lscr.io/linuxserver/qbittorrent
+    repository: linuxserver/qbittorrent
     # -- Image tag (defaults to chart appVersion).
     tag: ""
     # -- Image pull policy.
