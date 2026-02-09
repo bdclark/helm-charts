@@ -35,7 +35,7 @@ tests:
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[?(@.name == "qbittorrent")].image
-          pattern: "^lscr.io/linuxserver/qbittorrent:"
+          pattern: "^linuxserver/qbittorrent:"
 
   - it: should use custom qbittorrent image
     set:
