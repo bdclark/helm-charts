@@ -1,6 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended", "customManagers:helmChartYamlAppVersions"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["linuxserver/qbittorrent"],
+      "allowedVersions": "/^[0-9]\\.[0-9]+\\.[0-9]+$/"
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
