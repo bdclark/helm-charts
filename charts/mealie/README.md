@@ -1,7 +1,7 @@
 # Mealie Helm Chart
 
-[![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 3.9.2](https://img.shields.io/badge/AppVersion-3.9.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: v3.10.2](https://img.shields.io/badge/AppVersion-v3.10.2-informational?style=flat-square)](Chart.yaml)
 
 Mealie recipe manager and meal planner
 
@@ -117,7 +117,7 @@ strategy:
 |-----|------|---------|-------------|
 | replicaCount | int | `1` | Number of replicas for the mealie deployment SQLite requires a single instance |
 | image.repository | string | `"ghcr.io/mealie-recipes/mealie"` | Image repository |
-| image.tag | string | `"v3.9.2"` | Image tag |
+| image.tag | string | `""` | Image tag (defaults to appVersion) |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
 | nameOverride | string | `""` | Override the chart name |
