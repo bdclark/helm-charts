@@ -36,7 +36,7 @@ podSecurityContext: {}
 
 image:
   # -- Image repository.
-  repository: lscr.io/linuxserver/sonarr
+  repository: linuxserver/sonarr
   # -- Image tag (defaults to chart appVersion).
   tag: ""
   # -- Image pull policy.
