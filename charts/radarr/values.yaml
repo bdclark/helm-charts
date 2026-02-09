@@ -36,7 +36,7 @@ podSecurityContext: {}
 
 image:
   # -- Image repository.
-  repository: lscr.io/linuxserver/radarr
+  repository: linuxserver/radarr
   # -- Image tag (defaults to chart appVersion).
   tag: ""
   # -- Image pull policy.

@@ -1,6 +1,6 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
@@ -189,7 +189,7 @@ qbittorrent:
 | podLabels | object | `{}` | Additional labels for pods. |
 | commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod security context. |
-| qbittorrent.image.repository | string | `"lscr.io/linuxserver/qbittorrent"` | Image repository. |
+| qbittorrent.image.repository | string | `"linuxserver/qbittorrent"` | Image repository. |
 | qbittorrent.image.tag | string | `""` | Image tag (defaults to chart appVersion). |
 | qbittorrent.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | qbittorrent.securityContext | object | `{}` | Container security context. |
