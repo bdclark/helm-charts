@@ -34,6 +34,16 @@ tests:
             targetPort: stream
             protocol: TCP
 
+  - it: should apply common labels to service
+    set:
+      service.enabled: true
+      commonLabels:
+        app.kubernetes.io/part-of: media-stack
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/part-of"]
+          value: media-stack
+
   - it: should NOT create service when explicitly disabled
     set:
       service.enabled: false
