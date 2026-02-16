@@ -1,7 +1,7 @@
 # Music-Assistant Helm Chart
 
-[![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 2.7.6](https://img.shields.io/badge/AppVersion-2.7.6-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.7.7](https://img.shields.io/badge/AppVersion-2.7.7-informational?style=flat-square)](Chart.yaml)
 
 Music Assistant - Universal media library manager for streaming services and connected audio devices
 
@@ -108,8 +108,11 @@ additionalMounts:
 | imagePullSecrets | list | `[]` | Secrets for pulling images from private repositories |
 | nameOverride | string | `""` | Override the chart name |
 | fullnameOverride | string | `""` | Override the full release name |
+| deploymentAnnotations | object | `{}` | Annotations for the Deployment. |
+| extraDeploymentLabels | object | `{}` | Additional labels for the Deployment. |
 | podLabels | object | `{}` | Extra labels applied to the pod |
 | podAnnotations | object | `{}` | Pod annotations applied to the Music Assistant pod |
+| commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod security context |
 | resources | object | `{}` | Resource requests/limits for the pod |
 | securityContext.runAsNonRoot | bool | `false` | Whether to run the container as non-root |

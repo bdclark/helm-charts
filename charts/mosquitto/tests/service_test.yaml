@@ -13,6 +13,15 @@ tests:
           path: spec.type
           value: ClusterIP
 
+  - it: should apply common labels to service
+    set:
+      commonLabels:
+        app.kubernetes.io/part-of: iot-stack
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/part-of"]
+          value: iot-stack
+
   - it: should only expose enabled ports
     set:
       service.ports.mqtt.enabled: true

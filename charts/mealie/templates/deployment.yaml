@@ -11,6 +11,13 @@ metadata:
   name: {{ include "mealie.fullname" . }}
   labels:
     {{- include "mealie.labels" . | nindent 4 }}
+    {{- with .Values.extraDeploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   {{- if .Values.strategy }}

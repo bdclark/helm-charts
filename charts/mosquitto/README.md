@@ -1,6 +1,6 @@
 # Mosquitto Helm Chart
 
-[![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.0.22](https://img.shields.io/badge/AppVersion-2.0.22-informational?style=flat-square)](Chart.yaml)
 
 Eclipse Mosquitto MQTT broker with authentication and persistence support
@@ -93,8 +93,11 @@ config:
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
 | nameOverride | string | `""` | Override the chart name |
 | fullnameOverride | string | `""` | Override the full release name |
+| deploymentAnnotations | object | `{}` | Annotations for the Deployment. |
+| extraDeploymentLabels | object | `{}` | Additional labels for the Deployment. |
 | podAnnotations | object | `{}` | Pod annotations applied to the broker pod |
 | podLabels | object | `{}` | Extra labels applied to the broker pod |
+| commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod-level security context |
 | securityContext | object | `{}` | Container-level security context |
 | resources | object | `{}` | Resource requests and limits |

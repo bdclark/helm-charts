@@ -23,10 +23,21 @@ nameOverride: ""
 # -- Override the full release name
 fullnameOverride: ""
 
+# -- Annotations for the Deployment.
+deploymentAnnotations: {}
+
+# -- Additional labels for the Deployment.
+extraDeploymentLabels: {}
+
 # -- Pod annotations applied to the mealie pod
 podAnnotations: {}
 # -- Pod labels applied to the mealie pod
 podLabels: {}
+
+# -- Labels to add to all resources.
+commonLabels: {}
+  # app.kubernetes.io/part-of: media-stack
+  # app.kubernetes.io/component: recipes
 
 # -- Pod-level security context
 podSecurityContext: {}

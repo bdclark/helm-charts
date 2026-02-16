@@ -161,6 +161,37 @@ tests:
           content:
             name: tls-certs
 
+  - it: should apply deployment annotations
+    set:
+      deploymentAnnotations:
+        deploy-annotation: deploy-value
+    asserts:
+      - equal:
+          path: metadata.annotations["deploy-annotation"]
+          value: deploy-value
+
+  - it: should apply extra deployment labels
+    set:
+      extraDeploymentLabels:
+        custom-label: custom-value
+    asserts:
+      - equal:
+          path: metadata.labels["custom-label"]
+          value: custom-value
+
+  - it: should apply common labels to deployment
+    set:
+      commonLabels:
+        app.kubernetes.io/part-of: iot-stack
+        app.kubernetes.io/component: broker
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/part-of"]
+          value: iot-stack
+      - equal:
+          path: metadata.labels["app.kubernetes.io/component"]
+          value: broker
+
   - it: should apply pod annotations
     set:
       podAnnotations:

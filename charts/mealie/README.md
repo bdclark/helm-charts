@@ -1,6 +1,6 @@
 # Mealie Helm Chart
 
-[![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: v3.10.2](https://img.shields.io/badge/AppVersion-v3.10.2-informational?style=flat-square)](Chart.yaml)
 
 Mealie recipe manager and meal planner
@@ -122,8 +122,11 @@ strategy:
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
 | nameOverride | string | `""` | Override the chart name |
 | fullnameOverride | string | `""` | Override the full release name |
+| deploymentAnnotations | object | `{}` | Annotations for the Deployment. |
+| extraDeploymentLabels | object | `{}` | Additional labels for the Deployment. |
 | podAnnotations | object | `{}` | Pod annotations applied to the mealie pod |
 | podLabels | object | `{}` | Pod labels applied to the mealie pod |
+| commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod-level security context |
 | securityContext | object | `{}` | Container-level security context |
 | service.type | string | `"ClusterIP"` | Service type (ClusterIP/LoadBalancer/NodePort) |

@@ -19,6 +19,12 @@ nameOverride: ""
 # -- Override the full release name
 fullnameOverride: ""
 
+# -- Annotations for the Deployment.
+deploymentAnnotations: {}
+
+# -- Additional labels for the Deployment.
+extraDeploymentLabels: {}
+
 # -- Extra labels applied to the pod
 podLabels: {}
 
@@ -28,6 +34,11 @@ podAnnotations: {}
   # k8s.v1.cni.cncf.io/networks: "mac-vlan-vlan100"
   # Example monitoring annotation:
   # prometheus.io/scrape: "false"  # MA doesn't expose metrics yet
+
+# -- Labels to add to all resources.
+commonLabels: {}
+  # app.kubernetes.io/part-of: media-stack
+  # app.kubernetes.io/component: music
 
 # -- Pod security context
 podSecurityContext: {}

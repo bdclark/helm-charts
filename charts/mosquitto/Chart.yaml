@@ -2,7 +2,7 @@ apiVersion: v2
 name: mosquitto
 description: Eclipse Mosquitto MQTT broker with authentication and persistence support
 type: application
-version: 0.6.0
+version: 0.6.1
 # renovate: image=eclipse-mosquitto
 appVersion: 2.0.22
 home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
@@ -19,7 +19,7 @@ keywords:
   - messaging
   - home-automation
 maintainers:
-  - name: Brian Clark
+  - name: bdclark
     email: brian@clark.zone
     url: https://github.com/bdclark
 annotations:
