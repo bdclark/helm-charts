@@ -19,10 +19,21 @@ nameOverride: ""
 # -- Override the full release name
 fullnameOverride: ""
 
+# -- Annotations for the Deployment.
+deploymentAnnotations: {}
+
+# -- Additional labels for the Deployment.
+extraDeploymentLabels: {}
+
 # -- Pod annotations applied to the broker pod
 podAnnotations: {}
 # -- Extra labels applied to the broker pod
 podLabels: {}
+
+# -- Labels to add to all resources.
+commonLabels: {}
+  # app.kubernetes.io/part-of: iot-stack
+  # app.kubernetes.io/component: broker
 
 # -- Pod-level security context
 podSecurityContext: {}

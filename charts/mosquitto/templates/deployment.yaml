@@ -4,6 +4,13 @@ metadata:
   name: {{ include "mosquitto.fullname" . }}
   labels:
     {{- include "mosquitto.labels" . | nindent 4 }}
+    {{- with .Values.extraDeploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: 1
   {{- if .Values.strategy }}
