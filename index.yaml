@@ -10,6 +10,34 @@ entries:
           url: https://mealie.io/
     apiVersion: v2
     appVersion: v3.10.2
+    created: "2026-02-16T14:42:04.044744838Z"
+    description: Mealie recipe manager and meal planner
+    digest: 7f188d4a1dfc7f3d4eaf0c10a8de0820870ff0ab21c024138b2e5e4d88cbc787
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    - email: ashleyclarkindy@gmail.com
+      name: ashleylclark
+      url: https://github.com/ashleylclark
+    name: mealie
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    - https://github.com/mealie-recipes/mealie
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mealie-0.1.3/mealie-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+        - name: Mealie
+          url: https://mealie.io/
+    apiVersion: v2
+    appVersion: v3.10.2
     created: "2026-02-09T01:12:38.763880394Z"
     description: Mealie recipe manager and meal planner
     digest: b6d6856b1a3a44033318fc57afd8eed2751c5e5c2bf553a98a1d052a3bb6cbf0
@@ -86,6 +114,44 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/mealie-0.1.0/mealie-0.1.0.tgz
     version: 0.1.0
   mosquitto:
+  - annotations:
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+    apiVersion: v2
+    appVersion: 2.0.22
+    created: "2026-02-16T14:42:04.200069683Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: 58c8f08a36a1f07f8d2bb58982fc335e8b82961c45efdcef2343ba4ce31d79e3
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.6.1/mosquitto-0.6.1.tgz
+    version: 0.6.1
   - annotations:
       artifacthub.io/images: |
         - name: mosquitto
@@ -379,6 +445,45 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.2.0/mosquitto-0.2.0.tgz
     version: 0.2.0
   music-assistant:
+  - annotations:
+      artifacthub.io/images: |
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+        - name: Music Assistant
+          url: https://music-assistant.io/
+        - name: GitHub Repository
+          url: https://github.com/music-assistant/server
+    apiVersion: v2
+    appVersion: 2.7.7
+    created: "2026-02-16T14:42:04.356739298Z"
+    description: Music Assistant - Universal media library manager for streaming services
+      and connected audio devices
+    digest: 866baa8682fa051d646818c4b08a1050406b20f5f424bc623b5c4abb5fdd9256
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon.png
+    keywords:
+    - music
+    - audio
+    - streaming
+    - media
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: music-assistant
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - https://github.com/music-assistant/server
+    - https://music-assistant.io/
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.3.2/music-assistant-0.3.2.tgz
+    version: 0.3.2
   - annotations:
       artifacthub.io/images: |
         - name: music-assistant
@@ -1386,4 +1491,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-09T01:35:18.501330629Z"
+generated: "2026-02-16T14:42:04.356879733Z"
