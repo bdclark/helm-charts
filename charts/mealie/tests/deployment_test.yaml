@@ -136,6 +136,37 @@ tests:
             persistentVolumeClaim:
               claimName: my-existing-pvc
 
+  - it: should apply deployment annotations
+    set:
+      deploymentAnnotations:
+        deploy-annotation: deploy-value
+    asserts:
+      - equal:
+          path: metadata.annotations["deploy-annotation"]
+          value: deploy-value
+
+  - it: should apply extra deployment labels
+    set:
+      extraDeploymentLabels:
+        custom-label: custom-value
+    asserts:
+      - equal:
+          path: metadata.labels["custom-label"]
+          value: custom-value
+
+  - it: should apply common labels to deployment
+    set:
+      commonLabels:
+        app.kubernetes.io/part-of: media-stack
+        app.kubernetes.io/component: recipes
+    asserts:
+      - equal:
+          path: metadata.labels["app.kubernetes.io/part-of"]
+          value: media-stack
+      - equal:
+          path: metadata.labels["app.kubernetes.io/component"]
+          value: recipes
+
   - it: should apply pod annotations
     set:
       podAnnotations:

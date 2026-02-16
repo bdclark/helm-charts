@@ -40,6 +40,16 @@
       "type": "string",
       "description": "Override the full name"
     },
+    "deploymentAnnotations": {
+      "type": "object",
+      "description": "Annotations for the Deployment",
+      "additionalProperties": { "type": "string" }
+    },
+    "extraDeploymentLabels": {
+      "type": "object",
+      "description": "Additional labels for the Deployment",
+      "additionalProperties": { "type": "string" }
+    },
     "podAnnotations": {
       "type": "object",
       "description": "Annotations to add to the pod"
@@ -47,6 +57,11 @@
     "podLabels": {
       "type": "object",
       "description": "Labels to add to the pod"
+    },
+    "commonLabels": {
+      "type": "object",
+      "description": "Labels to add to all resources",
+      "additionalProperties": { "type": "string" }
     },
     "podSecurityContext": {
       "type": "object",
