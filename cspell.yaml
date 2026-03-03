@@ -15,6 +15,7 @@ words:
   - kubeconform
   - kubectl
   - letsencrypt
+  - lidarr
   - LOGDB
   - lscr.io
   - MAINDB
