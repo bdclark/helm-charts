@@ -1,5 +1,37 @@
 apiVersion: v1
 entries:
+  lidarr:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+        - name: Lidarr
+          url: https://lidarr.audio
+        - name: Lidarr GitHub
+          url: https://github.com/Lidarr/Lidarr
+    apiVersion: v2
+    appVersion: 3.1.0
+    created: "2026-03-03T10:51:18.771309849Z"
+    description: Music collection manager for usenet and torrent users
+    digest: 8690ec363773c9e302b707e8b737ff562cd0f4839439b997f9a7e9c7dbff0765
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+    icon: https://raw.githubusercontent.com/Lidarr/Lidarr/develop/Logo/Lidarr.svg
+    keywords:
+    - music
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: lidarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/lidarr-0.1.0/lidarr-0.1.0.tgz
+    version: 0.1.0
   mealie:
   - annotations:
       artifacthub.io/license: MIT
@@ -1491,4 +1523,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2026-02-16T14:42:04.356879733Z"
+generated: "2026-03-03T10:51:18.771406712Z"
