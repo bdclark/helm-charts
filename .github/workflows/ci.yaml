@@ -63,6 +63,7 @@ jobs:
         run: helm-docs --chart-search-root charts --sort-values-order file
 
       - name: Check for changes
+        if: github.event_name != 'pull_request' || github.actor != 'renovate[bot]'
         run: |
           if ! git diff --exit-code; then
             echo "::error::Documentation is out of date. Run 'helm-docs' locally and commit the changes."
