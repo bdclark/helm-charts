@@ -31,7 +31,7 @@ jobs:
       helm-docs: ${{ steps.versions.outputs.HELM_DOCS_VERSION }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           sparse-checkout: .github/versions.env
           sparse-checkout-cone-mode: false
@@ -50,7 +50,7 @@ jobs:
     needs: load-versions
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install helm-docs
         run: |
@@ -78,7 +78,7 @@ jobs:
       charts: ${{ steps.detect.outputs.charts }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -110,7 +110,7 @@ jobs:
         chart: ${{ fromJson(needs.detect-changes.outputs.charts) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
