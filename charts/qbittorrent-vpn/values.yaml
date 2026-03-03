@@ -240,7 +240,7 @@ gluetun:
     # -- Image repository.
     repository: qmcgaw/gluetun
     # -- Image tag.
-    tag: v3.41.0
+    tag: v3.41.1
     # -- Image pull policy.
     pullPolicy: IfNotPresent
 
