@@ -46,7 +46,7 @@ jobs:
         run: helm-docs --chart-search-root charts --sort-values-order file
 
       - name: Commit README updates
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "chore(helm-docs): regenerate chart READMEs"
           file_pattern: "charts/**/README.md"
