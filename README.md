@@ -9,6 +9,7 @@ Personal Helm charts. Each chart has its own README under `charts/<name>/`.
 
 | Chart                                       | Description                              |
 | ------------------------------------------- | ---------------------------------------- |
+| [lidarr](charts/lidarr/)                    | Music organizer/manager                  |
 | [mealie](charts/mealie/)                    | Mealie recipe manager                    |
 | [mosquitto](charts/mosquitto/)              | Eclipse Mosquitto MQTT broker            |
 | [music-assistant](charts/music-assistant/)  | Music Assistant media server             |
