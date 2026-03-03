@@ -5,6 +5,19 @@
     {
       "matchPackageNames": ["linuxserver/qbittorrent"],
       "allowedVersions": "/^[0-9]\\.[0-9]+\\.[0-9]+$/"
+    },
+    {
+      "description": "Bump chart version patch when Renovate updates chart app/image references",
+      "matchManagers": ["custom.regex", "helm-values"],
+      "matchFileNames": ["charts/**/Chart.yaml", "charts/**/values.yaml"],
+      "bumpVersions": [
+        {
+          "name": "Helm chart version patch bump",
+          "filePatterns": ["{{packageFileDir}}/Chart.yaml"],
+          "matchStrings": ["^version:\\s*\"?(?<version>\\d+\\.\\d+\\.\\d+)\"?\\s*$"],
+          "bumpType": "patch"
+        }
+      ]
     }
   ],
   "customManagers": [

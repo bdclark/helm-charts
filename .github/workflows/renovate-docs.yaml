@@ -1,0 +1,52 @@
+name: Renovate Docs Fixup
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "charts/**/Chart.yaml"
+      - "charts/**/values.yaml"
+      - "charts/**/README.md.gotmpl"
+      - ".github/versions.env"
+      - ".github/workflows/renovate-docs.yaml"
+
+permissions:
+  contents: write
+
+jobs:
+  helm-docs:
+    name: Regenerate chart READMEs
+    runs-on: ubuntu-latest
+    if: >
+      github.actor == 'renovate[bot]' &&
+      startsWith(github.head_ref, 'renovate/') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Load helm-docs version
+        id: versions
+        run: |
+          while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" =~ ^# ]] && continue
+            echo "${key}=${value}" >> "$GITHUB_OUTPUT"
+          done < .github/versions.env
+
+      - name: Install helm-docs
+        run: |
+          VERSION="${{ steps.versions.outputs.HELM_DOCS_VERSION }}"
+          VERSION="${VERSION#v}"
+          curl -sSL "https://github.com/norwoodj/helm-docs/releases/download/v${VERSION}/helm-docs_${VERSION}_Linux_x86_64.tar.gz" | tar xz helm-docs
+          sudo mv helm-docs /usr/local/bin/
+
+      - name: Run helm-docs
+        run: helm-docs --chart-search-root charts --sort-values-order file
+
+      - name: Commit README updates
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(helm-docs): regenerate chart READMEs"
+          file_pattern: "charts/**/README.md"
