@@ -1,19 +1,31 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "customManagers:helmChartYamlAppVersions"],
+  "extends": [
+    "config:recommended",
+    "customManagers:helmChartYamlAppVersions"
+  ],
   "packageRules": [
     {
-      "matchPackageNames": ["linuxserver/qbittorrent"],
+      "matchPackageNames": [
+        "linuxserver/qbittorrent"
+      ],
       "allowedVersions": "/^[0-9]\\.[0-9]+\\.[0-9]+$/"
     },
     {
       "description": "Bump chart version patch when Renovate updates chart app/image references",
-      "matchFileNames": ["charts/**/Chart.yaml", "charts/**/values.yaml"],
+      "matchFileNames": [
+        "charts/**/Chart.yaml",
+        "charts/**/values.yaml"
+      ],
       "bumpVersions": [
         {
           "name": "Helm chart version patch bump",
-          "filePatterns": ["{{packageFileDir}}/Chart.yaml"],
-          "matchStrings": ["version:\\s*\"?(?<version>\\d+\\.\\d+\\.\\d+)\"?"],
+          "filePatterns": [
+            "{{packageFileDir}}/Chart.yaml"
+          ],
+          "matchStrings": [
+            "version:\\s*\"?(?<version>\\d+\\.\\d+\\.\\d+)\"?"
+          ],
           "bumpType": "patch"
         }
       ]
@@ -22,7 +34,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^\\.github/versions\\.env$"],
+      "managerFilePatterns": [
+        "/^\\.github/versions\\.env$/"
+      ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\n[A-Z_]+=(?<currentValue>.*)"
       ],
