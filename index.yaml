@@ -870,6 +870,37 @@ entries:
         - name: NZBGet GitHub
           url: https://github.com/nzbgetcom/nzbget
     apiVersion: v2
+    appVersion: 26.0.20260306
+    created: "2026-03-08T19:22:15.810174066Z"
+    description: Usenet downloader
+    digest: 3c6add2dc4da2a2d71103b668a2e8e026e0c2475bf968de8adde581dfe5a01d6
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    icon: https://nzbget.com/img/logo.svg
+    keywords:
+    - usenet
+    - downloader
+    - nzb
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: nzbget
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/nzbget-0.1.3/nzbget-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+        - name: NZBGet
+          url: https://nzbget.com
+        - name: NZBGet GitHub
+          url: https://github.com/nzbgetcom/nzbget
+    apiVersion: v2
     appVersion: 26.0.20260227
     created: "2026-03-03T12:53:08.646663352Z"
     description: Usenet downloader
@@ -1720,4 +1751,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-08T19:21:52.662787165Z"
+generated: "2026-03-08T19:22:15.810268272Z"
