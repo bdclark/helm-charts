@@ -36,7 +36,7 @@ podSecurityContext: {}
 
 image:
   # -- Image repository.
-  repository: ghcr.io/sct/seerr
+  repository: ghcr.io/seerr-team/seerr
   # -- Image tag (defaults to chart appVersion).
   tag: ""
   # -- Image pull policy.

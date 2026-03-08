@@ -1,6 +1,6 @@
 # Seerr Helm Chart
 
-[![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 3.1.0](https://img.shields.io/badge/AppVersion-3.1.0-informational?style=flat-square)](Chart.yaml)
 
 Request management for media libraries
@@ -89,7 +89,7 @@ ingress:
 | podLabels | object | `{}` | Additional labels for pods. |
 | commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod security context. |
-| image.repository | string | `"ghcr.io/sct/seerr"` | Image repository. |
+| image.repository | string | `"ghcr.io/seerr-team/seerr"` | Image repository. |
 | image.tag | string | `""` | Image tag (defaults to chart appVersion). |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | securityContext | object | `{}` | Container security context. |
