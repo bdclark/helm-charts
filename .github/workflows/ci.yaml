@@ -131,7 +131,7 @@ jobs:
         run: ct lint --charts charts/${{ matrix.chart }}
 
       - name: Install helm-unittest
-        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version ${{ needs.load-versions.outputs.helm-unittest }}
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version ${{ needs.load-versions.outputs.helm-unittest }} --verify=false
 
       - name: Run helm unittest
         run: helm unittest charts/${{ matrix.chart }}
