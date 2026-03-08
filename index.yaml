@@ -1590,6 +1590,40 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/radarr-0.1.0/radarr-0.1.0.tgz
     version: 0.1.0
+  seerr:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+        - name: Seerr
+          url: https://seerr.dev
+        - name: Seerr GitHub
+          url: https://github.com/seerr-team/seerr
+    apiVersion: v2
+    appVersion: 3.1.0
+    created: "2026-03-08T19:35:30.995330149Z"
+    description: Request management for media libraries
+    digest: 1927ede133cfdfb2766554e9cc8877f6f406a58e531f0107c09421143b745337
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+    icon: https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/main/public/os_icon.svg
+    keywords:
+    - requests
+    - media
+    - seerr
+    - overseerr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: seerr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+    - https://github.com/seerr-team/seerr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/seerr-0.1.0/seerr-0.1.0.tgz
+    version: 0.1.0
   sonarr:
   - annotations:
       artifacthub.io/license: MIT
@@ -1751,4 +1785,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2026-03-08T19:22:15.810268272Z"
+generated: "2026-03-08T19:35:30.995451857Z"
