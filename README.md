@@ -17,6 +17,7 @@ Personal Helm charts. Each chart has its own README under `charts/<name>/`.
 | [prowlarr](charts/prowlarr/)                | Indexer manager for usenet and torrent   |
 | [qbittorrent-vpn](charts/qbittorrent-vpn/)  | qBittorrent with VPN sidecar             |
 | [radarr](charts/radarr/)                    | Movie organizer/manager                  |
+| [seerr](charts/seerr/)                      | Request management (Overseerr replacement) |
 | [sonarr](charts/sonarr/)                    | TV show organizer/manager                |
 
 ## Usage
