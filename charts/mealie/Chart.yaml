@@ -2,9 +2,9 @@ apiVersion: v2
 name: mealie
 description: Mealie recipe manager and meal planner
 type: application
-version: 0.1.5
+version: 0.1.6
 # renovate: image=ghcr.io/mealie-recipes/mealie
-appVersion: v3.12.0
+appVersion: v3.13.1
 home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
 sources:
   - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
