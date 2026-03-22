@@ -2,9 +2,9 @@ apiVersion: v2
 name: sonarr
 description: TV show organizer/manager for usenet and torrent users
 type: application
-version: "0.4.1"
+version: "0.4.2"
 # renovate: image=linuxserver/sonarr
-appVersion: "4.0.16"
+appVersion: "4.0.17"
 icon: https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/Sonarr.svg
 keywords:
   - tv

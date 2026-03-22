@@ -1,7 +1,7 @@
 # Sonarr Helm Chart
 
-[![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 4.0.16](https://img.shields.io/badge/AppVersion-4.0.16-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 4.0.17](https://img.shields.io/badge/AppVersion-4.0.17-informational?style=flat-square)](Chart.yaml)
 
 TV show organizer/manager for usenet and torrent users
 
