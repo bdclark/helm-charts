@@ -18,6 +18,8 @@ tests:
       - equal:
           path: spec.strategy.type
           value: Recreate
+      - isNull:
+          path: spec.template.spec.containers[0].securityContext
 
   - it: should not set strategy when persistence is disabled
     set:
@@ -189,6 +191,7 @@ tests:
         runAsUser: 1000
         runAsGroup: 1000
         runAsNonRoot: true
+        allowPrivilegeEscalation: false
     asserts:
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsUser
@@ -199,33 +202,38 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].securityContext.runAsNonRoot
           value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
+          value: false
 
-  - it: should apply capabilities when enabled
+  - it: should apply pod security context
+    set:
+      podSecurityContext:
+        fsGroup: 1000
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+
+  - it: should apply capability add and drop lists
     set:
       securityContext:
         capabilities:
-          enabled: true
+          drop:
+            - ALL
           add:
             - DAC_READ_SEARCH
             - SYS_ADMIN
     asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop[0]
+          value: ALL
       - equal:
           path: spec.template.spec.containers[0].securityContext.capabilities.add[0]
           value: DAC_READ_SEARCH
       - equal:
           path: spec.template.spec.containers[0].securityContext.capabilities.add[1]
           value: SYS_ADMIN
-
-  - it: should not add capabilities when disabled
-    set:
-      securityContext:
-        capabilities:
-          enabled: false
-          add:
-            - DAC_READ_SEARCH
-    asserts:
-      - isNull:
-          path: spec.template.spec.containers[0].securityContext.capabilities
 
   - it: should apply resource limits
     set:

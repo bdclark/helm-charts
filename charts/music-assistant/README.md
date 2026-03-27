@@ -1,9 +1,12 @@
 # Music-Assistant Helm Chart
 
-[![Version: 0.3.6](https://img.shields.io/badge/Version-0.3.6-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.8.1](https://img.shields.io/badge/AppVersion-2.8.1-informational?style=flat-square)](Chart.yaml)
 
 Music Assistant - Universal media library manager for streaming services and connected audio devices
+
+> [!NOTE]
+> This chart is under active development. Breaking changes may occur between minor versions.
 
 ## Installing
 
@@ -98,6 +101,38 @@ additionalMounts:
     readOnly: true
 ```
 
+### Security context overrides
+
+The chart leaves pod and container security settings unset by default. This lets
+the image runtime defaults apply unless you explicitly opt into Kubernetes
+security context fields.
+
+```yaml
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+```
+
+For cases that need additional access, use the native Kubernetes
+`securityContext.capabilities` shape directly:
+
+```yaml
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - DAC_READ_SEARCH
+```
+
 ## Configuration
 
 | Key | Type | Default | Description |
@@ -115,12 +150,7 @@ additionalMounts:
 | commonLabels | object | `{}` | Labels to add to all resources. |
 | podSecurityContext | object | `{}` | Pod security context |
 | resources | object | `{}` | Resource requests/limits for the pod |
-| securityContext.runAsNonRoot | bool | `false` | Whether to run the container as non-root |
-| securityContext.runAsUser | int | `0` | User ID to run the container as |
-| securityContext.runAsGroup | int | `0` | Group ID to run the container as |
-| securityContext.capabilities.enabled | bool | `false` |  |
-| securityContext.capabilities.add | list | `[]` |  |
-| securityContext.capabilities.drop[0] | string | `"ALL"` |  |
+| securityContext | object | `{}` | Container security context |
 | hostNetwork | bool | `true` | Run the pod in the node network namespace |
 | dnsPolicy | string | `"ClusterFirst"` | DNS policy when using host networking |
 | hostPort.enabled | bool | `false` | Enable hostPort configuration |

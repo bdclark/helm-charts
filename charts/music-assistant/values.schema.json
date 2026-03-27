@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Music Assistant Helm Chart Values",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "image": {
       "type": "object",
@@ -48,11 +49,13 @@
     },
     "podAnnotations": {
       "type": "object",
-      "description": "Annotations to add to the pod"
+      "description": "Annotations to add to the pod",
+      "additionalProperties": { "type": "string" }
     },
     "podLabels": {
       "type": "object",
-      "description": "Labels to add to the pod"
+      "description": "Labels to add to the pod",
+      "additionalProperties": { "type": "string" }
     },
     "commonLabels": {
       "type": "object",
@@ -65,43 +68,6 @@
     },
     "securityContext": {
       "type": "object",
-      "properties": {
-        "runAsNonRoot": {
-          "type": "boolean",
-          "description": "Run container as non-root user"
-        },
-        "runAsUser": {
-          "type": "integer",
-          "description": "User ID to run container as"
-        },
-        "runAsGroup": {
-          "type": "integer",
-          "description": "Group ID to run container as"
-        },
-        "capabilities": {
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "type": "boolean",
-              "description": "Enable custom capabilities"
-            },
-            "add": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "Capabilities to add"
-            },
-            "drop": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "description": "Capabilities to drop"
-            }
-          }
-        }
-      },
       "description": "Security context for the container"
     },
     "hostNetwork": {
@@ -145,7 +111,8 @@
         },
         "annotations": {
           "type": "object",
-          "description": "Service annotations"
+          "description": "Service annotations",
+          "additionalProperties": { "type": "string" }
         },
         "webPort": {
           "type": "integer",
@@ -191,7 +158,8 @@
         },
         "annotations": {
           "type": "object",
-          "description": "Ingress annotations"
+          "description": "Ingress annotations",
+          "additionalProperties": { "type": "string" }
         },
         "hosts": {
           "type": "array",
@@ -253,9 +221,14 @@
         },
         "annotations": {
           "type": "object",
-          "description": "Annotations for PVC"
+          "description": "Annotations for PVC",
+          "additionalProperties": { "type": "string" }
         }
       }
+    },
+    "strategy": {
+      "type": "object",
+      "description": "Deployment update strategy"
     },
     "additionalVolumes": {
       "type": "array",

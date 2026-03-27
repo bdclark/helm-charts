@@ -53,25 +53,20 @@ resources: {}
   #   cpu: 100m
   #   memory: 256Mi
 
-# Container security context
-securityContext:
-  # -- Whether to run the container as non-root
-  runAsNonRoot: false  # Default false for current MA images
-  # -- User ID to run the container as
-  runAsUser: 0         # Default 0, configurable for custom images
-  # -- Group ID to run the container as
-  runAsGroup: 0        # Default 0, configurable for custom images
-  # Capabilities for advanced use cases (SMB/network shares, local media access)
-  # Default: no additional capabilities for better security
-  capabilities:
-    enabled: false
-    add: []
-    # Example capabilities for advanced features:
-    # add:
-    #   - DAC_READ_SEARCH  # Required for SMB/network share access
-    #   - SYS_ADMIN        # Required for mounting network shares
-    drop:
-      - ALL
+# -- Container security context
+securityContext: {}
+  # runAsUser: 1000
+  # runAsGroup: 1000
+  # runAsNonRoot: true
+  # allowPrivilegeEscalation: false
+  # readOnlyRootFilesystem: true
+  # seccompProfile:
+  #   type: RuntimeDefault
+  # capabilities:
+  #   drop:
+  #     - ALL
+  #   add:
+  #     - DAC_READ_SEARCH
 
 # -- Run the pod in the node network namespace
 hostNetwork: true
