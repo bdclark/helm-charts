@@ -51,26 +51,7 @@ spec:
         - name: {{ .Chart.Name }}
           {{- with .Values.securityContext }}
           securityContext:
-            {{- if .capabilities.enabled }}
-            capabilities:
-              {{- if .capabilities.add }}
-              add:
-                {{- toYaml .capabilities.add | nindent 16 }}
-              {{- end }}
-              {{- if .capabilities.drop }}
-              drop:
-                {{- toYaml .capabilities.drop | nindent 16 }}
-              {{- end }}
-            {{- end }}
-            {{- if hasKey . "runAsNonRoot" }}
-            runAsNonRoot: {{ .runAsNonRoot }}
-            {{- end }}
-            {{- if hasKey . "runAsUser" }}
-            runAsUser: {{ .runAsUser }}
-            {{- end }}
-            {{- if hasKey . "runAsGroup" }}
-            runAsGroup: {{ .runAsGroup }}
-            {{- end }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}

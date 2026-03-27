@@ -9,6 +9,9 @@
 
 {{ template "chart.header" . }}
 
+> [!NOTE]
+> This chart is under active development. Breaking changes may occur between minor versions.
+
 ## Installing
 
 ### From repo
@@ -100,6 +103,38 @@ additionalMounts:
   - name: media-nfs
     mountPath: /media
     readOnly: true
+```
+
+### Security context overrides
+
+The chart leaves pod and container security settings unset by default. This lets
+the image runtime defaults apply unless you explicitly opt into Kubernetes
+security context fields.
+
+```yaml
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+```
+
+For cases that need additional access, use the native Kubernetes
+`securityContext.capabilities` shape directly:
+
+```yaml
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+    add:
+      - DAC_READ_SEARCH
 ```
 
 ## Configuration
