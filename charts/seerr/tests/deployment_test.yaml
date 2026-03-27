@@ -14,7 +14,7 @@ tests:
           value: 1
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: "^ghcr.io/sct/seerr:"
+          pattern: "^ghcr.io/seerr-team/seerr:"
       - equal:
           path: spec.strategy.type
           value: Recreate
@@ -34,7 +34,7 @@ tests:
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: "^ghcr.io/sct/seerr:.+"
+          pattern: "^ghcr.io/seerr-team/seerr:.+"
 
   - it: should mount config volume when persistence enabled
     set:
@@ -394,4 +394,3 @@ tests:
       - equal:
           path: spec.template.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key
           value: kubernetes.io/arch
-
