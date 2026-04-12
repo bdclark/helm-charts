@@ -182,9 +182,11 @@ jobs:
 
       - name: Run ct install smoke test
         run: |
+          # --helm-extra-args are forwarded to helm install/test invocations;
+          # avoid flags unsupported by helm test (for example: --wait).
           ct install \
             --charts charts/${{ matrix.chart }} \
-            --helm-extra-args "--timeout 5m --wait"
+            --helm-extra-args "--timeout 5m"
 
       - name: Dump cluster diagnostics on failure
         if: failure()
