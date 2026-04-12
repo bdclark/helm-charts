@@ -41,6 +41,34 @@ entries:
         - name: Mealie
           url: https://mealie.io/
     apiVersion: v2
+    appVersion: v3.14.0
+    created: "2026-04-12T04:16:51.853253164Z"
+    description: Mealie recipe manager and meal planner
+    digest: b0358cd9df1e40e16e07f059d7da7861e115cecea0696f1b3a5a1a2cddc27b13
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    - email: ashleyclarkindy@gmail.com
+      name: ashleylclark
+      url: https://github.com/ashleylclark
+    name: mealie
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    - https://github.com/mealie-recipes/mealie
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mealie-0.1.7/mealie-0.1.7.tgz
+    version: 0.1.7
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+        - name: Mealie
+          url: https://mealie.io/
+    apiVersion: v2
     appVersion: v3.13.1
     created: "2026-03-22T16:43:38.325317761Z"
     description: Mealie recipe manager and meal planner
@@ -2122,4 +2150,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.1.0/sonarr-0.1.0.tgz
     version: 0.1.0
-generated: "2026-04-12T04:15:49.906349362Z"
+generated: "2026-04-12T04:16:51.853385936Z"
