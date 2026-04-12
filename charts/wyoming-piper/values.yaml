@@ -1,0 +1,147 @@
+# -- Override the release name.
+nameOverride: ""
+# -- Override the full release name.
+fullnameOverride: ""
+
+# -- Number of replicas.
+replicaCount: 1
+
+# -- Deployment update strategy.
+strategy:
+  type: Recreate
+
+# -- Image pull secrets.
+imagePullSecrets: []
+
+# -- Annotations for the Deployment.
+deploymentAnnotations: {}
+
+# -- Additional labels for the Deployment.
+extraDeploymentLabels: {}
+
+# -- Annotations for pods.
+podAnnotations: {}
+
+# -- Additional labels for pods.
+podLabels: {}
+
+# -- Labels to add to all resources.
+commonLabels: {}
+  # app.kubernetes.io/part-of: voice-stack
+  # app.kubernetes.io/component: tts
+
+# -- Pod security context.
+podSecurityContext: {}
+  # fsGroup: 2000
+
+image:
+  # -- Image repository.
+  repository: rhasspy/wyoming-piper
+  # -- Image tag (defaults to chart appVersion).
+  tag: ""
+  # -- Image pull policy.
+  pullPolicy: IfNotPresent
+
+# -- Container security context.
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# -- Resource requests and limits.
+resources: {}
+  # limits:
+  #   cpu: 500m
+  #   memory: 512Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Container ports.
+ports:
+  - name: wyoming
+    containerPort: 10200
+    protocol: TCP
+
+# -- Startup probe configuration.
+startupProbe: {}
+# -- Liveness probe configuration.
+livenessProbe: {}
+# -- Readiness probe configuration.
+readinessProbe: {}
+
+# -- Environment variables.
+# @default -- `{}` (see values.yaml comments for examples)
+env: {}
+  # TZ: Etc/UTC
+  # PUID: "1000"
+  # PGID: "1000"
+  # LOG_LEVEL: info
+  # MY_PASSWORD:
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: mysecret
+  #       key: password
+
+# -- Environment variables from ConfigMaps or Secrets.
+envFrom: []
+  # - configMapRef:
+  #     name: wyoming-piper-env
+  # - secretRef:
+  #     name: wyoming-piper-secret-env
+
+# Persistent storage
+persistence:
+  # -- Enable persistence.
+  enabled: true
+  # -- Mount path.
+  mountPath: /data
+  # -- Storage class ("-" for default, "" for cluster default).
+  storageClass: ""
+  # -- Access modes.
+  accessModes:
+    - ReadWriteOnce
+  # -- Volume size.
+  size: 5Gi
+  # -- Use existing PVC (disables provisioning).
+  existingClaim: ""
+  # -- PVC annotations.
+  annotations: {}
+    # k8up.io/backup: "true"
+
+# -- Additional volume mounts.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+service:
+  # -- Service type.
+  type: ClusterIP
+  # -- Service port.
+  port: 10200
+
+# -- Additional init containers.
+initContainers: []
+
+# -- Additional containers.
+extraContainers: []
+
+# -- Additional volumes.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# -- Node selector.
+nodeSelector: {}
+
+# -- Tolerations.
+tolerations: []
+
+# -- Affinity rules.
+affinity: {}

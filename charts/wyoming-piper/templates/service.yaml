@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "wyoming-piper.fullname" . }}
+  labels:
+    {{- include "wyoming-piper.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: wyoming
+      protocol: TCP
+      name: wyoming
+  selector:
+    {{- include "wyoming-piper.selectorLabels" . | nindent 4 }}
