@@ -1,0 +1,255 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should create deployment with default values
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-wyoming-piper
+      - equal:
+          path: spec.replicas
+          value: 1
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^rhasspy/wyoming-piper:"
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: en_US-lessac-medium
+
+  - it: should use custom image
+    set:
+      image.repository: my-wyoming-piper
+      image.tag: "custom"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: "my-wyoming-piper:custom"
+
+  - it: should use appVersion when tag not specified
+    set:
+      image.tag: ""
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^rhasspy/wyoming-piper:.+"
+
+  - it: should mount data volume when persistence enabled
+    set:
+      persistence.enabled: true
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-wyoming-piper-data
+
+  - it: should use custom mount path
+    set:
+      persistence.enabled: true
+      persistence.mountPath: /custom/data
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /custom/data
+
+  - it: should use existing claim when specified
+    set:
+      persistence.enabled: true
+      persistence.existingClaim: my-data-pvc
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: my-data-pvc
+
+  - it: should not mount volumes when persistence disabled
+    set:
+      persistence.enabled: false
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].volumeMounts
+      - isNull:
+          path: spec.template.spec.volumes
+
+  - it: should set environment variables
+    set:
+      env:
+        TZ: America/New_York
+        PUID: "1000"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TZ
+            value: America/New_York
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PUID
+            value: "1000"
+
+  - it: should set environment variables from secrets
+    set:
+      env:
+        SECRET_VAR:
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: secret-key
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: SECRET_VAR
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: secret-key
+
+  - it: should apply envFrom
+    set:
+      envFrom:
+        - secretRef:
+            name: my-secret
+        - configMapRef:
+            name: my-config
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-secret
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: my-config
+
+  - it: should configure container ports
+    set:
+      ports:
+        - name: wyoming
+          containerPort: 10200
+          protocol: TCP
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            name: wyoming
+            containerPort: 10200
+            protocol: TCP
+
+  - it: should override piper voice in args mode
+    set:
+      piper:
+        voice: en_GB-alan-medium
+        voiceMode: arg
+        additionalArgs: []
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: en_GB-alan-medium
+
+  - it: should inject PIPER_VOICE in env mode and not auto-add --voice args
+    set:
+      piper:
+        voice: en_GB-alan-medium
+        voiceMode: env
+        additionalArgs: []
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].args
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PIPER_VOICE
+            value: en_GB-alan-medium
+
+  - it: should append additional args when auto args are used
+    set:
+      piper:
+        voice: en_US-lessac-medium
+        voiceMode: arg
+        additionalArgs:
+          - --debug
+          - --update-voices
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: en_US-lessac-medium
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --debug
+      - equal:
+          path: spec.template.spec.containers[0].args[3]
+          value: --update-voices
+
+  - it: should use explicit args when provided
+    set:
+      args:
+        - --voice
+        - custom-voice
+        - --debug
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: custom-voice
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --debug
+
+  - it: should render command override
+    set:
+      command:
+        - /usr/bin/python3
+        - -m
+        - wyoming_piper
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].command[0]
+          value: /usr/bin/python3
+      - equal:
+          path: spec.template.spec.containers[0].command[1]
+          value: -m
+      - equal:
+          path: spec.template.spec.containers[0].command[2]
+          value: wyoming_piper
+
+  - it: should fail when piper voice is empty and args are not provided
+    set:
+      piper:
+        voice: ""
+        voiceMode: arg
+        additionalArgs: []
+      args: []
+    asserts:
+      - failedTemplate:
+          errorMessage: "piper.voice cannot be empty when args is empty; set piper.voice or provide explicit args"

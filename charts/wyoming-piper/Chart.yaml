@@ -1,0 +1,27 @@
+apiVersion: v2
+name: wyoming-piper
+description: Wyoming protocol server for Piper text to speech
+type: application
+version: "0.1.0"
+# renovate: image=rhasspy/wyoming-piper
+appVersion: "2.2.2"
+icon: https://raw.githubusercontent.com/OHF-Voice/piper1-gpl/refs/heads/main/etc/logo.svg
+keywords:
+  - tts
+  - piper
+  - wyoming
+home: https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+  - https://github.com/rhasspy/wyoming-piper
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+    - name: Wyoming Piper GitHub
+      url: https://github.com/rhasspy/wyoming-piper
+maintainers:
+  - name: bdclark
+    email: brian@clark.zone
+    url: https://github.com/bdclark

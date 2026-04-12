@@ -1,0 +1,126 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+> [!NOTE]
+> This chart is under active development. Breaking changes may occur between minor versions.
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install wyoming-piper bdclark/wyoming-piper -f values.yaml
+```
+
+## Environment Variables
+
+Environment variables can be set via `env` (inline values or refs) and `envFrom` (bulk refs).
+
+```yaml
+env:
+  TZ: America/New_York
+  LOG_LEVEL: info
+
+envFrom:
+  - secretRef:
+      name: wyoming-piper-secrets
+```
+
+## Voice Configuration
+
+By default, the chart auto-generates runtime args for the official image:
+
+```yaml
+piper:
+  voice: en_US-lessac-medium
+  voiceMode: arg
+```
+
+You can switch how voice is injected:
+
+- `voiceMode: arg` generates `--voice <value>`
+- `voiceMode: env` injects `PIPER_VOICE=<value>`
+
+If you set `args`, those args are used exactly and auto-generated Piper args are skipped.
+
+## LinuxServer Image Example
+
+To use LinuxServer's Piper image, override the image, switch to env voice mode,
+and set LinuxServer env vars.
+
+```yaml
+image:
+  repository: lscr.io/linuxserver/piper
+  tag: latest
+
+piper:
+  voice: en_US-lessac-medium
+  voiceMode: env
+
+env:
+  PUID: "1000"
+  PGID: "1000"
+  TZ: America/New_York
+
+persistence:
+  mountPath: /config
+```
+
+## Command/Args Overrides
+
+Use container-level command/args for full control:
+
+```yaml
+command:
+  - /usr/bin/python3
+  - -m
+  - wyoming_piper
+
+args:
+  - --voice
+  - en_US-lessac-medium
+  - --debug
+```
+
+When `args` is set, `piper.voiceMode` and `piper.additionalArgs` are not auto-applied.
+
+## Persistence
+
+Persistence is enabled by default and mounted at `/data`.
+
+```yaml
+persistence:
+  enabled: true
+  size: 5Gi
+  # storageClass: ""
+  # existingClaim: wyoming-piper-data
+```
+
+### Additional Volumes
+
+```yaml
+volumes:
+  - name: voices
+    persistentVolumeClaim:
+      claimName: piper-voices
+
+volumeMounts:
+  - name: voices
+    mountPath: /voices
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).
