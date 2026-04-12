@@ -54,6 +54,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Validate configuration
+*/}}
+{{- define "wyoming-piper.validateConfig" -}}
+{{- if and (eq (len (.Values.args | default (list))) 0) (eq (.Values.piper.voice | default "" | trim) "") -}}
+{{- fail "piper.voice cannot be empty when args is empty; set piper.voice or provide explicit args" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Render env entries from a map
 */}}
 {{- define "wyoming-piper.envFromMap" -}}

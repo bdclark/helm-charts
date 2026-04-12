@@ -30,15 +30,36 @@ envFrom:
       name: wyoming-piper-secrets
 ```
 
+## Voice Configuration
+
+By default, the chart auto-generates runtime args for the official image:
+
+```yaml
+piper:
+  voice: en_US-lessac-medium
+  voiceMode: arg
+```
+
+You can switch how voice is injected:
+
+- `voiceMode: arg` generates `--voice <value>`
+- `voiceMode: env` injects `PIPER_VOICE=<value>`
+
+If you set `args`, those args are used exactly and auto-generated Piper args are skipped.
+
 ## LinuxServer Image Example
 
-To use LinuxServer's Piper image, override the image and set LinuxServer env vars.
-If needed, adjust persistence mount path to `/config` for that image.
+To use LinuxServer's Piper image, override the image, switch to env voice mode,
+and set LinuxServer env vars.
 
 ```yaml
 image:
   repository: lscr.io/linuxserver/piper
   tag: latest
+
+piper:
+  voice: en_US-lessac-medium
+  voiceMode: env
 
 env:
   PUID: "1000"
@@ -48,6 +69,24 @@ env:
 persistence:
   mountPath: /config
 ```
+
+## Command/Args Overrides
+
+Use container-level command/args for full control:
+
+```yaml
+command:
+  - /usr/bin/python3
+  - -m
+  - wyoming_piper
+
+args:
+  - --voice
+  - en_US-lessac-medium
+  - --debug
+```
+
+When `args` is set, `piper.voiceMode` and `piper.additionalArgs` are not auto-applied.
 
 ## Persistence
 
@@ -95,6 +134,11 @@ volumeMounts:
 | securityContext | object | `{}` | Container security context. |
 | resources | object | `{}` | Resource requests and limits. |
 | ports | list | `[{"containerPort":10200,"name":"wyoming","protocol":"TCP"}]` | Container ports. |
+| piper.voice | string | `"en_US-lessac-medium"` | Voice identifier used by the runtime. |
+| piper.voiceMode | string | `"arg"` | How to provide the voice to the container (`arg` for `--voice`, `env` for `PIPER_VOICE`). |
+| piper.additionalArgs | list | `[]` | Additional runtime args appended when `args` is empty. |
+| command | list | `[]` | Optional container command override. |
+| args | list | `[]` | Optional container args override. When set, this takes precedence over auto-generated Piper args. |
 | startupProbe | object | `{}` | Startup probe configuration. |
 | livenessProbe | object | `{}` | Liveness probe configuration. |
 | readinessProbe | object | `{}` | Readiness probe configuration. |

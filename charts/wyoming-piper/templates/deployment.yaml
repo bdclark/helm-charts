@@ -1,3 +1,4 @@
+{{- include "wyoming-piper.validateConfig" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,9 +53,35 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.env }}
+          {{- with .Values.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.args }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+          {{- else }}
+          {{- $autoArgs := list -}}
+          {{- if eq .Values.piper.voiceMode "arg" -}}
+          {{- $autoArgs = append $autoArgs "--voice" -}}
+          {{- $autoArgs = append $autoArgs (.Values.piper.voice | toString) -}}
+          {{- end -}}
+          {{- range .Values.piper.additionalArgs }}
+          {{- $autoArgs = append $autoArgs (. | toString) -}}
+          {{- end -}}
+          {{- if $autoArgs }}
+          args:
+            {{- toYaml $autoArgs | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- $injectVoiceEnv := and (eq .Values.piper.voiceMode "env") (ne (.Values.piper.voice | default "" | trim) "") (not (and .Values.env (hasKey .Values.env "PIPER_VOICE"))) -}}
+          {{- if or .Values.env $injectVoiceEnv }}
           env:
-            {{- include "wyoming-piper.envFromMap" . | trim | nindent 12 }}
+            {{- if $injectVoiceEnv }}
+            - name: PIPER_VOICE
+              value: {{ .Values.piper.voice | quote }}
+            {{- end }}
+            {{- include "wyoming-piper.envFromMap" (.Values.env | default (dict)) | trim | nindent 12 }}
           {{- end }}
           {{- with .Values.envFrom }}
           envFrom:

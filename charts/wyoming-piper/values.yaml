@@ -66,6 +66,28 @@ ports:
     containerPort: 10200
     protocol: TCP
 
+# Piper runtime configuration
+piper:
+  # -- Voice identifier used by the runtime.
+  voice: en_US-lessac-medium
+  # -- How to provide the voice to the container (`arg` for `--voice`, `env` for `PIPER_VOICE`).
+  voiceMode: arg
+  # -- Additional runtime args appended when `args` is empty.
+  additionalArgs: []
+  # - --debug
+  # - --update-voices
+
+# -- Optional container command override.
+command: []
+# - /usr/bin/python3
+# - -m
+# - wyoming_piper
+
+# -- Optional container args override. When set, this takes precedence over auto-generated Piper args.
+args: []
+# - --voice
+# - en_US-lessac-medium
+
 # -- Startup probe configuration.
 startupProbe: {}
 # -- Liveness probe configuration.

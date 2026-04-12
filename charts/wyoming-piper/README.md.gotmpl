@@ -34,15 +34,36 @@ envFrom:
       name: wyoming-piper-secrets
 ```
 
+## Voice Configuration
+
+By default, the chart auto-generates runtime args for the official image:
+
+```yaml
+piper:
+  voice: en_US-lessac-medium
+  voiceMode: arg
+```
+
+You can switch how voice is injected:
+
+- `voiceMode: arg` generates `--voice <value>`
+- `voiceMode: env` injects `PIPER_VOICE=<value>`
+
+If you set `args`, those args are used exactly and auto-generated Piper args are skipped.
+
 ## LinuxServer Image Example
 
-To use LinuxServer's Piper image, override the image and set LinuxServer env vars.
-If needed, adjust persistence mount path to `/config` for that image.
+To use LinuxServer's Piper image, override the image, switch to env voice mode,
+and set LinuxServer env vars.
 
 ```yaml
 image:
   repository: lscr.io/linuxserver/piper
   tag: latest
+
+piper:
+  voice: en_US-lessac-medium
+  voiceMode: env
 
 env:
   PUID: "1000"
@@ -52,6 +73,24 @@ env:
 persistence:
   mountPath: /config
 ```
+
+## Command/Args Overrides
+
+Use container-level command/args for full control:
+
+```yaml
+command:
+  - /usr/bin/python3
+  - -m
+  - wyoming_piper
+
+args:
+  - --voice
+  - en_US-lessac-medium
+  - --debug
+```
+
+When `args` is set, `piper.voiceMode` and `piper.additionalArgs` are not auto-applied.
 
 ## Persistence
 

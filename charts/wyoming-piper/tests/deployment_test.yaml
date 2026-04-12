@@ -18,6 +18,12 @@ tests:
       - equal:
           path: spec.strategy.type
           value: Recreate
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: en_US-lessac-medium
 
   - it: should use custom image
     set:
@@ -151,3 +157,99 @@ tests:
             name: wyoming
             containerPort: 10200
             protocol: TCP
+
+  - it: should override piper voice in args mode
+    set:
+      piper:
+        voice: en_GB-alan-medium
+        voiceMode: arg
+        additionalArgs: []
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: en_GB-alan-medium
+
+  - it: should inject PIPER_VOICE in env mode and not auto-add --voice args
+    set:
+      piper:
+        voice: en_GB-alan-medium
+        voiceMode: env
+        additionalArgs: []
+    asserts:
+      - isNull:
+          path: spec.template.spec.containers[0].args
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PIPER_VOICE
+            value: en_GB-alan-medium
+
+  - it: should append additional args when auto args are used
+    set:
+      piper:
+        voice: en_US-lessac-medium
+        voiceMode: arg
+        additionalArgs:
+          - --debug
+          - --update-voices
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: en_US-lessac-medium
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --debug
+      - equal:
+          path: spec.template.spec.containers[0].args[3]
+          value: --update-voices
+
+  - it: should use explicit args when provided
+    set:
+      args:
+        - --voice
+        - custom-voice
+        - --debug
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].args[0]
+          value: --voice
+      - equal:
+          path: spec.template.spec.containers[0].args[1]
+          value: custom-voice
+      - equal:
+          path: spec.template.spec.containers[0].args[2]
+          value: --debug
+
+  - it: should render command override
+    set:
+      command:
+        - /usr/bin/python3
+        - -m
+        - wyoming_piper
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].command[0]
+          value: /usr/bin/python3
+      - equal:
+          path: spec.template.spec.containers[0].command[1]
+          value: -m
+      - equal:
+          path: spec.template.spec.containers[0].command[2]
+          value: wyoming_piper
+
+  - it: should fail when piper voice is empty and args are not provided
+    set:
+      piper:
+        voice: ""
+        voiceMode: arg
+        additionalArgs: []
+      args: []
+    asserts:
+      - failedTemplate:
+          errorMessage: "piper.voice cannot be empty when args is empty; set piper.voice or provide explicit args"

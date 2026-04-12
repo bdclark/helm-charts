@@ -144,6 +144,46 @@
         }
       }
     },
+    "piper": {
+      "type": "object",
+      "description": "Piper runtime configuration",
+      "additionalProperties": false,
+      "properties": {
+        "voice": {
+          "type": "string",
+          "description": "Voice identifier used by the runtime"
+        },
+        "voiceMode": {
+          "type": "string",
+          "description": "How to provide the voice to the container",
+          "enum": [
+            "arg",
+            "env"
+          ]
+        },
+        "additionalArgs": {
+          "type": "array",
+          "description": "Additional runtime args appended when args is empty",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "command": {
+      "type": "array",
+      "description": "Optional container command override",
+      "items": {
+        "type": "string"
+      }
+    },
+    "args": {
+      "type": "array",
+      "description": "Optional container args override",
+      "items": {
+        "type": "string"
+      }
+    },
     "startupProbe": {
       "type": "object",
       "description": "Startup probe configuration"
