@@ -19,6 +19,7 @@ Personal Helm charts. Each chart has its own README under `charts/<name>/`.
 | [radarr](charts/radarr/)                    | Movie organizer/manager                  |
 | [seerr](charts/seerr/)                      | Request management (Overseerr replacement) |
 | [sonarr](charts/sonarr/)                    | TV show organizer/manager                |
+| [wyoming-piper](charts/wyoming-piper/)      | Wyoming protocol server for Piper TTS    |
 
 ## Usage
 
@@ -46,6 +47,15 @@ task docs CHART=<name>        # regenerate chart README
 task docs-all                 # regenerate all READMEs
 task ct-lint CHART=<name>     # run chart-testing lint
 ```
+
+CI install smoke checks run with `ct install` on changed charts in a kind cluster.
+For chart-specific CI install overrides, add values files under:
+
+```text
+charts/<name>/ci/*-values.yaml
+```
+
+`ct install` will run install/tests for each matching file automatically.
 
 ## Contributing
 
