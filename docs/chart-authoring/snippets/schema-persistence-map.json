@@ -1,0 +1,55 @@
+{
+  "$defs": {
+    "persistenceItem": {
+      "type": "object",
+      "description": "Persistent storage item",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "mountPath": {
+          "type": "string"
+        },
+        "subPath": {
+          "type": "string"
+        },
+        "storageClass": {
+          "type": "string"
+        },
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "size": {
+          "type": "string"
+        },
+        "existingClaim": {
+          "type": "string"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "properties": {
+    "persistence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "config": {
+          "$ref": "#/$defs/persistenceItem"
+        },
+        "data": {
+          "$ref": "#/$defs/persistenceItem"
+        }
+      }
+    }
+  }
+}

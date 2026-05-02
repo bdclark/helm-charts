@@ -1,0 +1,8 @@
+suite: test configmap
+templates:
+  - configmap.yaml
+tests:
+  - it: should create configmap when enabled
+    asserts:
+      - isKind:
+          of: ConfigMap

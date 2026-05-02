@@ -1,0 +1,8 @@
+suite: test pvc
+templates:
+  - pvc.yaml
+tests:
+  - it: should create pvc when enabled
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim

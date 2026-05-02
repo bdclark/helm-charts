@@ -1,0 +1,8 @@
+suite: test service
+templates:
+  - service.yaml
+tests:
+  - it: should create service with default values
+    asserts:
+      - isKind:
+          of: Service
