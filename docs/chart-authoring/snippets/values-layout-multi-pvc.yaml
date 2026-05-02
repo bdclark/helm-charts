@@ -1,0 +1,87 @@
+# Common values layout for grouped PVCs.
+# This matches charts like radarr and qbittorrent-vpn more closely than a single-PVC layout.
+# Plain names below are first-class user-owned sections.
+# `extra*` names below are additive escape hatches merged into chart-owned defaults.
+
+# Identity and rollout
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+strategy:
+  type: Recreate
+
+# Metadata
+commonLabels: {}
+deploymentAnnotations: {}
+extraDeploymentLabels: {}
+podAnnotations: {}
+podLabels: {}
+
+# Image and security
+image:
+  repository: example/app
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+podSecurityContext: {}
+securityContext: {}
+
+# Container runtime
+ports: []
+# This snippet uses `env` / `envFrom`; switch to `extraEnv` / `extraEnvFrom`
+# when the chart already owns required env entries.
+env: {}
+envFrom: []
+resources: {}
+startupProbe: {}
+livenessProbe: {}
+readinessProbe: {}
+
+# Storage and additive pod-spec storage hooks
+persistence:
+  config:
+    enabled: true
+    mountPath: /config
+    subPath: ""
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    existingClaim: ""
+    annotations: {}
+  data:
+    enabled: true
+    mountPath: /data
+    subPath: ""
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    existingClaim: ""
+    annotations: {}
+
+extraVolumes: []
+extraVolumeMounts: []
+
+# Pod composition hooks
+initContainers: []
+sidecars: []
+
+# Exposure
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []
+
+# Scheduling
+nodeSelector: {}
+tolerations: []
+affinity: {}

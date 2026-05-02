@@ -1,0 +1,128 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install audiobookshelf bdclark/audiobookshelf -f values.yaml
+```
+
+## Runtime Defaults
+
+By default, this chart follows upstream container behavior (root-compatible).  
+Use the non-root profile below when your cluster policy requires non-root workloads.
+
+## Environment Variables
+
+Environment variables can be set via `env` (inline values or refs) and `envFrom` (bulk refs).
+
+```yaml
+env:
+  TZ: America/New_York
+  HOST: 0.0.0.0
+  PORT: "80"
+  CONFIG_PATH: /config
+  METADATA_PATH: /metadata
+  BACKUP_PATH: /metadata/backups
+```
+
+## Persistence
+
+This chart manages two PVCs by default:
+- `persistence.config` mounted at `/config`
+- `persistence.metadata` mounted at `/metadata`
+
+```yaml
+persistence:
+  config:
+    enabled: true
+    size: 5Gi
+  metadata:
+    enabled: true
+    size: 5Gi
+```
+
+### Media Volumes (Existing PVCs)
+
+Use `mediaMounts` to mount user-provided media claims:
+
+```yaml
+mediaMounts:
+  - name: audiobooks
+    existingClaim: media-audiobooks
+    mountPath: /audiobooks
+    readOnly: true
+  - name: podcasts
+    existingClaim: media-podcasts
+    mountPath: /podcasts
+    readOnly: true
+```
+
+## Non-Root Profile Example
+
+For non-root execution, switch to a non-privileged port and align service/container settings:
+
+```yaml
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+
+env:
+  PORT: "13378"
+
+ports:
+  - name: http
+    containerPort: 13378
+    protocol: TCP
+
+service:
+  port: 13378
+  targetPort: http
+
+permissionsInitContainer:
+  enabled: true
+  chownUser: 1000
+  chownGroup: 1000
+  chownPaths:
+    - /config
+    - /metadata
+```
+
+## Permissions Init Container
+
+The optional built-in permissions init container is intentionally scoped to chart-owned writable paths (`/config`, `/metadata`) and does not touch media mounts.
+
+## Ingress
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: audiobookshelf.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).

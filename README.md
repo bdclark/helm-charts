@@ -61,10 +61,11 @@ charts/<name>/ci/*-values.yaml
 
 1. Edit chart in `charts/<name>/`
 2. Update unit tests in `charts/<name>/tests/`
-3. Run `task verify CHART=<name>`
-4. Run `task docs CHART=<name>` if values changed
-5. Bump chart `version` in `Chart.yaml`
-6. Open PR — CI runs lint, unittest, kubeconform, and docs check
+3. Use `AGENTS.md` and `docs/chart-authoring/README.md` as the authoring guide and snippet library
+4. Run `task verify CHART=<name>`
+5. Run `task docs CHART=<name>` if values changed
+6. Bump chart `version` in `Chart.yaml`
+7. Open PR — CI runs lint, unittest, kubeconform, and docs check
 
 ## License
 

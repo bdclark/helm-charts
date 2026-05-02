@@ -1,0 +1,113 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should create deployment with defaults
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-audiobookshelf
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^ghcr.io/advplyr/audiobookshelf:.+"
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 80
+      - isNull:
+          path: spec.template.spec.initContainers
+
+  - it: should mount config and metadata by default
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /config
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: metadata
+            mountPath: /metadata
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: config
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-audiobookshelf-config
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: metadata
+            persistentVolumeClaim:
+              claimName: RELEASE-NAME-audiobookshelf-metadata
+
+  - it: should support non-root profile values
+    set:
+      podSecurityContext:
+        fsGroup: 1000
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+      env:
+        PORT: "13378"
+      ports:
+        - name: http
+          containerPort: 13378
+          protocol: TCP
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext.fsGroup
+          value: 1000
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: PORT
+            value: "13378"
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 13378
+
+  - it: should render permissions init container when enabled
+    set:
+      permissionsInitContainer.enabled: true
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[0].name
+          value: permissions
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /config
+      - contains:
+          path: spec.template.spec.initContainers[0].volumeMounts
+          content:
+            name: metadata
+            mountPath: /metadata
+
+  - it: should render mediaMounts as pvc volumes and mounts
+    set:
+      mediaMounts:
+        - name: audiobooks
+          existingClaim: media-audiobooks
+          mountPath: /audiobooks
+          readOnly: true
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: audiobooks
+            persistentVolumeClaim:
+              claimName: media-audiobooks
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: audiobooks
+            mountPath: /audiobooks
+            readOnly: true

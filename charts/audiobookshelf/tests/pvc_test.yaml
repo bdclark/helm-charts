@@ -1,0 +1,48 @@
+suite: test pvc
+templates:
+  - pvc.yaml
+tests:
+  - it: should create both PVCs with default values
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should create config PVC with default values
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-audiobookshelf-config
+      - equal:
+          path: spec.resources.requests.storage
+          value: 5Gi
+
+  - it: should create metadata PVC with default values
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-audiobookshelf-metadata
+      - equal:
+          path: spec.resources.requests.storage
+          value: 5Gi
+
+  - it: should not create config PVC when using existing claim
+    set:
+      persistence.config.existingClaim: my-config
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-audiobookshelf-metadata
+
+  - it: should not create metadata PVC when disabled
+    set:
+      persistence.metadata.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-audiobookshelf-config

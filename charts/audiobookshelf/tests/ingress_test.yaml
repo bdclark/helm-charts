@@ -1,0 +1,29 @@
+suite: test ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: should NOT create ingress by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create ingress when enabled
+    set:
+      ingress.enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: Ingress
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-audiobookshelf
+
+  - it: should use service port in backend
+    set:
+      ingress.enabled: true
+      service.port: 13378
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 13378

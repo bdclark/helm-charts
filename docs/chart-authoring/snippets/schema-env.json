@@ -1,0 +1,35 @@
+{
+  "$defs": {
+    "env": {
+      "type": "object",
+      "description": "Environment variables map",
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": ["string", "number", "boolean"]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": {
+                "type": ["string", "number", "boolean"]
+              },
+              "valueFrom": {
+                "type": "object"
+              }
+            },
+            "anyOf": [
+              {
+                "required": ["value"]
+              },
+              {
+                "required": ["valueFrom"]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
