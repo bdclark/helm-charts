@@ -7,19 +7,20 @@ Personal Helm charts. Each chart has its own README under `charts/<name>/`.
 
 ## Charts
 
-| Chart                                       | Description                              |
-| ------------------------------------------- | ---------------------------------------- |
-| [lidarr](charts/lidarr/)                    | Music organizer/manager                  |
-| [mealie](charts/mealie/)                    | Mealie recipe manager                    |
-| [mosquitto](charts/mosquitto/)              | Eclipse Mosquitto MQTT broker            |
-| [music-assistant](charts/music-assistant/)  | Music Assistant media server             |
-| [nzbget](charts/nzbget/)                    | Usenet downloader                        |
-| [prowlarr](charts/prowlarr/)                | Indexer manager for usenet and torrent   |
-| [qbittorrent-vpn](charts/qbittorrent-vpn/)  | qBittorrent with VPN sidecar             |
-| [radarr](charts/radarr/)                    | Movie organizer/manager                  |
-| [seerr](charts/seerr/)                      | Request management (Overseerr replacement) |
-| [sonarr](charts/sonarr/)                    | TV show organizer/manager                |
-| [wyoming-piper](charts/wyoming-piper/)      | Wyoming protocol server for Piper TTS    |
+| Chart | Description |
+| ----- | ----------- |
+| [audiobookshelf](charts/audiobookshelf/) | Self-hosted audiobooks and podcast server |
+| [lidarr](charts/lidarr/) | Music collection manager for usenet and torrent users |
+| [mealie](charts/mealie/) | Mealie recipe manager and meal planner |
+| [mosquitto](charts/mosquitto/) | Eclipse Mosquitto MQTT broker with authentication and persistence support |
+| [music-assistant](charts/music-assistant/) | Music Assistant - Universal media library manager for streaming services and connected audio devices |
+| [nzbget](charts/nzbget/) | Usenet downloader |
+| [prowlarr](charts/prowlarr/) | Indexer manager for usenet and torrent users |
+| [qbittorrent-vpn](charts/qbittorrent-vpn/) | qBittorrent with Gluetun VPN sidecar |
+| [radarr](charts/radarr/) | Movie organizer/manager for usenet and torrent users |
+| [seerr](charts/seerr/) | Request management for media libraries |
+| [sonarr](charts/sonarr/) | TV show organizer/manager for usenet and torrent users |
+| [wyoming-piper](charts/wyoming-piper/) | Wyoming protocol server for Piper text to speech |
 
 ## Usage
 
