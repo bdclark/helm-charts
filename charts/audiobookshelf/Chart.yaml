@@ -1,0 +1,29 @@
+apiVersion: v2
+name: audiobookshelf
+description: Self-hosted audiobooks and podcast server
+type: application
+version: "0.1.0"
+# renovate: image=ghcr.io/advplyr/audiobookshelf
+appVersion: "2.33.1"
+icon: https://raw.githubusercontent.com/advplyr/audiobookshelf/refs/heads/master/client/static/icon.svg
+keywords:
+  - audiobooks
+  - podcasts
+  - media
+home: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+sources:
+  - https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+  - https://github.com/advplyr/audiobookshelf
+annotations:
+  artifacthub.io/license: MIT
+  artifacthub.io/links: |
+    - name: Chart Source
+      url: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+    - name: Audiobookshelf
+      url: https://www.audiobookshelf.org
+    - name: Audiobookshelf GitHub
+      url: https://github.com/advplyr/audiobookshelf
+maintainers:
+  - name: bdclark
+    email: brian@clark.zone
+    url: https://github.com/bdclark

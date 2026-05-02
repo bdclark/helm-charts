@@ -1,0 +1,182 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "audiobookshelf.fullname" . }}
+  labels:
+    {{- include "audiobookshelf.labels" . | nindent 4 }}
+    {{- with .Values.extraDeploymentLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  {{- with .Values.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "audiobookshelf.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "audiobookshelf.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.permissionsInitContainer.enabled .Values.initContainers }}
+      initContainers:
+      {{- if .Values.permissionsInitContainer.enabled }}
+        - name: permissions
+          image: {{ .Values.permissionsInitContainer.image | quote }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: {{ .Values.permissionsInitContainer.runAsUser }}
+            runAsGroup: {{ .Values.permissionsInitContainer.runAsGroup }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              {{- range .Values.permissionsInitContainer.chownPaths }}
+              if [ -e {{ . | quote }} ]; then
+                chown -R {{ $.Values.permissionsInitContainer.chownUser }}:{{ $.Values.permissionsInitContainer.chownGroup }} {{ . | quote }}
+              fi
+              {{- end }}
+          volumeMounts:
+            {{- if .Values.persistence.config.enabled }}
+            - name: config
+              mountPath: {{ .Values.persistence.config.mountPath | quote }}
+              {{- with .Values.persistence.config.subPath }}
+              subPath: {{ . | quote }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.persistence.metadata.enabled }}
+            - name: metadata
+              mountPath: {{ .Values.persistence.metadata.mountPath | quote }}
+              {{- with .Values.persistence.metadata.subPath }}
+              subPath: {{ . | quote }}
+              {{- end }}
+            {{- end }}
+      {{- end }}
+      {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      containers:
+        - name: audiobookshelf
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.env }}
+          env:
+            {{- include "audiobookshelf.envFromMap" . | trim | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or .Values.persistence.config.enabled .Values.persistence.metadata.enabled .Values.mediaMounts .Values.extraVolumeMounts }}
+          volumeMounts:
+            {{- if .Values.persistence.config.enabled }}
+            - name: config
+              mountPath: {{ .Values.persistence.config.mountPath | default "/config" }}
+              {{- with .Values.persistence.config.subPath }}
+              subPath: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.persistence.metadata.enabled }}
+            - name: metadata
+              mountPath: {{ .Values.persistence.metadata.mountPath | default "/metadata" }}
+              {{- with .Values.persistence.metadata.subPath }}
+              subPath: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- range .Values.mediaMounts }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
+              {{- with .subPath }}
+              subPath: {{ . }}
+              {{- end }}
+              {{- if hasKey . "readOnly" }}
+              readOnly: {{ .readOnly }}
+              {{- end }}
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+      {{- with .Values.sidecars }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.persistence.config.enabled .Values.persistence.metadata.enabled .Values.mediaMounts .Values.extraVolumes }}
+      volumes:
+      {{- if .Values.persistence.config.enabled }}
+        - name: config
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.config.existingClaim }}{{ .Values.persistence.config.existingClaim }}{{- else }}{{ include "audiobookshelf.fullname" . }}-config{{- end }}
+      {{- end }}
+      {{- if .Values.persistence.metadata.enabled }}
+        - name: metadata
+          persistentVolumeClaim:
+            claimName: {{ if .Values.persistence.metadata.existingClaim }}{{ .Values.persistence.metadata.existingClaim }}{{- else }}{{ include "audiobookshelf.fullname" . }}-metadata{{- end }}
+      {{- end }}
+      {{- range .Values.mediaMounts }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ .existingClaim }}
+      {{- end }}
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

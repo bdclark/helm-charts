@@ -1,0 +1,201 @@
+# -- Override the release name.
+nameOverride: ""
+# -- Override the full release name.
+fullnameOverride: ""
+
+# -- Number of replicas.
+replicaCount: 1
+
+# -- Deployment update strategy.
+strategy:
+  type: Recreate
+
+# -- Labels to add to all resources.
+commonLabels: {}
+  # app.kubernetes.io/part-of: media-stack
+  # app.kubernetes.io/component: audiobooks
+
+# -- Annotations for the Deployment.
+deploymentAnnotations: {}
+
+# -- Additional labels for the Deployment.
+extraDeploymentLabels: {}
+
+# -- Annotations for pods.
+podAnnotations: {}
+
+# -- Additional labels for pods.
+podLabels: {}
+
+image:
+  # -- Image repository.
+  repository: ghcr.io/advplyr/audiobookshelf
+  # -- Image tag (defaults to chart appVersion).
+  tag: ""
+  # -- Image pull policy.
+  pullPolicy: IfNotPresent
+
+# -- Image pull secrets.
+imagePullSecrets: []
+
+# -- Pod security context.
+podSecurityContext: {}
+  # fsGroup: 1000
+
+# -- Container security context.
+securityContext: {}
+  # runAsUser: 1000
+  # runAsGroup: 1000
+  # runAsNonRoot: true
+
+# -- Container ports.
+ports:
+  - name: http
+    containerPort: 80
+    protocol: TCP
+
+# -- Environment variables.
+# @default -- `{}` (see values.yaml comments for examples)
+env: {}
+  # TZ: America/New_York
+  # PORT: "13378"
+  # HOST: 0.0.0.0
+  # CONFIG_PATH: /config
+  # METADATA_PATH: /metadata
+  # BACKUP_PATH: /metadata/backups
+  # JWT_SECRET:
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: audiobookshelf-secrets
+  #       key: jwt-secret
+
+# -- Environment variables from ConfigMaps or Secrets.
+envFrom: []
+
+# -- Resource requests and limits.
+resources: {}
+
+# -- Startup probe configuration.
+startupProbe: {}
+# -- Liveness probe configuration.
+livenessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: http
+# -- Readiness probe configuration.
+readinessProbe: {}
+  # httpGet:
+  #   path: /
+  #   port: http
+
+# Persistent storage
+persistence:
+  config:
+    # -- Enable persistence for config data.
+    enabled: true
+    # -- Mount path.
+    mountPath: /config
+    # -- Subdirectory of the volume to mount (optional).
+    subPath: ""
+    # -- Storage class ("-" for default, "" for cluster default).
+    storageClass: ""
+    # -- Access modes.
+    accessModes:
+      - ReadWriteOnce
+    # -- Volume size.
+    size: 5Gi
+    # -- Use existing PVC (disables provisioning).
+    existingClaim: ""
+    # -- PVC annotations.
+    annotations: {}
+
+  metadata:
+    # -- Enable persistence for metadata.
+    enabled: true
+    # -- Mount path.
+    mountPath: /metadata
+    # -- Subdirectory of the volume to mount (optional).
+    subPath: ""
+    # -- Storage class ("-" for default, "" for cluster default).
+    storageClass: ""
+    # -- Access modes.
+    accessModes:
+      - ReadWriteOnce
+    # -- Volume size.
+    size: 5Gi
+    # -- Use existing PVC (disables provisioning).
+    existingClaim: ""
+    # -- PVC annotations.
+    annotations: {}
+
+# -- Structured media mounts for user-provided existing PVCs.
+mediaMounts: []
+# - name: audiobooks
+#   existingClaim: media-audiobooks
+#   mountPath: /audiobooks
+#   subPath: ""
+#   readOnly: true
+
+permissionsInitContainer:
+  # -- Enable built-in permissions init container.
+  enabled: false
+  # -- Image for the permissions init container.
+  image: busybox:1.37
+  # -- UID used to run the init container.
+  runAsUser: 0
+  # -- GID used to run the init container.
+  runAsGroup: 0
+  # -- UID to chown target paths to.
+  chownUser: 1000
+  # -- GID to chown target paths to.
+  chownGroup: 1000
+  # -- Paths to chown. Keep this limited to app-owned writable paths.
+  chownPaths:
+    - /config
+    - /metadata
+
+# -- Additional init containers.
+initContainers: []
+
+# -- Additional sidecar containers.
+sidecars: []
+
+# -- Additional volumes.
+extraVolumes: []
+
+# -- Additional volume mounts.
+extraVolumeMounts: []
+
+service:
+  # -- Service type.
+  type: ClusterIP
+  # -- Service port.
+  port: 80
+  # -- Target port name or number.
+  targetPort: http
+
+# Ingress configuration
+ingress:
+  # -- Enable Ingress.
+  enabled: false
+  # -- Ingress class name.
+  className: ""
+  # -- Ingress annotations.
+  annotations: {}
+  # -- Ingress hosts.
+  hosts:
+    - host: audiobookshelf.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- Ingress TLS configuration.
+  tls: []
+
+# -- Node selector.
+nodeSelector: {}
+
+# -- Tolerations.
+tolerations: []
+
+# -- Affinity rules.
+affinity: {}

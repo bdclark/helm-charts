@@ -1,0 +1,37 @@
+suite: test service
+templates:
+  - service.yaml
+tests:
+  - it: should create service with default values
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-audiobookshelf
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].port
+          value: 80
+      - equal:
+          path: spec.ports[0].targetPort
+          value: http
+
+  - it: should use custom service targetPort
+    set:
+      service.targetPort: 13378
+    asserts:
+      - equal:
+          path: spec.ports[0].targetPort
+          value: 13378
+
+  - it: should have correct selector labels
+    asserts:
+      - equal:
+          path: spec.selector["app.kubernetes.io/name"]
+          value: audiobookshelf
+      - equal:
+          path: spec.selector["app.kubernetes.io/instance"]
+          value: RELEASE-NAME
