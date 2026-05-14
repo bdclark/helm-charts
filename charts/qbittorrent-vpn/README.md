@@ -1,7 +1,7 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.7.2](https://img.shields.io/badge/Version-0.7.2-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 5.1.4](https://img.shields.io/badge/AppVersion-5.1.4-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.7.3](https://img.shields.io/badge/Version-0.7.3-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 5.2.0](https://img.shields.io/badge/AppVersion-5.2.0-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
 
