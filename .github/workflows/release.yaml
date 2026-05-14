@@ -39,7 +39,7 @@ jobs:
           done < .github/versions.env
 
       - name: Set up Helm
-        uses: azure/setup-helm@v4
+        uses: azure/setup-helm@v5
         with:
           version: ${{ steps.versions.outputs.HELM_VERSION }}
 
