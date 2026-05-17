@@ -1,7 +1,7 @@
 # Nzbget Helm Chart
 
-[![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 26.1.20260508](https://img.shields.io/badge/AppVersion-26.1.20260508-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 26.1.20260515](https://img.shields.io/badge/AppVersion-26.1.20260515-informational?style=flat-square)](Chart.yaml)
 
 Usenet downloader
 
