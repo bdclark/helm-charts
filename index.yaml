@@ -1320,6 +1320,37 @@ entries:
         - name: NZBGet GitHub
           url: https://github.com/nzbgetcom/nzbget
     apiVersion: v2
+    appVersion: 26.1.20260515
+    created: "2026-05-17T13:51:55.711743854Z"
+    description: Usenet downloader
+    digest: 07487df3676984d583533321c55b27595276fad0b223e0ae19bff1271e8eaf9d
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    icon: https://nzbget.com/img/logo.svg
+    keywords:
+    - usenet
+    - downloader
+    - nzb
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: nzbget
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/nzbget-0.1.9/nzbget-0.1.9.tgz
+    version: 0.1.9
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+        - name: NZBGet
+          url: https://nzbget.com
+        - name: NZBGet GitHub
+          url: https://github.com/nzbgetcom/nzbget
+    apiVersion: v2
     appVersion: 26.1.20260508
     created: "2026-05-14T09:39:21.915873571Z"
     description: Usenet downloader
@@ -2647,4 +2678,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-05-14T09:40:10.207657831Z"
+generated: "2026-05-17T13:51:55.711878066Z"
