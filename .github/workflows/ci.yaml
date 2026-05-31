@@ -33,6 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ github.sha }}
           sparse-checkout: .github/versions.env
           sparse-checkout-cone-mode: false
 
@@ -51,6 +52,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
 
       - name: Install helm-docs
         run: |
@@ -80,6 +83,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Set up chart-testing
@@ -112,6 +116,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Set up Helm
@@ -160,6 +165,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Set up Helm
