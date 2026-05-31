@@ -1,6 +1,6 @@
 # Audiobookshelf Helm Chart
 
-[![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.35.1](https://img.shields.io/badge/AppVersion-2.35.1-informational?style=flat-square)](Chart.yaml)
 
 Self-hosted audiobooks and podcast server
@@ -159,7 +159,7 @@ ingress:
 | persistence.metadata.annotations | object | `{}` | PVC annotations. |
 | mediaMounts | list | `[]` | Structured media mounts for user-provided existing PVCs. |
 | permissionsInitContainer.enabled | bool | `false` | Enable built-in permissions init container. |
-| permissionsInitContainer.image | string | `"busybox:1.37"` | Image for the permissions init container. |
+| permissionsInitContainer.image | string | `"busybox:1.38"` | Image for the permissions init container. |
 | permissionsInitContainer.runAsUser | int | `0` | UID used to run the init container. |
 | permissionsInitContainer.runAsGroup | int | `0` | GID used to run the init container. |
 | permissionsInitContainer.chownUser | int | `1000` | UID to chown target paths to. |
