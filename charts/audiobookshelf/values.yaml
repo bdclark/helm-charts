@@ -140,7 +140,7 @@ permissionsInitContainer:
   # -- Enable built-in permissions init container.
   enabled: false
   # -- Image for the permissions init container.
-  image: busybox:1.37
+  image: busybox:1.38
   # -- UID used to run the init container.
   runAsUser: 0
   # -- GID used to run the init container.
