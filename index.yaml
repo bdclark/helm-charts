@@ -12,6 +12,38 @@ entries:
           url: https://github.com/advplyr/audiobookshelf
     apiVersion: v2
     appVersion: 2.35.1
+    created: "2026-05-31T19:22:52.836122684Z"
+    description: Self-hosted audiobooks and podcast server
+    digest: 5b0d22f14513d82f51e1d3ed3d8a1dade258193ebb8104f50ecc0a03917ee2fa
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+    icon: https://raw.githubusercontent.com/advplyr/audiobookshelf/refs/heads/master/client/static/icon.svg
+    keywords:
+    - audiobooks
+    - podcasts
+    - media
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: audiobookshelf
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+    - https://github.com/advplyr/audiobookshelf
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/audiobookshelf-0.1.3/audiobookshelf-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+        - name: Audiobookshelf
+          url: https://www.audiobookshelf.org
+        - name: Audiobookshelf GitHub
+          url: https://github.com/advplyr/audiobookshelf
+    apiVersion: v2
+    appVersion: 2.35.1
     created: "2026-05-31T19:10:15.541947781Z"
     description: Self-hosted audiobooks and podcast server
     digest: 9c539e4f1699a8e69c7e7d4f5f5f4b7ca1e41e7bd97b95a726288dd0f5c78fae
@@ -783,6 +815,45 @@ entries:
         - name: GitHub Repository
           url: https://github.com/music-assistant/server
     apiVersion: v2
+    appVersion: 2.8.8
+    created: "2026-05-31T19:22:53.024871435Z"
+    description: Music Assistant - Universal media library manager for streaming services
+      and connected audio devices
+    digest: bea34b87ab894589ff255ac8944c8da65acf75d59e0a3d004aca45bba7b52840
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon.png
+    keywords:
+    - music
+    - audio
+    - streaming
+    - media
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: music-assistant
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - https://github.com/music-assistant/server
+    - https://music-assistant.io/
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.4.5/music-assistant-0.4.5.tgz
+    version: 0.4.5
+  - annotations:
+      artifacthub.io/images: |
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+        - name: Music Assistant
+          url: https://music-assistant.io/
+        - name: GitHub Repository
+          url: https://github.com/music-assistant/server
+    apiVersion: v2
     appVersion: 2.8.7
     created: "2026-05-14T09:38:08.270271313Z"
     description: Music Assistant - Universal media library manager for streaming services
@@ -1380,6 +1451,37 @@ entries:
         - name: NZBGet GitHub
           url: https://github.com/nzbgetcom/nzbget
     apiVersion: v2
+    appVersion: 26.1.20260529
+    created: "2026-05-31T19:22:53.219985049Z"
+    description: Usenet downloader
+    digest: bfb0aa82d9de1a9e3943ac6462a551b0ecc0f9cbeafdb4a6ecaa50b9369131f2
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    icon: https://nzbget.com/img/logo.svg
+    keywords:
+    - usenet
+    - downloader
+    - nzb
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: nzbget
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/nzbget-0.1.10/nzbget-0.1.10.tgz
+    version: 0.1.10
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+        - name: NZBGet
+          url: https://nzbget.com
+        - name: NZBGet GitHub
+          url: https://github.com/nzbgetcom/nzbget
+    apiVersion: v2
     appVersion: 26.1.20260515
     created: "2026-05-17T13:51:55.711743854Z"
     description: Usenet downloader
@@ -1842,6 +1944,38 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/prowlarr-0.1.0/prowlarr-0.1.0.tgz
     version: 0.1.0
   qbittorrent-vpn:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+        - name: qBittorrent
+          url: https://www.qbittorrent.org/
+        - name: Gluetun
+          url: https://github.com/qdm12/gluetun
+    apiVersion: v2
+    appVersion: 5.2.1
+    created: "2026-05-31T19:22:53.411080298Z"
+    description: qBittorrent with Gluetun VPN sidecar
+    digest: d809e336cba2763b405c7db6782b67e73e426b8c6dfecbb94a2d6cbd00665a88
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
+    keywords:
+    - torrent
+    - bittorrent
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: qbittorrent-vpn
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    - https://github.com/qbittorrent/qBittorrent
+    - https://github.com/qdm12/gluetun
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/qbittorrent-vpn-0.7.4/qbittorrent-vpn-0.7.4.tgz
+    version: 0.7.4
   - annotations:
       artifacthub.io/license: MIT
       artifacthub.io/links: |
@@ -2738,4 +2872,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-05-31T19:10:28.590342164Z"
+generated: "2026-05-31T19:22:53.411455488Z"
