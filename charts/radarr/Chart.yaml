@@ -2,9 +2,9 @@ apiVersion: v2
 name: radarr
 description: Movie organizer/manager for usenet and torrent users
 type: application
-version: "0.4.2"
+version: "0.4.3"
 # renovate: image=linuxserver/radarr
-appVersion: "6.1.1"
+appVersion: "6.2.1"
 icon: https://raw.githubusercontent.com/Radarr/Radarr/master/Logo/Radarr.svg
 keywords:
   - movie
