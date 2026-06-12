@@ -1863,6 +1863,38 @@ entries:
         - name: Prowlarr GitHub
           url: https://github.com/Prowlarr/Prowlarr
     apiVersion: v2
+    appVersion: 2.4.0
+    created: "2026-06-12T10:34:54.686886504Z"
+    description: Indexer manager for usenet and torrent users
+    digest: 2d8b6727605c8a9cf3ad65528dde14d69618a4637c03b840a7e139ce5bcd2e32
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+    icon: https://raw.githubusercontent.com/Prowlarr/Prowlarr/develop/Logo/Prowlarr.svg
+    keywords:
+    - indexer
+    - usenet
+    - torrent
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: prowlarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/prowlarr-0.3.3/prowlarr-0.3.3.tgz
+    version: 0.3.3
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+        - name: Prowlarr
+          url: https://prowlarr.com
+        - name: Prowlarr GitHub
+          url: https://github.com/Prowlarr/Prowlarr
+    apiVersion: v2
     appVersion: 2.3.5
     created: "2026-04-12T04:15:49.906212813Z"
     description: Indexer manager for usenet and torrent users
@@ -2975,4 +3007,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-07T17:56:55.500164736Z"
+generated: "2026-06-12T10:34:54.687039944Z"
