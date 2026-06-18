@@ -2056,6 +2056,38 @@ entries:
         - name: Gluetun
           url: https://github.com/qdm12/gluetun
     apiVersion: v2
+    appVersion: 5.2.2
+    created: "2026-06-18T21:59:45.469659977Z"
+    description: qBittorrent with Gluetun VPN sidecar
+    digest: f0a607f2a973bd52d15c3011aa143c78a5140ee742757cf67fe0f2faf94e8dde
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
+    keywords:
+    - torrent
+    - bittorrent
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: qbittorrent-vpn
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    - https://github.com/qbittorrent/qBittorrent
+    - https://github.com/qdm12/gluetun
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/qbittorrent-vpn-0.7.5/qbittorrent-vpn-0.7.5.tgz
+    version: 0.7.5
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+        - name: qBittorrent
+          url: https://www.qbittorrent.org/
+        - name: Gluetun
+          url: https://github.com/qdm12/gluetun
+    apiVersion: v2
     appVersion: 5.2.1
     created: "2026-05-31T19:22:53.411080298Z"
     description: qBittorrent with Gluetun VPN sidecar
@@ -3038,4 +3070,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-12T10:35:11.143286201Z"
+generated: "2026-06-18T21:59:45.469851415Z"
