@@ -30,7 +30,30 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
+      - name: Detect release-relevant changes
+        id: changed
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch requested; proceeding without path filtering."
+            exit 0
+          fi
+
+          base_sha=$(git rev-parse "${{ github.event.workflow_run.head_sha }}^")
+          changed_files=$(git diff --name-only "$base_sha" "${{ github.event.workflow_run.head_sha }}")
+
+          echo "Changed files since previous main commit:"
+          echo "$changed_files"
+
+          if echo "$changed_files" | grep -q '^charts/'; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+            echo "No chart changes detected in the triggering main commit."
+          fi
+
       - name: Load versions
+        if: steps.changed.outputs.relevant == 'true'
         id: versions
         run: |
           while IFS='=' read -r key value; do
@@ -39,17 +62,20 @@ jobs:
           done < .github/versions.env
 
       - name: Set up Helm
+        if: steps.changed.outputs.relevant == 'true'
         uses: azure/setup-helm@v5
         with:
           version: ${{ steps.versions.outputs.HELM_VERSION }}
 
       - name: Add helm repositories
+        if: steps.changed.outputs.relevant == 'true'
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add stable https://charts.helm.sh/stable
           helm repo update
 
       - name: Detect charts to release
+        if: steps.changed.outputs.relevant == 'true'
         id: detect
         run: |
           charts_to_release=""
