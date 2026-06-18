@@ -1,8 +1,9 @@
 name: Renovate Docs Fixup
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - "renovate/**"
     paths:
       - "charts/**/Chart.yaml"
       - "charts/**/values.yaml"
@@ -19,13 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       github.actor == 'renovate[bot]' &&
-      startsWith(github.head_ref, 'renovate/') &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      startsWith(github.ref_name, 'renovate/')
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.ref_name }}
 
       - name: Load helm-docs version
         id: versions
