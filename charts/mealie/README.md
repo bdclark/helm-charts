@@ -1,7 +1,7 @@
 # Mealie Helm Chart
 
-[![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: v3.19.2](https://img.shields.io/badge/AppVersion-v3.19.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.11](https://img.shields.io/badge/Version-0.1.11-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: v3.20.0](https://img.shields.io/badge/AppVersion-v3.20.0-informational?style=flat-square)](Chart.yaml)
 
 Mealie recipe manager and meal planner
 
