@@ -2994,6 +2994,38 @@ entries:
         - name: Sonarr GitHub
           url: https://github.com/Sonarr/Sonarr
     apiVersion: v2
+    appVersion: 4.0.19
+    created: "2026-06-28T14:39:50.809053811Z"
+    description: TV show organizer/manager for usenet and torrent users
+    digest: 31e0f8756c30a3de0874bea8a300c9e57abce67401da600e69445be470c321a9
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    icon: https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/Sonarr.svg
+    keywords:
+    - tv
+    - television
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: sonarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.4.3/sonarr-0.4.3.tgz
+    version: 0.4.3
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+        - name: Sonarr
+          url: https://sonarr.tv
+        - name: Sonarr GitHub
+          url: https://github.com/Sonarr/Sonarr
+    apiVersion: v2
     appVersion: 4.0.17
     created: "2026-03-22T16:43:20.358246991Z"
     description: TV show organizer/manager for usenet and torrent users
@@ -3207,4 +3239,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-24T21:05:40.589766076Z"
+generated: "2026-06-28T14:39:50.809222015Z"
