@@ -2,9 +2,9 @@ apiVersion: v2
 name: qbittorrent-vpn
 description: qBittorrent with Gluetun VPN sidecar
 type: application
-version: "0.7.5"
+version: "0.7.6"
 # renovate: image=linuxserver/qbittorrent
-appVersion: "5.2.2"
+appVersion: "5.2.3"
 icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
 keywords:
   - torrent
