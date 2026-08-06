@@ -202,6 +202,34 @@ entries:
         - name: Mealie
           url: https://mealie.io/
     apiVersion: v2
+    appVersion: v3.22.0
+    created: "2026-08-06T02:11:48.021781134Z"
+    description: Mealie recipe manager and meal planner
+    digest: c39b64d0a0471f2e8a7d14053996d24462c1447b81128fdfccc592b3ab6aadf0
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    - email: ashleyclarkindy@gmail.com
+      name: ashleylclark
+      url: https://github.com/ashleylclark
+    name: mealie
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    - https://github.com/mealie-recipes/mealie
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mealie-0.1.13/mealie-0.1.13.tgz
+    version: 0.1.13
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+        - name: Mealie
+          url: https://mealie.io/
+    apiVersion: v2
     appVersion: v3.20.1
     created: "2026-06-28T14:40:44.071527729Z"
     description: Mealie recipe manager and meal planner
@@ -3501,4 +3529,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-06T02:11:26.500615402Z"
+generated: "2026-08-06T02:11:48.022005494Z"
