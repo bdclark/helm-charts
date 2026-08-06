@@ -238,7 +238,7 @@ qbittorrent:
 | gluetun.lifecycleMode | string | `"nativeSidecar"` | Lifecycle mode: "nativeSidecar" or "standard". Native sidecars (initContainer with restartPolicy Always) require Kubernetes 1.29+. |
 | gluetun.lifecycleHooks | object | `{}` | Container lifecycle hooks. |
 | gluetun.image.repository | string | `"qmcgaw/gluetun"` | Image repository. |
-| gluetun.image.tag | string | `"v3.41.1"` | Image tag. |
+| gluetun.image.tag | string | `"v3.41.3"` | Image tag. |
 | gluetun.image.pullPolicy | string | `"IfNotPresent"` | Image pull policy. |
 | gluetun.needsTunDevice | bool | `true` | Mount /dev/net/tun device. |
 | gluetun.securityContext | object | `{"capabilities":{"add":["NET_ADMIN"]}}` | Container security context. |
