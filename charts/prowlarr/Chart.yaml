@@ -2,9 +2,9 @@ apiVersion: v2
 name: prowlarr
 description: Indexer manager for usenet and torrent users
 type: application
-version: "0.3.3"
+version: "0.3.4"
 # renovate: image=linuxserver/prowlarr
-appVersion: "2.4.0"
+appVersion: "2.5.2"
 icon: https://raw.githubusercontent.com/Prowlarr/Prowlarr/develop/Logo/Prowlarr.svg
 keywords:
   - indexer
