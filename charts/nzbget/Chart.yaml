@@ -2,9 +2,9 @@ apiVersion: v2
 name: nzbget
 description: Usenet downloader
 type: application
-version: "0.1.14"
+version: "0.1.15"
 # renovate: image=linuxserver/nzbget
-appVersion: "26.2.20260731"
+appVersion: "26.2.20260807"
 icon: https://nzbget.com/img/logo.svg
 keywords:
   - usenet
