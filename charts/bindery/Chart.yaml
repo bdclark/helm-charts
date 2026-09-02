@@ -5,6 +5,7 @@ type: application
 version: "0.1.0"
 # renovate: image=ghcr.io/vavallee/bindery
 appVersion: "1.33.2"
+icon: https://raw.githubusercontent.com/vavallee/bindery/main/.github/assets/logo.png
 keywords:
   - books
   - ebooks
