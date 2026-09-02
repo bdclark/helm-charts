@@ -1,0 +1,71 @@
+suite: test pvc
+templates:
+  - pvc.yaml
+tests:
+  - it: should create only the config PVC by default
+    asserts:
+      - hasDocuments:
+          count: 1
+      - isKind:
+          of: PersistentVolumeClaim
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-bindery-config
+      - equal:
+          path: spec.resources.requests.storage
+          value: 4Gi
+
+  - it: should create a data PVC when explicitly enabled
+    set:
+      persistence.data.enabled: true
+    documentIndex: 1
+    asserts:
+      - hasDocuments:
+          count: 2
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-bindery-data
+      - equal:
+          path: spec.resources.requests.storage
+          value: 100Gi
+
+  - it: should not create a claim for existing config or data claims
+    set:
+      persistence.config.existingClaim: bindery-config
+      persistence.data.enabled: true
+      persistence.data.existingClaim: shared-media
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should respect data storage options
+    set:
+      persistence.config.enabled: false
+      persistence.data.enabled: true
+      persistence.data.size: 500Gi
+      persistence.data.storageClass: bulk
+      persistence.data.accessModes:
+        - ReadWriteMany
+      persistence.data.annotations:
+        backup.example.com/enabled: "true"
+    asserts:
+      - equal:
+          path: spec.resources.requests.storage
+          value: 500Gi
+      - equal:
+          path: spec.storageClassName
+          value: bulk
+      - equal:
+          path: spec.accessModes[0]
+          value: ReadWriteMany
+      - equal:
+          path: metadata.annotations["backup.example.com/enabled"]
+          value: "true"
+
+  - it: should disable a configured storage class with a dash
+    set:
+      persistence.config.storageClass: "-"
+    asserts:
+      - equal:
+          path: spec.storageClassName
+          value: ""

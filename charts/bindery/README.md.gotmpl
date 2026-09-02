@@ -1,0 +1,114 @@
+{{- define "chart.header" -}}
+# {{ .Name | title }} Helm Chart
+
+[![Version: {{ .Version }}](https://img.shields.io/badge/Version-{{ .Version }}-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: {{ .AppVersion }}](https://img.shields.io/badge/AppVersion-{{ .AppVersion }}-informational?style=flat-square)](Chart.yaml)
+
+{{ .Description }}
+{{- end -}}
+
+{{ template "chart.header" . }}
+
+## Installing
+
+```bash
+helm repo add bdclark https://bdclark.github.io/helm-charts
+helm repo update
+helm install bindery bdclark/bindery -f values.yaml
+```
+
+## Persistence
+
+Bindery stores its SQLite database, backups, and image cache in `persistence.config`,
+which is enabled by default and mounted at `/config`.
+
+`persistence.data` is disabled by default. Bindery and its download client must mount
+the same filesystem at the same path to use hardlinks rather than copying completed
+downloads. Enable it with an existing shared claim for the normal media-stack layout:
+
+```yaml
+persistence:
+  data:
+    enabled: true
+    existingClaim: shared-media
+    mountPath: /data
+```
+
+Configure Bindery to use directories beneath that shared mount:
+
+```yaml
+env:
+  BINDERY_DOWNLOAD_DIR: /data/downloads/complete
+  BINDERY_LIBRARY_DIR: /data/books
+  # Optional: leave unset to keep audiobooks with the ebook library.
+  # BINDERY_AUDIOBOOK_DIR: /data/audiobooks
+```
+
+To provision a standalone data claim, enable `persistence.data` without
+`existingClaim`. It only supports hardlinks when the download client also mounts that
+same claim at the same path.
+
+### Additional Volumes
+
+Use `extraVolumes` and `extraVolumeMounts` for additional media roots, Calibre
+integration, or a nonstandard storage topology:
+
+```yaml
+extraVolumes:
+  - name: calibre
+    persistentVolumeClaim:
+      claimName: calibre-library
+
+extraVolumeMounts:
+  - name: calibre
+    mountPath: /calibre
+    readOnly: true
+```
+
+## Environment Variables
+
+Configure Bindery through the web UI. Use `env` for environment-level settings such as
+paths, URL base, logging, or API-key seeding, and `envFrom` for bulk ConfigMap or
+Secret references.
+
+```yaml
+env:
+  BINDERY_LOG_LEVEL: info
+  BINDERY_URL_BASE: /bindery
+  BINDERY_API_KEY:
+    valueFrom:
+      secretKeyRef:
+        name: bindery-secrets
+        key: api-key
+
+envFrom:
+  - secretRef:
+      name: bindery-env
+```
+
+## Security and Probes
+
+The upstream distroless image runs as UID/GID `65532`. This chart uses the upstream
+non-root, read-only-root-filesystem security profile and mounts an internal writable
+`/tmp`. Startup uses a TCP probe; readiness and liveness use `/api/v1/health`.
+
+## Ingress
+
+```yaml
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: bindery.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+```
+
+## Configuration
+
+{{ template "chart.valuesTable" . }}
+
+## License
+
+MIT - see [LICENSE](../../LICENSE).

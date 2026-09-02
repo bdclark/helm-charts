@@ -10,6 +10,7 @@ Personal Helm charts. Each chart has its own README under `charts/<name>/`.
 | Chart | Description |
 | ----- | ----------- |
 | [audiobookshelf](charts/audiobookshelf/) | Self-hosted audiobooks and podcast server |
+| [bindery](charts/bindery/) | Automated ebook and audiobook download manager for Usenet and torrents |
 | [lidarr](charts/lidarr/) | Music collection manager for usenet and torrent users |
 | [mealie](charts/mealie/) | Mealie recipe manager and meal planner |
 | [mosquitto](charts/mosquitto/) | Eclipse Mosquitto MQTT broker with authentication and persistence support |
