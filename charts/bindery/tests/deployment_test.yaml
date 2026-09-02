@@ -1,0 +1,193 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should create a SQLite-safe deployment with secure defaults
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-bindery
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.strategy.type
+          value: Recreate
+      - equal:
+          path: spec.template.spec.automountServiceAccountToken
+          value: false
+      - equal:
+          path: spec.template.spec.terminationGracePeriodSeconds
+          value: 30
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^ghcr.io/vavallee/bindery:"
+      - equal:
+          path: spec.template.spec.securityContext.runAsUser
+          value: 65532
+      - equal:
+          path: spec.template.spec.securityContext.seccompProfile.type
+          value: RuntimeDefault
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - contains:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop
+          content: ALL
+
+  - it: should use appVersion when image tag is not specified
+    set:
+      image.tag: ""
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^ghcr.io/vavallee/bindery:1\\.33\\.2$"
+
+  - it: should render upstream health probes and writable tmp storage
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].startupProbe.tcpSocket.port
+          value: http
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet.path
+          value: /api/v1/health
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet.path
+          value: /api/v1/health
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: tmp
+            mountPath: /tmp
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tmp
+            emptyDir: {}
+
+  - it: should mount config persistence but not data persistence by default
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: config
+            mountPath: /config
+      - notContains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+
+  - it: should mount an enabled existing data claim
+    set:
+      persistence.data.enabled: true
+      persistence.data.existingClaim: shared-media
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: data
+            mountPath: /data
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: data
+            persistentVolumeClaim:
+              claimName: shared-media
+
+  - it: should render scalar and reference environment variables
+    set:
+      env:
+        BINDERY_LIBRARY_DIR: /data/books
+        BINDERY_API_KEY:
+          valueFrom:
+            secretKeyRef:
+              name: bindery-secrets
+              key: api-key
+      envFrom:
+        - configMapRef:
+            name: bindery-env
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: BINDERY_LIBRARY_DIR
+            value: /data/books
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: BINDERY_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: bindery-secrets
+                key: api-key
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            configMapRef:
+              name: bindery-env
+
+  - it: should add pod composition and storage escape hatches
+    set:
+      initContainers:
+        - name: init-media
+          image: busybox:1.37
+      sidecars:
+        - name: exporter
+          image: exporter:latest
+      extraVolumes:
+        - name: calibre
+          emptyDir: {}
+      extraVolumeMounts:
+        - name: calibre
+          mountPath: /calibre
+    asserts:
+      - contains:
+          path: spec.template.spec.initContainers
+          content:
+            name: init-media
+            image: busybox:1.37
+      - contains:
+          path: spec.template.spec.containers
+          content:
+            name: exporter
+            image: exporter:latest
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: calibre
+            emptyDir: {}
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: calibre
+            mountPath: /calibre
+
+  - it: should apply resource and scheduling overrides
+    set:
+      resources:
+        requests:
+          cpu: 100m
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: media
+          effect: NoSchedule
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 100m
+      - equal:
+          path: spec.template.spec.nodeSelector["kubernetes.io/arch"]
+          value: amd64
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: dedicated
+            operator: Equal
+            value: media
+            effect: NoSchedule

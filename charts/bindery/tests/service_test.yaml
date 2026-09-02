@@ -1,0 +1,32 @@
+suite: test service
+templates:
+  - service.yaml
+tests:
+  - it: should create the default HTTP service
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-bindery
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports[0].port
+          value: 8787
+      - equal:
+          path: spec.ports[0].targetPort
+          value: http
+
+  - it: should apply a custom service type and port
+    set:
+      service.type: NodePort
+      service.port: 8080
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+      - equal:
+          path: spec.ports[0].port
+          value: 8080

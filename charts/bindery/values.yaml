@@ -1,0 +1,200 @@
+# -- Override the release name.
+nameOverride: ""
+# -- Override the full release name.
+fullnameOverride: ""
+
+# -- Number of replicas. Bindery uses SQLite and supports one active replica.
+replicaCount: 1
+
+# -- Deployment update strategy. Bindery uses SQLite and requires Recreate.
+strategy:
+  type: Recreate
+
+# -- Annotations for the Deployment.
+deploymentAnnotations: {}
+
+# -- Additional labels for the Deployment.
+extraDeploymentLabels: {}
+
+# -- Annotations for pods.
+podAnnotations: {}
+
+# -- Additional labels for pods.
+podLabels: {}
+
+# -- Labels to add to all resources.
+commonLabels: {}
+  # app.kubernetes.io/part-of: media-stack
+  # app.kubernetes.io/component: books
+
+image:
+  # -- Image repository.
+  repository: ghcr.io/vavallee/bindery
+  # -- Image tag (defaults to chart appVersion).
+  tag: ""
+  # -- Image pull policy.
+  pullPolicy: IfNotPresent
+
+# -- Image pull secrets.
+imagePullSecrets: []
+
+# -- Pod security context.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container security context.
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+# -- Resource requests and limits.
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# -- Container ports.
+ports:
+  - name: http
+    containerPort: 8787
+    protocol: TCP
+
+# -- Startup probe configuration.
+startupProbe:
+  tcpSocket:
+    port: http
+  failureThreshold: 30
+  periodSeconds: 5
+
+# -- Liveness probe configuration.
+livenessProbe:
+  httpGet:
+    path: /api/v1/health
+    port: http
+  failureThreshold: 5
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+# -- Readiness probe configuration.
+readinessProbe:
+  httpGet:
+    path: /api/v1/health
+    port: http
+  failureThreshold: 3
+  periodSeconds: 10
+
+# -- Environment variables. Configure media paths below the mounted data volume.
+# @default -- `{}` (see values.yaml comments for examples)
+env: {}
+  # BINDERY_DOWNLOAD_DIR: /data/downloads/complete
+  # BINDERY_LIBRARY_DIR: /data/books
+  # BINDERY_API_KEY:
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: bindery-secrets
+  #       key: api-key
+
+# -- Environment variables from ConfigMaps or Secrets.
+envFrom: []
+  # - secretRef:
+  #     name: bindery-env
+
+# Persistent storage
+persistence:
+  config:
+    # -- Enable persistence for Bindery's database, backups, and image cache.
+    enabled: true
+    # -- Mount path.
+    mountPath: /config
+    # -- Subdirectory of the volume to mount (optional).
+    subPath: ""
+    # -- Storage class ("-" for default, "" for cluster default).
+    storageClass: ""
+    # -- Access modes.
+    accessModes:
+      - ReadWriteOnce
+    # -- Volume size.
+    size: 4Gi
+    # -- Use existing PVC (disables provisioning).
+    existingClaim: ""
+    # -- PVC annotations.
+    annotations: {}
+
+  data:
+    # -- Enable a shared media volume for downloads and libraries.
+    enabled: false
+    # -- Mount path.
+    mountPath: /data
+    # -- Subdirectory of the volume to mount (optional).
+    subPath: ""
+    # -- Storage class ("-" for default, "" for cluster default).
+    storageClass: ""
+    # -- Access modes.
+    accessModes:
+      - ReadWriteOnce
+    # -- Volume size when provisioning a PVC.
+    size: 100Gi
+    # -- Existing shared media PVC. Recommended when the download client uses the same filesystem.
+    existingClaim: ""
+    # -- PVC annotations.
+    annotations: {}
+
+# -- Additional volume mounts.
+extraVolumeMounts: []
+# - name: media
+#   mountPath: /data
+
+# -- Additional init containers.
+initContainers: []
+
+# -- Additional sidecar containers.
+sidecars: []
+
+# -- Additional volumes.
+extraVolumes: []
+# - name: media
+#   persistentVolumeClaim:
+#     claimName: shared-media
+
+service:
+  # -- Service type.
+  type: ClusterIP
+  # -- Service port.
+  port: 8787
+
+# Ingress configuration
+ingress:
+  # -- Enable Ingress.
+  enabled: false
+  # -- Ingress class name.
+  className: ""
+  # -- Ingress annotations.
+  annotations: {}
+  # -- Ingress hosts.
+  hosts:
+    - host: bindery.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- Ingress TLS configuration.
+  tls: []
+
+# -- Node selector.
+nodeSelector: {}
+
+# -- Tolerations.
+tolerations: []
+
+# -- Affinity rules.
+affinity: {}

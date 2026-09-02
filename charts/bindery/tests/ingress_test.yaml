@@ -1,0 +1,42 @@
+suite: test ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: should not create ingress by default
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create a standard ingress with TLS
+    set:
+      ingress.enabled: true
+      ingress.className: nginx
+      ingress.annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+      ingress.hosts:
+        - host: bindery.example.com
+          paths:
+            - path: /
+              pathType: Prefix
+      ingress.tls:
+        - secretName: bindery-tls
+          hosts:
+            - bindery.example.com
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.ingressClassName
+          value: nginx
+      - equal:
+          path: metadata.annotations["cert-manager.io/cluster-issuer"]
+          value: letsencrypt
+      - equal:
+          path: spec.rules[0].host
+          value: bindery.example.com
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8787
+      - equal:
+          path: spec.tls[0].secretName
+          value: bindery-tls

@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "nameOverride": { "type": "string", "description": "Override the release name" },
+    "fullnameOverride": { "type": "string", "description": "Override the full release name" },
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Number of replicas"
+    },
+    "strategy": {
+      "type": "object",
+      "description": "Deployment update strategy",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["Recreate"] }
+      },
+      "required": ["type"]
+    },
+    "deploymentAnnotations": { "$ref": "#/$defs/stringMap" },
+    "extraDeploymentLabels": { "$ref": "#/$defs/stringMap" },
+    "podAnnotations": { "$ref": "#/$defs/stringMap" },
+    "podLabels": { "$ref": "#/$defs/stringMap" },
+    "commonLabels": { "$ref": "#/$defs/stringMap" },
+    "image": {
+      "type": "object",
+      "description": "Container image configuration",
+      "additionalProperties": false,
+      "properties": {
+        "repository": { "type": "string", "description": "Image repository" },
+        "tag": { "type": "string", "description": "Image tag" },
+        "pullPolicy": { "type": "string", "enum": ["Always", "IfNotPresent", "Never"], "description": "Image pull policy" }
+      },
+      "required": ["repository", "tag", "pullPolicy"]
+    },
+    "imagePullSecrets": {
+      "type": "array",
+      "description": "Image pull secrets",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": { "name": { "type": "string" } },
+        "required": ["name"]
+      }
+    },
+    "podSecurityContext": { "type": "object", "description": "Pod security context" },
+    "securityContext": { "type": "object", "description": "Container security context" },
+    "resources": {
+      "type": "object",
+      "description": "Resource requests and limits",
+      "additionalProperties": false,
+      "properties": {
+        "limits": { "type": "object" },
+        "requests": { "type": "object" }
+      }
+    },
+    "ports": {
+      "type": "array",
+      "description": "Container ports",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "containerPort": { "type": "integer", "minimum": 1, "maximum": 65535 },
+          "protocol": { "type": "string", "enum": ["TCP", "UDP", "SCTP"] }
+        },
+        "required": ["name", "containerPort", "protocol"]
+      }
+    },
+    "startupProbe": { "type": "object", "description": "Startup probe configuration" },
+    "livenessProbe": { "type": "object", "description": "Liveness probe configuration" },
+    "readinessProbe": { "type": "object", "description": "Readiness probe configuration" },
+    "env": { "$ref": "#/$defs/env" },
+    "envFrom": {
+      "type": "array",
+      "description": "Environment variables from ConfigMaps or Secrets",
+      "items": { "type": "object" }
+    },
+    "persistence": {
+      "type": "object",
+      "description": "Persistent storage configuration",
+      "additionalProperties": false,
+      "properties": {
+        "config": { "$ref": "#/$defs/persistence" },
+        "data": { "$ref": "#/$defs/persistence" }
+      },
+      "required": ["config", "data"]
+    },
+    "extraVolumeMounts": {
+      "type": "array",
+      "description": "Additional volume mounts",
+      "items": { "type": "object" }
+    },
+    "initContainers": {
+      "type": "array",
+      "description": "Additional init containers",
+      "items": { "type": "object" }
+    },
+    "sidecars": {
+      "type": "array",
+      "description": "Additional sidecar containers",
+      "items": { "type": "object" }
+    },
+    "extraVolumes": {
+      "type": "array",
+      "description": "Additional volumes",
+      "items": { "type": "object" }
+    },
+    "service": {
+      "type": "object",
+      "description": "Service configuration",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "description": "Service type" },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535, "description": "Service port" }
+      },
+      "required": ["type", "port"]
+    },
+    "ingress": {
+      "type": "object",
+      "description": "Ingress configuration",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "description": "Enable Ingress" },
+        "className": { "type": "string", "description": "Ingress class name" },
+        "annotations": { "$ref": "#/$defs/stringMap" },
+        "hosts": {
+          "type": "array",
+          "description": "Ingress hosts",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "host": { "type": "string" },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": { "type": "string" },
+                    "pathType": { "type": "string" }
+                  },
+                  "required": ["path", "pathType"]
+                }
+              }
+            },
+            "required": ["host", "paths"]
+          }
+        },
+        "tls": {
+          "type": "array",
+          "description": "Ingress TLS configuration",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "secretName": { "type": "string" },
+              "hosts": { "type": "array", "items": { "type": "string" } }
+            },
+            "required": ["secretName", "hosts"]
+          }
+        }
+      },
+      "required": ["enabled", "className", "annotations", "hosts", "tls"]
+    },
+    "nodeSelector": { "$ref": "#/$defs/stringMap" },
+    "tolerations": { "type": "array", "description": "Tolerations", "items": { "type": "object" } },
+    "affinity": { "type": "object", "description": "Affinity rules" }
+  },
+  "$defs": {
+    "stringMap": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "env": {
+      "type": "object",
+      "description": "Environment variables",
+      "additionalProperties": {
+        "oneOf": [
+          { "type": ["string", "number", "boolean"] },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "value": { "type": ["string", "number", "boolean"] },
+              "valueFrom": { "type": "object" }
+            },
+            "anyOf": [
+              { "required": ["value"] },
+              { "required": ["valueFrom"] }
+            ]
+          }
+        ]
+      }
+    },
+    "persistence": {
+      "type": "object",
+      "description": "Persistence configuration",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "description": "Enable persistence" },
+        "mountPath": { "type": "string", "description": "Mount path" },
+        "subPath": { "type": "string", "description": "Subdirectory of the volume to mount" },
+        "storageClass": { "type": "string", "description": "Storage class" },
+        "accessModes": { "type": "array", "description": "Access modes", "items": { "type": "string" } },
+        "size": { "type": "string", "description": "Volume size" },
+        "existingClaim": { "type": "string", "description": "Use existing PVC" },
+        "annotations": { "$ref": "#/$defs/stringMap" }
+      },
+      "required": ["enabled", "mountPath", "subPath", "storageClass", "accessModes", "size", "existingClaim", "annotations"]
+    }
+  }
+}
