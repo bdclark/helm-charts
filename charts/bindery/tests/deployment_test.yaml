@@ -19,6 +19,9 @@ tests:
           path: spec.template.spec.automountServiceAccountToken
           value: false
       - equal:
+          path: spec.template.spec.enableServiceLinks
+          value: false
+      - equal:
           path: spec.template.spec.terminationGracePeriodSeconds
           value: 30
       - matchRegex:
