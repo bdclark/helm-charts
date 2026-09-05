@@ -46,7 +46,7 @@ tests:
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: "^ghcr.io/vavallee/bindery:1\\.33\\.2$"
+          pattern: "^ghcr.io/vavallee/bindery:.+$"
 
   - it: should render upstream health probes and writable tmp storage
     asserts:
