@@ -1,7 +1,7 @@
 # Seerr Helm Chart
 
-[![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: v3.4.1](https://img.shields.io/badge/AppVersion-v3.4.1-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: v3.5.0](https://img.shields.io/badge/AppVersion-v3.5.0-informational?style=flat-square)](Chart.yaml)
 
 Request management for media libraries
 
