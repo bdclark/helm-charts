@@ -1,7 +1,7 @@
 # Prowlarr Helm Chart
 
-[![Version: 0.3.4](https://img.shields.io/badge/Version-0.3.4-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 2.5.2](https://img.shields.io/badge/AppVersion-2.5.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.3.5](https://img.shields.io/badge/Version-0.3.5-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.6.5](https://img.shields.io/badge/AppVersion-2.6.5-informational?style=flat-square)](Chart.yaml)
 
 Indexer manager for usenet and torrent users
 
