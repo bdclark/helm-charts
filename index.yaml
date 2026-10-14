@@ -11,6 +11,38 @@ entries:
         - name: Audiobookshelf GitHub
           url: https://github.com/advplyr/audiobookshelf
     apiVersion: v2
+    appVersion: 2.37.1
+    created: "2026-10-14T18:01:22.72061553Z"
+    description: Self-hosted audiobooks and podcast server
+    digest: 1351b050789956ba96653fc3df9b1c2ef495389dd732417cb0b23bb5d33fc895
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+    icon: https://raw.githubusercontent.com/advplyr/audiobookshelf/refs/heads/master/client/static/icon.svg
+    keywords:
+    - audiobooks
+    - podcasts
+    - media
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: audiobookshelf
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+    - https://github.com/advplyr/audiobookshelf
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/audiobookshelf-0.1.5/audiobookshelf-0.1.5.tgz
+    version: 0.1.5
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+        - name: Audiobookshelf
+          url: https://www.audiobookshelf.org
+        - name: Audiobookshelf GitHub
+          url: https://github.com/advplyr/audiobookshelf
+    apiVersion: v2
     appVersion: 2.36.0
     created: "2026-08-06T02:09:09.487923621Z"
     description: Self-hosted audiobooks and podcast server
@@ -4339,4 +4371,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-14T18:00:26.643437041Z"
+generated: "2026-10-14T18:01:22.720752894Z"
