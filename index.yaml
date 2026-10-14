@@ -1148,6 +1148,45 @@ entries:
         - name: GitHub Repository
           url: https://github.com/music-assistant/server
     apiVersion: v2
+    appVersion: 2.10.6
+    created: "2026-10-14T17:02:45.768320085Z"
+    description: Music Assistant - Universal media library manager for streaming services
+      and connected audio devices
+    digest: fd939014cd3eb4e0b4b0667346e2461e9d57acc1bd54d4b2941afd0d2929e99a
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon.png
+    keywords:
+    - music
+    - audio
+    - streaming
+    - media
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: music-assistant
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - https://github.com/music-assistant/server
+    - https://music-assistant.io/
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.4.14/music-assistant-0.4.14.tgz
+    version: 0.4.14
+  - annotations:
+      artifacthub.io/images: |
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+        - name: Music Assistant
+          url: https://music-assistant.io/
+        - name: GitHub Repository
+          url: https://github.com/music-assistant/server
+    apiVersion: v2
     appVersion: 2.10.3
     created: "2026-09-13T14:06:39.059573116Z"
     description: Music Assistant - Universal media library manager for streaming services
@@ -4205,4 +4244,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-10-11T21:50:36.554190618Z"
+generated: "2026-10-14T17:02:45.768533965Z"
