@@ -202,6 +202,38 @@ entries:
         - name: Bindery GitHub
           url: https://github.com/vavallee/bindery
     apiVersion: v2
+    appVersion: v1.46.1
+    created: "2026-11-01T14:34:54.975184031Z"
+    description: Automated ebook and audiobook download manager for Usenet and torrents
+    digest: 0a3c8276dfa104298610b2d9736065145f0e060ac2f7411fdcab1ed9d26ad5d4
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/bindery
+    icon: https://raw.githubusercontent.com/vavallee/bindery/main/.github/assets/logo.png
+    keywords:
+    - books
+    - ebooks
+    - audiobooks
+    - usenet
+    - torrent
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: bindery
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/bindery
+    - https://github.com/vavallee/bindery
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/bindery-0.1.7/bindery-0.1.7.tgz
+    version: 0.1.7
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/bindery
+        - name: Bindery GitHub
+          url: https://github.com/vavallee/bindery
+    apiVersion: v2
     appVersion: v1.42.1
     created: "2026-10-18T11:12:10.211764246Z"
     description: Automated ebook and audiobook download manager for Usenet and torrents
@@ -4658,4 +4690,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-01T14:34:09.737115934Z"
+generated: "2026-11-01T14:34:54.975856434Z"
