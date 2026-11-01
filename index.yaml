@@ -461,6 +461,37 @@ entries:
         - name: Lidarr GitHub
           url: https://github.com/Lidarr/Lidarr
     apiVersion: v2
+    appVersion: 3.1.6
+    created: "2026-11-01T14:41:25.094063452Z"
+    description: Music collection manager for usenet and torrent users
+    digest: 1ed20442dc07108d22c954aaaf011e443ec4b0e7603a68b3458a2a866df5626c
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+    icon: https://raw.githubusercontent.com/Lidarr/Lidarr/develop/Logo/Lidarr.svg
+    keywords:
+    - music
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: lidarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/lidarr-0.1.1/lidarr-0.1.1.tgz
+    version: 0.1.1
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+        - name: Lidarr
+          url: https://lidarr.audio
+        - name: Lidarr GitHub
+          url: https://github.com/Lidarr/Lidarr
+    apiVersion: v2
     appVersion: 3.1.0
     created: "2026-03-03T10:51:18.771309849Z"
     description: Music collection manager for usenet and torrent users
@@ -4749,4 +4780,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-01T14:40:35.501173936Z"
+generated: "2026-11-01T14:41:25.094359253Z"
