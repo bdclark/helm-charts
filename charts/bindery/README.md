@@ -1,7 +1,7 @@
 # Bindery Helm Chart
 
-[![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: v1.46.1](https://img.shields.io/badge/AppVersion-v1.46.1-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: v1.46.2](https://img.shields.io/badge/AppVersion-v1.46.2-informational?style=flat-square)](Chart.yaml)
 
 Automated ebook and audiobook download manager for Usenet and torrents
 
