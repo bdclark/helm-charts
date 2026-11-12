@@ -4286,6 +4286,39 @@ entries:
         - name: Seerr GitHub
           url: https://github.com/seerr-team/seerr
     apiVersion: v2
+    appVersion: v3.5.2
+    created: "2026-11-12T14:25:04.994591286Z"
+    description: Request management for media libraries
+    digest: 1aea37269f04346af24b2fb1ed53538708a81859d0b35c85a355139ee01aa7ed
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+    icon: https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/main/public/os_icon.svg
+    keywords:
+    - requests
+    - media
+    - seerr
+    - overseerr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: seerr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+    - https://github.com/seerr-team/seerr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/seerr-0.1.8/seerr-0.1.8.tgz
+    version: 0.1.8
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+        - name: Seerr
+          url: https://seerr.dev
+        - name: Seerr GitHub
+          url: https://github.com/seerr-team/seerr
+    apiVersion: v2
     appVersion: v3.5.1
     created: "2026-11-01T14:42:01.97764092Z"
     description: Request management for media libraries
@@ -4948,4 +4981,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-05T12:36:33.567253325Z"
+generated: "2026-11-12T14:25:04.994832734Z"
