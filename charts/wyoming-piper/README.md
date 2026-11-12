@@ -1,7 +1,7 @@
 # Wyoming-Piper Helm Chart
 
-[![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 2.5.2](https://img.shields.io/badge/AppVersion-2.5.2-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.5.3](https://img.shields.io/badge/AppVersion-2.5.3-informational?style=flat-square)](Chart.yaml)
 
 Wyoming protocol server for Piper text to speech
 
