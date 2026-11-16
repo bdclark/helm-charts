@@ -166,7 +166,7 @@ jobs:
   kind-smoke:
     name: Kind Smoke ${{ matrix.chart }}
     # Ubuntu 26.04 Kind smoke runs fail when Mosquitto opens its ConfigMap.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [load-versions, detect-changes]
     if: needs.detect-changes.outputs.changed == 'true'
     strategy:
