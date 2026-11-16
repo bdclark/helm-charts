@@ -1,7 +1,7 @@
 # Radarr Helm Chart
 
-[![Version: 0.4.5](https://img.shields.io/badge/Version-0.4.5-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 6.4.4](https://img.shields.io/badge/AppVersion-6.4.4-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.4.6](https://img.shields.io/badge/Version-0.4.6-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 7.0.3](https://img.shields.io/badge/AppVersion-7.0.3-informational?style=flat-square)](Chart.yaml)
 
 Movie organizer/manager for usenet and torrent users
 
