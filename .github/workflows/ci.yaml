@@ -143,6 +143,15 @@ jobs:
       - name: Run helm unittest
         run: helm unittest charts/${{ matrix.chart }}
 
+      - name: Run chart verification script
+        env:
+          CHART: ${{ matrix.chart }}
+        run: |
+          script="charts/$CHART/scripts/verify.sh"
+          if [[ -f "$script" ]]; then
+            bash "$script"
+          fi
+
       - name: Install kubeconform
         run: |
           VERSION="${{ needs.load-versions.outputs.kubeconform }}"

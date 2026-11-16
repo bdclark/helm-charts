@@ -64,6 +64,11 @@ tasks:
         vars: { CHART: "{{.CHART | default .DEFAULT_CHART}}" }
       - task: kubeconform
         vars: { CHART: "{{.CHART | default .DEFAULT_CHART}}" }
+      - |
+        script="{{.CHARTS_DIR}}/{{.CHART | default .DEFAULT_CHART}}/scripts/verify.sh"
+        if [ -f "$script" ]; then
+          bash "$script"
+        fi
 
   verify-all:
     desc: Run all checks for all charts
