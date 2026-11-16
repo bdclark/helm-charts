@@ -4168,6 +4168,37 @@ entries:
         - name: Radarr GitHub
           url: https://github.com/Radarr/Radarr
     apiVersion: v2
+    appVersion: 7.0.3
+    created: "2026-11-16T17:07:09.158886594Z"
+    description: Movie organizer/manager for usenet and torrent users
+    digest: ce4045ab5f3e054e12128337598407cc6b689174b4f629ee664cdab0ade61e7f
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    icon: https://raw.githubusercontent.com/Radarr/Radarr/master/Logo/Radarr.svg
+    keywords:
+    - movie
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: radarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/radarr-0.4.6/radarr-0.4.6.tgz
+    version: 0.4.6
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+        - name: Radarr
+          url: https://radarr.video
+        - name: Radarr GitHub
+          url: https://github.com/Radarr/Radarr
+    apiVersion: v2
     appVersion: 6.4.4
     created: "2026-10-11T21:50:08.40443261Z"
     description: Movie organizer/manager for usenet and torrent users
@@ -5173,4 +5204,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-13T22:55:22.94618249Z"
+generated: "2026-11-16T17:07:09.159007888Z"
