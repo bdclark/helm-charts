@@ -16,7 +16,7 @@ tests:
           path: spec.template.spec.containers[0].image
           pattern: "^eclipse-mosquitto:"
 
-  - it: should checksum the rendered config, not every value
+  - it: should expose a SHA-256 config checksum
     asserts:
       - matchRegex:
           path: spec.template.metadata.annotations["checksum/config"]

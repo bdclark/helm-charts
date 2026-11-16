@@ -1,6 +1,6 @@
 # Mosquitto Helm Chart
 
-[![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.0.22](https://img.shields.io/badge/AppVersion-2.0.22-informational?style=flat-square)](Chart.yaml)
 
 Eclipse Mosquitto MQTT broker with authentication and persistence support
