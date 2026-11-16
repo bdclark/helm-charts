@@ -1311,6 +1311,44 @@ entries:
           url: https://mosquitto.org/
     apiVersion: v2
     appVersion: 2.0.22
+    created: "2026-11-16T23:01:44.712494606Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: 477583d949e8bd101ac5198bee65f78aaf13e6ee988c8affa9d324fab9168872
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.6.2/mosquitto-0.6.2.tgz
+    version: 0.6.2
+  - annotations:
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+    apiVersion: v2
+    appVersion: 2.0.22
     created: "2026-02-16T14:42:04.200069683Z"
     description: Eclipse Mosquitto MQTT broker with authentication and persistence
       support
@@ -5338,4 +5376,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-16T17:08:42.520365574Z"
+generated: "2026-11-16T23:01:44.712730613Z"
