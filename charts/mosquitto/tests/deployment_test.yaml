@@ -16,6 +16,12 @@ tests:
           path: spec.template.spec.containers[0].image
           pattern: "^eclipse-mosquitto:"
 
+  - it: should expose a SHA-256 config checksum
+    asserts:
+      - matchRegex:
+          path: spec.template.metadata.annotations["checksum/config"]
+          pattern: "^[a-f0-9]{64}$"
+
   - it: should use custom image
     set:
       image.repository: my-mosquitto

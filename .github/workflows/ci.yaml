@@ -143,6 +143,15 @@ jobs:
       - name: Run helm unittest
         run: helm unittest charts/${{ matrix.chart }}
 
+      - name: Run chart verification script
+        env:
+          CHART: ${{ matrix.chart }}
+        run: |
+          script="charts/$CHART/scripts/verify.sh"
+          if [[ -f "$script" ]]; then
+            bash "$script"
+          fi
+
       - name: Install kubeconform
         run: |
           VERSION="${{ needs.load-versions.outputs.kubeconform }}"
@@ -156,7 +165,8 @@ jobs:
 
   kind-smoke:
     name: Kind Smoke ${{ matrix.chart }}
-    runs-on: ubuntu-latest
+    # Ubuntu 26.04 Kind smoke runs fail when Mosquitto opens its ConfigMap.
+    runs-on: ubuntu-24.04
     needs: [load-versions, detect-changes]
     if: needs.detect-changes.outputs.changed == 'true'
     strategy:
