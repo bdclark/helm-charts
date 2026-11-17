@@ -2,9 +2,9 @@ apiVersion: v2
 name: mosquitto
 description: Eclipse Mosquitto MQTT broker with authentication and persistence support
 type: application
-version: 0.6.2
+version: 0.6.3
 # renovate: image=eclipse-mosquitto
-appVersion: 2.0.22
+appVersion: 2.0.23
 home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
 sources:
   - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
