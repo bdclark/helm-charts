@@ -1,7 +1,7 @@
 # Mosquitto Helm Chart
 
-[![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 2.0.22](https://img.shields.io/badge/AppVersion-2.0.22-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.6.3](https://img.shields.io/badge/Version-0.6.3-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.0.23](https://img.shields.io/badge/AppVersion-2.0.23-informational?style=flat-square)](Chart.yaml)
 
 Eclipse Mosquitto MQTT broker with authentication and persistence support
 
@@ -88,7 +88,7 @@ config:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | image.repository | string | `"eclipse-mosquitto"` | Image repository |
-| image.tag | string | `"2.0.22"` | Image tag |
+| image.tag | string | `"2.0.23"` | Image tag |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | imagePullSecrets | list | `[]` | Image pull secrets for private registries |
 | nameOverride | string | `""` | Override the chart name |
