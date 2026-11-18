@@ -5268,6 +5268,36 @@ entries:
         - name: Wyoming Piper GitHub
           url: https://github.com/rhasspy/wyoming-piper
     apiVersion: v2
+    appVersion: 2.5.4
+    created: "2026-11-18T12:58:01.692971269Z"
+    description: Wyoming protocol server for Piper text to speech
+    digest: 5c56ba9765f81b03dff9989e2c579988ffa79519ac73bad3d6815ba89751d067
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+    icon: https://raw.githubusercontent.com/OHF-Voice/piper1-gpl/refs/heads/main/etc/logo.svg
+    keywords:
+    - tts
+    - piper
+    - wyoming
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: wyoming-piper
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+    - https://github.com/rhasspy/wyoming-piper
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.6/wyoming-piper-0.1.6.tgz
+    version: 0.1.6
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+        - name: Wyoming Piper GitHub
+          url: https://github.com/rhasspy/wyoming-piper
+    apiVersion: v2
     appVersion: 2.5.3
     created: "2026-11-13T09:45:15.341281433Z"
     description: Wyoming protocol server for Piper text to speech
@@ -5440,4 +5470,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-18T12:57:37.862682814Z"
+generated: "2026-11-18T12:58:01.6932959Z"
