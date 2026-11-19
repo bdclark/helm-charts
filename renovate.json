@@ -29,6 +29,24 @@
           "bumpType": "patch"
         }
       ]
+    },
+    {
+      "description": "Keep primary chart application image patches separate from minor updates",
+      "matchDatasources": ["docker"],
+      "matchFileNames": [
+        "charts/**/Chart.yaml"
+      ],
+      "separateMinorPatch": true
+    },
+    {
+      "description": "Automerge primary chart application image patches",
+      "matchDatasources": ["docker"],
+      "matchFileNames": [
+        "charts/**/Chart.yaml"
+      ],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr"
     }
   ],
   "customManagers": [

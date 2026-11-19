@@ -4,11 +4,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "charts/**"
-      - ".github/workflows/ci.yaml"
-      - ".github/versions.env"
-      - "ct.yaml"
   push:
     branches:
       - main
@@ -68,7 +63,6 @@ jobs:
         run: helm-docs --chart-search-root charts --sort-values-order file
 
       - name: Check for changes
-        if: github.event_name != 'pull_request' || github.actor != 'renovate[bot]'
         run: |
           if ! git diff --exit-code; then
             echo "::error::Documentation is out of date. Run 'helm-docs' locally and commit the changes."
@@ -215,3 +209,42 @@ jobs:
           kubectl describe pods -A || true
           echo "=== kubectl get events -A --sort-by=.lastTimestamp ==="
           kubectl get events -A --sort-by=.lastTimestamp || true
+
+  ci-gate:
+    name: CI Gate
+    runs-on: ubuntu-latest
+    needs: [load-versions, docs, detect-changes, chart-test, kind-smoke]
+    if: ${{ always() }}
+    steps:
+      - name: Check required jobs
+        env:
+          LOAD_VERSIONS_RESULT: ${{ needs.load-versions.result }}
+          DOCS_RESULT: ${{ needs.docs.result }}
+          DETECT_CHANGES_RESULT: ${{ needs.detect-changes.result }}
+          CHARTS_CHANGED: ${{ needs.detect-changes.outputs.changed }}
+          CHART_TEST_RESULT: ${{ needs.chart-test.result }}
+          KIND_SMOKE_RESULT: ${{ needs.kind-smoke.result }}
+        run: |
+          if [[ "$LOAD_VERSIONS_RESULT" != success || "$DOCS_RESULT" != success || "$DETECT_CHANGES_RESULT" != success ]]; then
+            echo "::error::A prerequisite CI job did not succeed."
+            exit 1
+          fi
+
+          case "$CHARTS_CHANGED" in
+            true)
+              if [[ "$CHART_TEST_RESULT" != success || "$KIND_SMOKE_RESULT" != success ]]; then
+                echo "::error::Changed charts must pass chart tests and kind smoke tests."
+                exit 1
+              fi
+              ;;
+            false)
+              if [[ "$CHART_TEST_RESULT" != skipped || "$KIND_SMOKE_RESULT" != skipped ]]; then
+                echo "::error::Chart test jobs must be skipped when no charts changed."
+                exit 1
+              fi
+              ;;
+            *)
+              echo "::error::Chart change detection did not report true or false."
+              exit 1
+              ;;
+          esac
