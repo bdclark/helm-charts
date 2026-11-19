@@ -6,8 +6,8 @@
 image:
   # -- Image repository
   repository: eclipse-mosquitto
-  # -- Image tag
-  tag: "2.0.23"
+  # -- Image tag (defaults to appVersion from Chart.yaml)
+  tag: ""
   # -- Image pull policy
   pullPolicy: IfNotPresent
 
