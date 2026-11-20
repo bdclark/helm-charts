@@ -1,6 +1,6 @@
 # Qbittorrent-Vpn Helm Chart
 
-[![Version: 0.7.8](https://img.shields.io/badge/Version-0.7.8-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 5.3.0](https://img.shields.io/badge/AppVersion-5.3.0-informational?style=flat-square)](Chart.yaml)
 
 qBittorrent with Gluetun VPN sidecar
@@ -217,6 +217,7 @@ qbittorrent:
 | qbittorrent.persistence.config.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | qbittorrent.persistence.config.size | string | `"2Gi"` | Volume size. |
 | qbittorrent.persistence.config.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| qbittorrent.persistence.config.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | qbittorrent.persistence.config.annotations | object | `{}` | PVC annotations. |
 | qbittorrent.persistence.data.enabled | bool | `false` | Enable data persistence. |
 | qbittorrent.persistence.data.mountPath | string | `"/data"` | Mount path. |
@@ -225,6 +226,7 @@ qbittorrent:
 | qbittorrent.persistence.data.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | qbittorrent.persistence.data.size | string | `"2Gi"` | Volume size. |
 | qbittorrent.persistence.data.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| qbittorrent.persistence.data.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | qbittorrent.persistence.data.annotations | object | `{}` | PVC annotations. |
 | qbittorrent.volumeMounts | list | `[]` | Additional volume mounts. |
 | qbittorrent.service.type | string | `"ClusterIP"` | Service type. |
@@ -254,6 +256,7 @@ qbittorrent:
 | gluetun.persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | gluetun.persistence.size | string | `"200Mi"` | Volume size. |
 | gluetun.persistence.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| gluetun.persistence.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | gluetun.persistence.annotations | object | `{}` | PVC annotations. |
 | gluetun.volumeMounts | list | `[]` | Additional volume mounts. |
 | gluetun.controlServer.enabled | bool | `false` | Enable control server authentication config file. |

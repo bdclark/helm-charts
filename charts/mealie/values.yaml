@@ -106,6 +106,8 @@ persistence:
   # -- Use an existing PVC instead of creating a new one
   # If defined, PVC must be created manually before volume will be bound
   existingClaim: ""
+  # -- Additional labels for PVCs created by this chart.
+  extraLabels: {}
   # -- Annotations for PVC
   annotations: {}
     # k8up.io/backup: "true"

@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "prowlarr.fullname" . }}-config
   labels:
-    {{- include "prowlarr.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "prowlarr.labels" . | fromYaml) (.Values.persistence.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

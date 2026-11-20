@@ -166,6 +166,8 @@ qbittorrent:
       size: 2Gi
       # -- Use existing PVC (disables provisioning).
       existingClaim: ""
+      # -- Additional labels for PVCs created by this chart.
+      extraLabels: {}
       # -- PVC annotations.
       annotations: {}
         # k8up.io/backup: "true"
@@ -186,6 +188,8 @@ qbittorrent:
       size: 2Gi
       # -- Use existing PVC (disables provisioning).
       existingClaim: ""
+      # -- Additional labels for PVCs created by this chart.
+      extraLabels: {}
       # -- PVC annotations.
       annotations: {}
         # k8up.io/backup: "true"
@@ -312,6 +316,8 @@ gluetun:
     size: 200Mi
     # -- Use existing PVC (disables provisioning).
     existingClaim: ""
+    # -- Additional labels for PVCs created by this chart.
+    extraLabels: {}
     # -- PVC annotations.
     annotations: {}
       # k8up.io/backup: "true"

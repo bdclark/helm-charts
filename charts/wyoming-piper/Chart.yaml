@@ -2,7 +2,7 @@ apiVersion: v2
 name: wyoming-piper
 description: Wyoming protocol server for Piper text to speech
 type: application
-version: "0.1.6"
+version: "0.2.0"
 # renovate: image=rhasspy/wyoming-piper
 appVersion: "2.5.4"
 icon: https://raw.githubusercontent.com/OHF-Voice/piper1-gpl/refs/heads/main/etc/logo.svg

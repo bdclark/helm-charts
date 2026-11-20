@@ -109,3 +109,23 @@ tests:
           path: spec.storageClassName
           value: ""
 
+  - it: should apply claim-specific PVC labels and override common labels
+    set:
+      commonLabels:
+        example.com/backup-policy: shared
+      persistence.enabled: true
+      persistence.extraLabels:
+        example.com/backup-policy: data
+        recurring-job.longhorn.io/source: "enabled"
+    asserts:
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.labels["example.com/backup-policy"]
+          value: data
+      - equal:
+          path: metadata.labels["recurring-job.longhorn.io/source"]
+          value: "enabled"
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: music-assistant

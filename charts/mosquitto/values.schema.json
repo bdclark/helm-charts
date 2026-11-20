@@ -364,6 +364,7 @@
     },
     "persistence": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "enabled": {
           "type": "boolean",
@@ -388,6 +389,7 @@
           "type": "string",
           "description": "Use an existing PVC instead of creating a new one"
         },
+        "extraLabels": { "type": "object", "description": "Additional labels for chart-created PVCs", "additionalProperties": { "type": "string" } },
         "annotations": {
           "type": "object",
           "description": "Annotations for PVC"

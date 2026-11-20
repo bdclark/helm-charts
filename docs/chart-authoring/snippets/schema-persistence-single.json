@@ -32,6 +32,7 @@
           "type": "string",
           "description": "Use existing PVC"
         },
+        "extraLabels": { "type": "object", "additionalProperties": { "type": "string" } },
         "annotations": {
           "type": "object",
           "description": "PVC annotations",

@@ -1,6 +1,6 @@
 # Mosquitto Helm Chart
 
-[![Version: 0.6.4](https://img.shields.io/badge/Version-0.6.4-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.0.23](https://img.shields.io/badge/AppVersion-2.0.23-informational?style=flat-square)](Chart.yaml)
 
 Eclipse Mosquitto MQTT broker with authentication and persistence support
@@ -156,6 +156,7 @@ config:
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes for the PVC |
 | persistence.size | string | `"1Gi"` | Requested PVC size |
 | persistence.existingClaim | string | `""` | Use an existing PVC instead of creating a new one |
+| persistence.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.annotations | object | `{}` | Annotations for PVC |
 | nodeSelector | object | `{}` | Node selector for scheduling |
 | tolerations | list | `[]` | Pod tolerations |

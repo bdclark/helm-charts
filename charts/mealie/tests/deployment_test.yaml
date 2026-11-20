@@ -33,7 +33,7 @@ tests:
   - it: should not let postgres be used with incomplete config
     set:
       database.engine: postgres
-      database.postgres.host.value: ""
+      database.postgres.server.value: ""
       database.postgres.port.value: 5432
       database.postgres.user.value: ""
       database.postgres.password.value: ""

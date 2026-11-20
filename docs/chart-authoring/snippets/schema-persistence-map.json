@@ -29,6 +29,7 @@
         "existingClaim": {
           "type": "string"
         },
+        "extraLabels": { "type": "object", "additionalProperties": { "type": "string" } },
         "annotations": {
           "type": "object",
           "additionalProperties": {

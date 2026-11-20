@@ -1,6 +1,6 @@
 # Seerr Helm Chart
 
-[![Version: 0.1.8](https://img.shields.io/badge/Version-0.1.8-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: v3.5.2](https://img.shields.io/badge/AppVersion-v3.5.2-informational?style=flat-square)](Chart.yaml)
 
 Request management for media libraries
@@ -106,6 +106,7 @@ ingress:
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.size | string | `"1Gi"` | Volume size. |
 | persistence.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.annotations | object | `{}` | PVC annotations. |
 | volumeMounts | list | `[]` | Additional volume mounts. |
 | service.type | string | `"ClusterIP"` | Service type. |

@@ -225,6 +225,8 @@ persistence:
   size: 1Gi
   # -- Use an existing PVC instead of creating a new one
   existingClaim: ""
+  # -- Additional labels for PVCs created by this chart.
+  extraLabels: {}
   # -- Annotations for PVC
   annotations: {}
 

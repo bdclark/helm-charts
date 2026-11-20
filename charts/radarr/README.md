@@ -1,6 +1,6 @@
 # Radarr Helm Chart
 
-[![Version: 0.4.6](https://img.shields.io/badge/Version-0.4.6-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 7.0.3](https://img.shields.io/badge/AppVersion-7.0.3-informational?style=flat-square)](Chart.yaml)
 
 Movie organizer/manager for usenet and torrent users
@@ -239,6 +239,7 @@ ingress:
 | persistence.config.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.config.size | string | `"1Gi"` | Volume size. |
 | persistence.config.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.config.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.config.annotations | object | `{}` | PVC annotations. |
 | persistence.data.enabled | bool | `true` | Enable persistence for data. |
 | persistence.data.mountPath | string | `"/data"` | Mount path. |
@@ -247,6 +248,7 @@ ingress:
 | persistence.data.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.data.size | string | `"100Gi"` | Volume size. |
 | persistence.data.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.data.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.data.annotations | object | `{}` | PVC annotations. |
 | volumeMounts | list | `[]` | Additional volume mounts. |
 | service.type | string | `"ClusterIP"` | Service type. |
