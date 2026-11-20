@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "lidarr.fullname" . }}-config
   labels:
-    {{- include "lidarr.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "lidarr.labels" . | fromYaml) (.Values.persistence.config.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.persistence.config.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -32,7 +32,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "lidarr.fullname" . }}-data
   labels:
-    {{- include "lidarr.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "lidarr.labels" . | fromYaml) (.Values.persistence.data.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.persistence.data.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

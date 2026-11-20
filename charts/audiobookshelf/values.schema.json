@@ -206,6 +206,7 @@
         "accessModes": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
         "size": { "type": "string" },
         "existingClaim": { "type": "string" },
+        "extraLabels": { "type": "object", "description": "Additional labels for chart-created PVCs", "additionalProperties": { "type": "string" } },
         "annotations": { "type": "object", "additionalProperties": { "type": "string" } }
       },
       "required": ["enabled", "mountPath", "subPath", "storageClass", "accessModes", "size", "existingClaim", "annotations"]

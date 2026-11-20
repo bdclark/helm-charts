@@ -201,6 +201,7 @@
           "type": "string",
           "description": "Use existing PVC"
         },
+        "extraLabels": { "type": "object", "description": "Additional labels for chart-created PVCs", "additionalProperties": { "type": "string" } },
         "annotations": {
           "type": "object",
           "description": "PVC annotations",

@@ -2,7 +2,7 @@ apiVersion: v2
 name: seerr
 description: Request management for media libraries
 type: application
-version: "0.1.8"
+version: "0.2.0"
 # renovate: image=ghcr.io/seerr-team/seerr
 appVersion: "v3.5.2"
 icon: https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/main/public/os_icon.svg

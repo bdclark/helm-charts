@@ -15,19 +15,15 @@ tests:
       qbittorrent.persistence.config.enabled: true
       qbittorrent.persistence.config.existingClaim: my-existing-pvc
     asserts:
-      - not: true
-        containsDocument:
-          kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-config
+      - hasDocuments:
+          count: 0
 
   - it: should not create config pvc when disabled
     set:
       qbittorrent.persistence.config.enabled: false
     asserts:
-      - not: true
-        containsDocument:
-          kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-config
+      - hasDocuments:
+          count: 0
 
   - it: should use correct config pvc size
     set:
@@ -73,10 +69,11 @@ tests:
   # Data PVC tests
   - it: should not create data pvc by default
     asserts:
-      - not: true
-        containsDocument:
-          kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-data
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-qbittorrent-vpn-config
 
   - it: should create data pvc when enabled
     set:
@@ -93,18 +90,20 @@ tests:
       qbittorrent.persistence.data.enabled: true
       qbittorrent.persistence.data.existingClaim: my-data-pvc
     asserts:
-      - not: true
-        containsDocument:
-          kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-data
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-qbittorrent-vpn-config
 
   # Gluetun PVC tests
   - it: should not create gluetun pvc by default
     asserts:
-      - not: true
-        containsDocument:
-          kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-gluetun
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-qbittorrent-vpn-config
 
   - it: should create gluetun pvc when enabled
     set:
@@ -121,10 +120,11 @@ tests:
       gluetun.persistence.enabled: true
       gluetun.persistence.existingClaim: my-gluetun-pvc
     asserts:
-      - not: true
-        containsDocument:
-          kind: PersistentVolumeClaim
-          name: RELEASE-NAME-qbittorrent-vpn-gluetun
+      - hasDocuments:
+          count: 1
+      - equal:
+          path: metadata.name
+          value: RELEASE-NAME-qbittorrent-vpn-config
 
   # Access modes tests
   - it: should use correct access modes
@@ -142,3 +142,59 @@ tests:
           path: spec.accessModes
           content: "ReadOnlyMany"
         documentIndex: 0
+
+  - it: should apply claim-specific PVC labels and override common labels
+    set:
+      commonLabels:
+        example.com/backup-policy: shared
+      qbittorrent.persistence.config.enabled: true
+      qbittorrent.persistence.config.extraLabels:
+        example.com/backup-policy: config
+        recurring-job.longhorn.io/source: "enabled"
+      qbittorrent.persistence.data.enabled: true
+      qbittorrent.persistence.data.extraLabels:
+        example.com/backup-policy: data
+        recurring-job.longhorn.io/source: "enabled"
+      gluetun.persistence.enabled: true
+      gluetun.persistence.extraLabels:
+        example.com/backup-policy: gluetun
+        recurring-job.longhorn.io/source: "enabled"
+    asserts:
+      - hasDocuments:
+          count: 3
+      - equal:
+          path: metadata.labels["example.com/backup-policy"]
+          value: config
+        documentIndex: 0
+      - equal:
+          path: metadata.labels["recurring-job.longhorn.io/source"]
+          value: "enabled"
+        documentIndex: 0
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: qbittorrent-vpn
+        documentIndex: 0
+      - equal:
+          path: metadata.labels["example.com/backup-policy"]
+          value: data
+        documentIndex: 1
+      - equal:
+          path: metadata.labels["recurring-job.longhorn.io/source"]
+          value: "enabled"
+        documentIndex: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: qbittorrent-vpn
+        documentIndex: 1
+      - equal:
+          path: metadata.labels["example.com/backup-policy"]
+          value: gluetun
+        documentIndex: 2
+      - equal:
+          path: metadata.labels["recurring-job.longhorn.io/source"]
+          value: "enabled"
+        documentIndex: 2
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: qbittorrent-vpn
+        documentIndex: 2

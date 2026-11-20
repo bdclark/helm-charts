@@ -128,6 +128,8 @@ persistence:
     size: 4Gi
     # -- Use existing PVC (disables provisioning).
     existingClaim: ""
+    # -- Additional labels for PVCs created by this chart.
+    extraLabels: {}
     # -- PVC annotations.
     annotations: {}
 
@@ -147,6 +149,8 @@ persistence:
     size: 100Gi
     # -- Existing shared media PVC. Recommended when the download client uses the same filesystem.
     existingClaim: ""
+    # -- Additional labels for PVCs created by this chart.
+    extraLabels: {}
     # -- PVC annotations.
     annotations: {}
 

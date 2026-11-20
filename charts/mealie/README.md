@@ -1,6 +1,6 @@
 # Mealie Helm Chart
 
-[![Version: 0.1.19](https://img.shields.io/badge/Version-0.1.19-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: v3.31.0](https://img.shields.io/badge/AppVersion-v3.31.0-informational?style=flat-square)](Chart.yaml)
 
 Mealie recipe manager and meal planner
@@ -142,6 +142,7 @@ strategy:
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes for the PVC |
 | persistence.size | string | `"1Gi"` | Requested PVC size |
 | persistence.existingClaim | string | `""` | Use an existing PVC instead of creating a new one If defined, PVC must be created manually before volume will be bound |
+| persistence.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.annotations | object | `{}` | Annotations for PVC |
 | strategy | object | `{}` | Deployment update strategy (default: Recreate when persistence enabled and non-RWX or single replica) |
 | database.engine | string | `"sqlite"` | Database engine to use (sqlite/postgres) |

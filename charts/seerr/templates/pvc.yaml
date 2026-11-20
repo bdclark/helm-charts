@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "seerr.fullname" . }}-config
   labels:
-    {{- include "seerr.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "seerr.labels" . | fromYaml) (.Values.persistence.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

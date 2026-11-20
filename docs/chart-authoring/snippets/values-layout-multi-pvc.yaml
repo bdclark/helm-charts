@@ -50,6 +50,7 @@ persistence:
       - ReadWriteOnce
     size: 1Gi
     existingClaim: ""
+    extraLabels: {}
     annotations: {}
   data:
     enabled: true
@@ -60,6 +61,7 @@ persistence:
       - ReadWriteOnce
     size: 10Gi
     existingClaim: ""
+    extraLabels: {}
     annotations: {}
 
 extraVolumes: []

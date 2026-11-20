@@ -16,19 +16,25 @@
         },
         "pullPolicy": {
           "type": "string",
-          "enum": ["Always", "IfNotPresent", "Never"],
+          "enum": [
+            "Always",
+            "IfNotPresent",
+            "Never"
+          ],
           "description": "Image pull policy"
         },
         "tag": {
           "type": "string",
           "description": "Image tag (overrides appVersion from Chart.yaml)"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "imagePullSecrets": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "additionalProperties": true
       },
       "description": "Secrets for pulling images from private repositories"
     },
@@ -43,47 +49,67 @@
     "deploymentAnnotations": {
       "type": "object",
       "description": "Annotations for the Deployment",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "extraDeploymentLabels": {
       "type": "object",
       "description": "Additional labels for the Deployment",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "podAnnotations": {
       "type": "object",
-      "description": "Annotations to add to the pod"
+      "description": "Annotations to add to the pod",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "podLabels": {
       "type": "object",
-      "description": "Labels to add to the pod"
+      "description": "Labels to add to the pod",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "commonLabels": {
       "type": "object",
       "description": "Labels to add to all resources",
-      "additionalProperties": { "type": "string" }
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "podSecurityContext": {
       "type": "object",
-      "description": "Security context for the pod"
+      "description": "Security context for the pod",
+      "additionalProperties": true
     },
     "securityContext": {
       "type": "object",
-      "description": "Security context for the container"
+      "description": "Security context for the container",
+      "additionalProperties": true
     },
     "service": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["ClusterIP", "NodePort", "LoadBalancer", "ExternalName"],
+          "enum": [
+            "ClusterIP",
+            "NodePort",
+            "LoadBalancer",
+            "ExternalName"
+          ],
           "description": "Kubernetes Service type"
         },
         "port": {
           "type": "integer",
           "description": "Port for the service"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "ingress": {
       "type": "object",
@@ -98,39 +124,80 @@
         },
         "annotations": {
           "type": "object",
-          "description": "Ingress annotations"
+          "description": "Ingress annotations",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "hosts": {
           "type": "array",
           "items": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "host": {
+                "type": "string"
+              },
+              "paths": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "path": {
+                      "type": "string"
+                    },
+                    "pathType": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           },
           "description": "Ingress hosts configuration"
         },
         "tls": {
           "type": "array",
           "items": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "secretName": {
+                "type": "string"
+              },
+              "hosts": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           },
           "description": "TLS configuration"
         }
-      }
+      },
+      "additionalProperties": false
     },
     "resources": {
       "type": "object",
-      "description": "Resource limits and requests"
+      "description": "Resource limits and requests",
+      "additionalProperties": true
     },
     "livenessProbe": {
       "type": "object",
-      "description": "Liveness probe configuration"
+      "description": "Liveness probe configuration",
+      "additionalProperties": true
     },
     "readinessProbe": {
       "type": "object",
-      "description": "Readiness probe configuration"
+      "description": "Readiness probe configuration",
+      "additionalProperties": true
     },
     "startupProbe": {
       "type": "object",
-      "description": "Startup probe configuration"
+      "description": "Startup probe configuration",
+      "additionalProperties": true
     },
     "persistence": {
       "type": "object",
@@ -158,151 +225,201 @@
           "type": "string",
           "description": "Use an existing PVC instead of creating a new one"
         },
+        "extraLabels": {
+          "type": "object",
+          "description": "Additional labels for chart-created PVCs",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
         "annotations": {
           "type": "object",
-          "description": "Annotations for PVC"
+          "description": "Annotations for PVC",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "strategy": {
       "type": "object",
-      "description": "Deployment update strategy"
+      "description": "Deployment update strategy",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Recreate",
+            "RollingUpdate"
+          ]
+        },
+        "rollingUpdate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maxSurge": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "maxUnavailable": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      }
     },
     "database": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "engine": {
           "type": "string",
-          "enum": ["sqlite", "postgres"],
-          "description": "Database engine to use"
+          "enum": [
+            "sqlite",
+            "postgres"
+          ]
         },
-        "urlOverride": {
+        "postgres": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "value": {
-              "type": "string",
-              "description": "Database connection URL override"
-            },
-            "existingSecret": {
+            "urlOverride": {
               "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of the existing secret"
+                "value": {
+                  "type": "string"
                 },
-                "key": {
-                  "type": "string",
-                  "description": "Key in the secret for the URL override"
+                "existingSecret": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
-            }
-          }
-        },
-        "server": {
-          "type": "object",
-          "properties": {
-            "value": {
-              "type": "string",
-              "description": "Database server hostname or IP"
             },
-            "existingSecret": {
+            "server": {
               "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of the existing secret"
+                "value": {
+                  "type": "string"
                 },
-                "key": {
-                  "type": "string",
-                  "description": "Key in the secret for the server value"
+                "existingSecret": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
-            }
-          }
-        },
-        "port": {
-          "type": "integer",
-          "properties": {
-            "value": {
-              "type": "string",
-              "description": "Database port"
             },
-            "existingSecret": {
+            "port": {
               "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of the existing secret"
+                "value": {
+                  "type": "integer"
                 },
-                "key": {
-                  "type": "string",
-                  "description": "Key in the secret for the port value"
+                "existingSecret": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
-            }
-          }
-        },
-        "name": {
-          "type": "object",
-          "properties": {
-            "value": {
-              "type": "string",
-              "description": "Database name"
             },
-            "existingSecret": {
+            "db": {
               "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of the existing secret"
+                "value": {
+                  "type": "string"
                 },
-                "key": {
-                  "type": "string",
-                  "description": "Key in the secret for the database name"
+                "existingSecret": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
-            }
-          }
-        },
-        "user": {
-          "type": "object",
-          "properties": {
-            "value": {
-              "type": "string",
-              "description": "Database user"
             },
-            "existingSecret": {
+            "user": {
               "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of the existing secret"
+                "value": {
+                  "type": "string"
                 },
-                "key": {
-                  "type": "string",
-                  "description": "Key in the secret for the user"
+                "existingSecret": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
-            }
-          }
-        },
-        "password": {
-          "type": "object",
-          "properties": {
-            "value": {
-              "type": "string",
-              "description": "Database password"
             },
-            "existingSecret": {
+            "password": {
               "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "Name of the existing secret"
+                "value": {
+                  "type": "string"
                 },
-                "key": {
-                  "type": "string",
-                  "description": "Key in the secret for the password"
+                "existingSecret": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "key": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -313,38 +430,47 @@
     "extraEnv": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "additionalProperties": true
       },
       "description": "Extra environment variables to add to the container"
     },
     "extraEnvFrom": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "additionalProperties": true
       },
       "description": "Extra environment variables from secrets or configmaps"
     },
     "volumeMounts": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "additionalProperties": true
       },
       "description": "Additional volume mounts for the container"
     },
     "nodeSelector": {
       "type": "object",
-      "description": "Node selector for pod assignment"
+      "description": "Node selector for pod assignment",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "tolerations": {
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "additionalProperties": true
       },
       "description": "Tolerations for pod assignment"
     },
     "affinity": {
       "type": "object",
-      "description": "Affinity rules for pod assignment"
+      "description": "Affinity rules for pod assignment",
+      "additionalProperties": true
     }
-  }
+  },
+  "additionalProperties": false
 }

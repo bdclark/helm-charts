@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "mosquitto.fullname" . }}-data
   labels:
-    {{- include "mosquitto.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "mosquitto.labels" . | fromYaml) (.Values.persistence.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

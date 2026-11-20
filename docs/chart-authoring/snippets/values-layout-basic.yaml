@@ -48,6 +48,7 @@ persistence:
     - ReadWriteOnce
   size: 1Gi
   existingClaim: ""
+  extraLabels: {}
   annotations: {}
 
 extraVolumes: []

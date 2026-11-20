@@ -1,6 +1,6 @@
 # Wyoming-Piper Helm Chart
 
-[![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.5.4](https://img.shields.io/badge/AppVersion-2.5.4-informational?style=flat-square)](Chart.yaml)
 
 Wyoming protocol server for Piper text to speech
@@ -150,6 +150,7 @@ volumeMounts:
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.size | string | `"5Gi"` | Volume size. |
 | persistence.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.annotations | object | `{}` | PVC annotations. |
 | volumeMounts | list | `[]` | Additional volume mounts. |
 | service.type | string | `"ClusterIP"` | Service type. |

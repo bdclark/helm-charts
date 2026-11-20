@@ -185,11 +185,8 @@ tests:
     set:
       gluetun.enabled: false
     asserts:
-      - notContains:
+      - isNull:
           path: spec.template.spec.initContainers
-          content:
-            name: gluetun
-          any: true
       - notContains:
           path: spec.template.spec.containers
           content:

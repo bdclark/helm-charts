@@ -1,6 +1,6 @@
 # Prowlarr Helm Chart
 
-[![Version: 0.3.7](https://img.shields.io/badge/Version-0.3.7-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 3.0.2](https://img.shields.io/badge/AppVersion-3.0.2-informational?style=flat-square)](Chart.yaml)
 
 Indexer manager for usenet and torrent users
@@ -218,6 +218,7 @@ ingress:
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.size | string | `"1Gi"` | Volume size. |
 | persistence.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.annotations | object | `{}` | PVC annotations. |
 | volumeMounts | list | `[]` | Additional volume mounts. |
 | service.type | string | `"ClusterIP"` | Service type. |

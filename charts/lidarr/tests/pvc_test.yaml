@@ -184,3 +184,43 @@ tests:
       - equal:
           path: metadata.annotations["backup.volume.io/backup"]
           value: "true"
+
+  - it: should apply claim-specific PVC labels and override common labels
+    set:
+      commonLabels:
+        example.com/backup-policy: shared
+      persistence.config.enabled: true
+      persistence.config.extraLabels:
+        example.com/backup-policy: config
+        recurring-job.longhorn.io/source: "enabled"
+      persistence.data.enabled: true
+      persistence.data.extraLabels:
+        example.com/backup-policy: data
+        recurring-job.longhorn.io/source: "enabled"
+    asserts:
+      - hasDocuments:
+          count: 2
+      - equal:
+          path: metadata.labels["example.com/backup-policy"]
+          value: config
+        documentIndex: 0
+      - equal:
+          path: metadata.labels["recurring-job.longhorn.io/source"]
+          value: "enabled"
+        documentIndex: 0
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: lidarr
+        documentIndex: 0
+      - equal:
+          path: metadata.labels["example.com/backup-policy"]
+          value: data
+        documentIndex: 1
+      - equal:
+          path: metadata.labels["recurring-job.longhorn.io/source"]
+          value: "enabled"
+        documentIndex: 1
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: lidarr
+        documentIndex: 1

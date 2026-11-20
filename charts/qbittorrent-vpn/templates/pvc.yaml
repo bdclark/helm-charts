@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "qbittorrent-vpn.fullname" . }}-config
   labels:
-    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "qbittorrent-vpn.labels" . | fromYaml) (.Values.qbittorrent.persistence.config.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.qbittorrent.persistence.config.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -32,7 +32,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "qbittorrent-vpn.fullname" . }}-data
   labels:
-    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "qbittorrent-vpn.labels" . | fromYaml) (.Values.qbittorrent.persistence.data.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.qbittorrent.persistence.data.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -60,7 +60,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "qbittorrent-vpn.fullname" . }}-gluetun
   labels:
-    {{- include "qbittorrent-vpn.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "qbittorrent-vpn.labels" . | fromYaml) (.Values.gluetun.persistence.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.gluetun.persistence.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

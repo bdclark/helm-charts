@@ -1,6 +1,6 @@
 # Audiobookshelf Helm Chart
 
-[![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.38.0](https://img.shields.io/badge/AppVersion-2.38.0-informational?style=flat-square)](Chart.yaml)
 
 Self-hosted audiobooks and podcast server
@@ -148,6 +148,7 @@ ingress:
 | persistence.config.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.config.size | string | `"5Gi"` | Volume size. |
 | persistence.config.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.config.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.config.annotations | object | `{}` | PVC annotations. |
 | persistence.metadata.enabled | bool | `true` | Enable persistence for metadata. |
 | persistence.metadata.mountPath | string | `"/metadata"` | Mount path. |
@@ -156,6 +157,7 @@ ingress:
 | persistence.metadata.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.metadata.size | string | `"5Gi"` | Volume size. |
 | persistence.metadata.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.metadata.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.metadata.annotations | object | `{}` | PVC annotations. |
 | mediaMounts | list | `[]` | Structured media mounts for user-provided existing PVCs. |
 | permissionsInitContainer.enabled | bool | `false` | Enable built-in permissions init container. |

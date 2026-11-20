@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "audiobookshelf.fullname" . }}-config
   labels:
-    {{- include "audiobookshelf.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "audiobookshelf.labels" . | fromYaml) (.Values.persistence.config.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.persistence.config.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -32,7 +32,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "audiobookshelf.fullname" . }}-metadata
   labels:
-    {{- include "audiobookshelf.labels" . | nindent 4 }}
+    {{- toYaml (mergeOverwrite (include "audiobookshelf.labels" . | fromYaml) (.Values.persistence.metadata.extraLabels | default dict)) | nindent 4 }}
   {{- with .Values.persistence.metadata.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

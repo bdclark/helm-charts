@@ -1,6 +1,6 @@
 # Music-Assistant Helm Chart
 
-[![Version: 0.4.18](https://img.shields.io/badge/Version-0.4.18-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: 2.10.12](https://img.shields.io/badge/AppVersion-2.10.12-informational?style=flat-square)](Chart.yaml)
 
 Music Assistant - Universal media library manager for streaming services and connected audio devices
@@ -175,6 +175,7 @@ securityContext:
 | persistence.accessModes | list | `["ReadWriteOnce"]` | Access modes for the PVC |
 | persistence.size | string | `"2Gi"` | Requested PVC size |
 | persistence.existingClaim | string | `""` | Use an existing PVC instead of creating a new one If defined, PVC must be created manually before volume will be bound |
+| persistence.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.annotations | object | `{}` | Annotations for PVC |
 | strategy | object | `{}` | Deployment update strategy (default: Recreate when persistence.enabled) |
 | additionalVolumes | list | `[]` | Extra volumes to mount (e.g., media libraries) |

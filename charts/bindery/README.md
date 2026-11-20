@@ -1,6 +1,6 @@
 # Bindery Helm Chart
 
-[![Version: 0.1.14](https://img.shields.io/badge/Version-0.1.14-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square)](Chart.yaml)
 [![AppVersion: v1.52.0](https://img.shields.io/badge/AppVersion-v1.52.0-informational?style=flat-square)](Chart.yaml)
 
 Automated ebook and audiobook download manager for Usenet and torrents
@@ -134,6 +134,7 @@ ingress:
 | persistence.config.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.config.size | string | `"4Gi"` | Volume size. |
 | persistence.config.existingClaim | string | `""` | Use existing PVC (disables provisioning). |
+| persistence.config.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.config.annotations | object | `{}` | PVC annotations. |
 | persistence.data.enabled | bool | `false` | Enable a shared media volume for downloads and libraries. |
 | persistence.data.mountPath | string | `"/data"` | Mount path. |
@@ -142,6 +143,7 @@ ingress:
 | persistence.data.accessModes | list | `["ReadWriteOnce"]` | Access modes. |
 | persistence.data.size | string | `"100Gi"` | Volume size when provisioning a PVC. |
 | persistence.data.existingClaim | string | `""` | Existing shared media PVC. Recommended when the download client uses the same filesystem. |
+| persistence.data.extraLabels | object | `{}` | Additional labels for PVCs created by this chart. |
 | persistence.data.annotations | object | `{}` | PVC annotations. |
 | extraVolumeMounts | list | `[]` | Additional volume mounts. |
 | initContainers | list | `[]` | Additional init containers. |
