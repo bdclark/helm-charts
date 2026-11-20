@@ -12,6 +12,38 @@ entries:
           url: https://github.com/advplyr/audiobookshelf
     apiVersion: v2
     appVersion: 2.38.0
+    created: "2026-11-20T21:48:26.80651738Z"
+    description: Self-hosted audiobooks and podcast server
+    digest: 999468ac0602744ed08610ab9699f6c6d9950046221b15360e69001bac6f1e57
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+    icon: https://raw.githubusercontent.com/advplyr/audiobookshelf/refs/heads/master/client/static/icon.svg
+    keywords:
+    - audiobooks
+    - podcasts
+    - media
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: audiobookshelf
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+    - https://github.com/advplyr/audiobookshelf
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/audiobookshelf-0.2.0/audiobookshelf-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/audiobookshelf
+        - name: Audiobookshelf
+          url: https://www.audiobookshelf.org
+        - name: Audiobookshelf GitHub
+          url: https://github.com/advplyr/audiobookshelf
+    apiVersion: v2
+    appVersion: 2.38.0
     created: "2026-11-18T12:57:37.862217939Z"
     description: Self-hosted audiobooks and podcast server
     digest: 8e536a5bdff25334a645f9c79d336dd886cc86bfd8f7e7447292c501b6e2dd29
@@ -258,6 +290,38 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/audiobookshelf-0.1.0/audiobookshelf-0.1.0.tgz
     version: 0.1.0
   bindery:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/bindery
+        - name: Bindery GitHub
+          url: https://github.com/vavallee/bindery
+    apiVersion: v2
+    appVersion: v1.52.0
+    created: "2026-11-20T21:48:26.937701027Z"
+    description: Automated ebook and audiobook download manager for Usenet and torrents
+    digest: dbe8f08f32ec9cd47c61eaab7a3f7873400c1cc0530e79377392945f7f26c1b1
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/bindery
+    icon: https://raw.githubusercontent.com/vavallee/bindery/main/.github/assets/logo.png
+    keywords:
+    - books
+    - ebooks
+    - audiobooks
+    - usenet
+    - torrent
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: bindery
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/bindery
+    - https://github.com/vavallee/bindery
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/bindery-0.2.0/bindery-0.2.0.tgz
+    version: 0.2.0
   - annotations:
       artifacthub.io/license: MIT
       artifacthub.io/links: |
@@ -750,6 +814,37 @@ entries:
           url: https://github.com/Lidarr/Lidarr
     apiVersion: v2
     appVersion: 3.1.6
+    created: "2026-11-20T21:48:27.098117462Z"
+    description: Music collection manager for usenet and torrent users
+    digest: 51afd69183a5611351c76d15aa814667a2f2de6de9d6d6c44f13db6f275bbf16
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+    icon: https://raw.githubusercontent.com/Lidarr/Lidarr/develop/Logo/Lidarr.svg
+    keywords:
+    - music
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: lidarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/lidarr-0.2.0/lidarr-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/lidarr
+        - name: Lidarr
+          url: https://lidarr.audio
+        - name: Lidarr GitHub
+          url: https://github.com/Lidarr/Lidarr
+    apiVersion: v2
+    appVersion: 3.1.6
     created: "2026-11-01T14:41:25.094063452Z"
     description: Music collection manager for usenet and torrent users
     digest: 1ed20442dc07108d22c954aaaf011e443ec4b0e7603a68b3458a2a866df5626c
@@ -802,6 +897,34 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/lidarr-0.1.0/lidarr-0.1.0.tgz
     version: 0.1.0
   mealie:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+        - name: Mealie
+          url: https://mealie.io/
+    apiVersion: v2
+    appVersion: v3.31.0
+    created: "2026-11-20T21:48:27.22136822Z"
+    description: Mealie recipe manager and meal planner
+    digest: 489cf2cca15dc19dbd4a845d1eedd2a11d5decb97919834c41a4739c0d4f2330
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    - email: ashleyclarkindy@gmail.com
+      name: ashleylclark
+      url: https://github.com/ashleylclark
+    name: mealie
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mealie
+    - https://github.com/mealie-recipes/mealie
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mealie-0.2.0/mealie-0.2.0.tgz
+    version: 0.2.0
   - annotations:
       artifacthub.io/license: MIT
       artifacthub.io/links: |
@@ -1375,6 +1498,44 @@ entries:
           url: https://mosquitto.org/
     apiVersion: v2
     appVersion: 2.0.23
+    created: "2026-11-20T21:48:27.375972022Z"
+    description: Eclipse Mosquitto MQTT broker with authentication and persistence
+      support
+    digest: d3168dc8f1481d438cd44af7738cce250d194871bcfa513837d31fdef6eff9c9
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mqtt
+    - mosquitto
+    - eclipse
+    - iot
+    - broker
+    - messaging
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: mosquitto
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+    - https://github.com/eclipse/mosquitto
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.7.0/mosquitto-0.7.0.tgz
+    version: 0.7.0
+  - annotations:
+      artifacthub.io/images: |
+        - name: mosquitto
+          image: eclipse-mosquitto
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/mosquitto
+        - name: Eclipse Mosquitto
+          url: https://mosquitto.org/
+    apiVersion: v2
+    appVersion: 2.0.23
     created: "2026-11-19T23:38:13.051777061Z"
     description: Eclipse Mosquitto MQTT broker with authentication and persistence
       support
@@ -1808,6 +1969,45 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/mosquitto-0.2.0/mosquitto-0.2.0.tgz
     version: 0.2.0
   music-assistant:
+  - annotations:
+      artifacthub.io/images: |
+        - name: music-assistant
+          image: ghcr.io/music-assistant/server
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+        - name: Music Assistant
+          url: https://music-assistant.io/
+        - name: GitHub Repository
+          url: https://github.com/music-assistant/server
+    apiVersion: v2
+    appVersion: 2.10.12
+    created: "2026-11-20T21:48:27.573782803Z"
+    description: Music Assistant - Universal media library manager for streaming services
+      and connected audio devices
+    digest: 11980721fff48066937fc145aca95d425179d88eb3b26bcebba352c2e6d458c3
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    icon: https://raw.githubusercontent.com/music-assistant/frontend/main/src/assets/icon.png
+    keywords:
+    - music
+    - audio
+    - streaming
+    - media
+    - home-automation
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: music-assistant
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/music-assistant
+    - https://github.com/music-assistant/server
+    - https://music-assistant.io/
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/music-assistant-0.5.0/music-assistant-0.5.0.tgz
+    version: 0.5.0
   - annotations:
       artifacthub.io/images: |
         - name: music-assistant
@@ -2965,6 +3165,37 @@ entries:
           url: https://github.com/nzbgetcom/nzbget
     apiVersion: v2
     appVersion: 26.3.20261113
+    created: "2026-11-20T21:48:27.73286905Z"
+    description: Usenet downloader
+    digest: fef15370efb42c0c59db67c4ce631d1ef197e2b989839f74ab152e2c3b2938af
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    icon: https://nzbget.com/img/logo.svg
+    keywords:
+    - usenet
+    - downloader
+    - nzb
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: nzbget
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/nzbget-0.2.0/nzbget-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/nzbget
+        - name: NZBGet
+          url: https://nzbget.com
+        - name: NZBGet GitHub
+          url: https://github.com/nzbgetcom/nzbget
+    apiVersion: v2
+    appVersion: 26.3.20261113
     created: "2026-11-16T17:08:13.473368566Z"
     description: Usenet downloader
     digest: a496e0465facfc71e663f87f5956efcf1e616f57616f8e4decf6e67642c55a30
@@ -3679,6 +3910,38 @@ entries:
           url: https://github.com/Prowlarr/Prowlarr
     apiVersion: v2
     appVersion: 3.0.2
+    created: "2026-11-20T21:48:27.915680499Z"
+    description: Indexer manager for usenet and torrent users
+    digest: d0f847349c1b756a84a7ec609673e7d7e8e85c6963c9ff43f1b802bc2adc9c38
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+    icon: https://raw.githubusercontent.com/Prowlarr/Prowlarr/develop/Logo/Prowlarr.svg
+    keywords:
+    - indexer
+    - usenet
+    - torrent
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: prowlarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/prowlarr-0.4.0/prowlarr-0.4.0.tgz
+    version: 0.4.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/prowlarr
+        - name: Prowlarr
+          url: https://prowlarr.com
+        - name: Prowlarr GitHub
+          url: https://github.com/Prowlarr/Prowlarr
+    apiVersion: v2
+    appVersion: 3.0.2
     created: "2026-11-17T02:36:41.680976269Z"
     description: Indexer manager for usenet and torrent users
     digest: 6160dbebea6b778d4271c85eb4d2abc2139120cbe39dae8a32d64c1e6d90a7a1
@@ -3989,6 +4252,38 @@ entries:
     - https://github.com/bdclark/helm-charts/releases/download/prowlarr-0.1.0/prowlarr-0.1.0.tgz
     version: 0.1.0
   qbittorrent-vpn:
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+        - name: qBittorrent
+          url: https://www.qbittorrent.org/
+        - name: Gluetun
+          url: https://github.com/qdm12/gluetun
+    apiVersion: v2
+    appVersion: 5.3.0
+    created: "2026-11-20T21:48:28.056225733Z"
+    description: qBittorrent with Gluetun VPN sidecar
+    digest: b1b5d47499fef0127043574b21466b2f8832254d9b8a4c4eaa6eb7d0e31d5558
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    icon: https://raw.githubusercontent.com/qbittorrent/qBittorrent/master/src/icons/qbittorrent-tray.svg
+    keywords:
+    - torrent
+    - bittorrent
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: qbittorrent-vpn
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/qbittorrent-vpn
+    - https://github.com/qbittorrent/qBittorrent
+    - https://github.com/qdm12/gluetun
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/qbittorrent-vpn-0.8.0/qbittorrent-vpn-0.8.0.tgz
+    version: 0.8.0
   - annotations:
       artifacthub.io/license: MIT
       artifacthub.io/links: |
@@ -4513,6 +4808,37 @@ entries:
           url: https://github.com/Radarr/Radarr
     apiVersion: v2
     appVersion: 7.0.3
+    created: "2026-11-20T21:48:28.197216638Z"
+    description: Movie organizer/manager for usenet and torrent users
+    digest: 037f01f589b08def012d5cceed77396d0b7901f21bb8d9d173f93c6848a692ab
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    icon: https://raw.githubusercontent.com/Radarr/Radarr/master/Logo/Radarr.svg
+    keywords:
+    - movie
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: radarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/radarr-0.5.0/radarr-0.5.0.tgz
+    version: 0.5.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/radarr
+        - name: Radarr
+          url: https://radarr.video
+        - name: Radarr GitHub
+          url: https://github.com/Radarr/Radarr
+    apiVersion: v2
+    appVersion: 7.0.3
     created: "2026-11-16T17:07:09.158886594Z"
     description: Movie organizer/manager for usenet and torrent users
     digest: ce4045ab5f3e054e12128337598407cc6b689174b4f629ee664cdab0ade61e7f
@@ -4824,6 +5150,39 @@ entries:
           url: https://github.com/seerr-team/seerr
     apiVersion: v2
     appVersion: v3.5.2
+    created: "2026-11-20T21:48:28.332528814Z"
+    description: Request management for media libraries
+    digest: 5071208a1ca34ed060521612f4da34f1a854a191bea3c94f491003e213b4060f
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+    icon: https://raw.githubusercontent.com/seerr-team/seerr/refs/heads/main/public/os_icon.svg
+    keywords:
+    - requests
+    - media
+    - seerr
+    - overseerr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: seerr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+    - https://github.com/seerr-team/seerr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/seerr-0.2.0/seerr-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/seerr
+        - name: Seerr
+          url: https://seerr.dev
+        - name: Seerr GitHub
+          url: https://github.com/seerr-team/seerr
+    apiVersion: v2
+    appVersion: v3.5.2
     created: "2026-11-12T14:25:04.994591286Z"
     description: Request management for media libraries
     digest: 1aea37269f04346af24b2fb1ed53538708a81859d0b35c85a355139ee01aa7ed
@@ -5122,6 +5481,38 @@ entries:
           url: https://github.com/Sonarr/Sonarr
     apiVersion: v2
     appVersion: 4.0.20
+    created: "2026-11-20T21:48:28.471624469Z"
+    description: TV show organizer/manager for usenet and torrent users
+    digest: 6022eefa7d5dc5fdce6fc3ea4d4fa69732c8836f9c23ea9febc9904b424d2fa2
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    icon: https://raw.githubusercontent.com/Sonarr/Sonarr/develop/Logo/Sonarr.svg
+    keywords:
+    - tv
+    - television
+    - organizer
+    - servarr
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: sonarr
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/sonarr-0.5.0/sonarr-0.5.0.tgz
+    version: 0.5.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/sonarr
+        - name: Sonarr
+          url: https://sonarr.tv
+        - name: Sonarr GitHub
+          url: https://github.com/Sonarr/Sonarr
+    apiVersion: v2
+    appVersion: 4.0.20
     created: "2026-10-14T18:00:26.643272385Z"
     description: TV show organizer/manager for usenet and torrent users
     digest: bb2a5e5d88705e185b3f2d1e6feaf9cbf77c721752e62b1fdc2451b6f0c2aef0
@@ -5377,6 +5768,36 @@ entries:
           url: https://github.com/rhasspy/wyoming-piper
     apiVersion: v2
     appVersion: 2.5.4
+    created: "2026-11-20T21:48:28.669318963Z"
+    description: Wyoming protocol server for Piper text to speech
+    digest: a996b7a9e5ef21ae446ff1d8a19e85d9fafbde6f697dce90aff39e668732227b
+    home: https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+    icon: https://raw.githubusercontent.com/OHF-Voice/piper1-gpl/refs/heads/main/etc/logo.svg
+    keywords:
+    - tts
+    - piper
+    - wyoming
+    maintainers:
+    - email: brian@clark.zone
+      name: bdclark
+      url: https://github.com/bdclark
+    name: wyoming-piper
+    sources:
+    - https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+    - https://github.com/rhasspy/wyoming-piper
+    type: application
+    urls:
+    - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.2.0/wyoming-piper-0.2.0.tgz
+    version: 0.2.0
+  - annotations:
+      artifacthub.io/license: MIT
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/bdclark/helm-charts/tree/main/charts/wyoming-piper
+        - name: Wyoming Piper GitHub
+          url: https://github.com/rhasspy/wyoming-piper
+    apiVersion: v2
+    appVersion: 2.5.4
     created: "2026-11-18T12:58:01.692971269Z"
     description: Wyoming protocol server for Piper text to speech
     digest: 5c56ba9765f81b03dff9989e2c579988ffa79519ac73bad3d6815ba89751d067
@@ -5578,4 +5999,4 @@ entries:
     urls:
     - https://github.com/bdclark/helm-charts/releases/download/wyoming-piper-0.1.0/wyoming-piper-0.1.0.tgz
     version: 0.1.0
-generated: "2026-11-19T23:38:13.051988679Z"
+generated: "2026-11-20T21:48:28.669944316Z"
