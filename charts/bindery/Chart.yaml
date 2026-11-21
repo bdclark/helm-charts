@@ -2,9 +2,9 @@ apiVersion: v2
 name: bindery
 description: Automated ebook and audiobook download manager for Usenet and torrents
 type: application
-version: "0.2.0"
+version: "0.2.1"
 # renovate: image=ghcr.io/vavallee/bindery
-appVersion: "v1.52.0"
+appVersion: "v1.53.0"
 icon: https://raw.githubusercontent.com/vavallee/bindery/main/.github/assets/logo.png
 keywords:
   - books
