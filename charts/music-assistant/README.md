@@ -1,7 +1,7 @@
 # Music-Assistant Helm Chart
 
-[![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square)](Chart.yaml)
-[![AppVersion: 2.10.13](https://img.shields.io/badge/AppVersion-2.10.13-informational?style=flat-square)](Chart.yaml)
+[![Version: 0.5.2](https://img.shields.io/badge/Version-0.5.2-informational?style=flat-square)](Chart.yaml)
+[![AppVersion: 2.10.14](https://img.shields.io/badge/AppVersion-2.10.14-informational?style=flat-square)](Chart.yaml)
 
 Music Assistant - Universal media library manager for streaming services and connected audio devices
 
